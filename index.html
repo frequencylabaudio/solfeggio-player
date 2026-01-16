@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
     <title>Frequency Lab | Solfeggio Mixer</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-
     <style>
         :root { --panel-bg: #0a0a0a; --chan-bg: #141414; }
         body { 
@@ -14,66 +11,64 @@
             font-family: 'Inter', -apple-system, sans-serif; 
             text-align: center; margin: 0; min-height: 100vh; 
             display: flex; flex-direction: column; align-items: center; 
-            justify-content: flex-start; overflow-x: hidden;
+            overflow-x: hidden;
         }
         
         .header-container { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 20px; }
         h1 { font-weight: 200; letter-spacing: 5px; margin: 0; font-size: 1.8rem; }
-        .info-trigger { 
-            cursor: pointer; color: #444; font-size: 1.1rem; 
-            border: 1px solid #333; width: 24px; height: 24px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-        }
+        .info-trigger { cursor: pointer; color: #444; font-size: 1.1rem; border: 1px solid #333; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 
         .subtitle { font-size: 0.7rem; letter-spacing: 3px; color: #666; margin: 5px 0 20px 0; text-transform: uppercase; }
-        
         .page-wrapper { display: flex; align-items: flex-start; gap: 15px; padding: 10px; width: 100%; justify-content: center; box-sizing: border-box; }
         
-        /* Desktop Sidebars */
+        /* Desktop Sidebar Ads */
         .ad-sidebar { width: 140px; height: 600px; background: #111; border: 1px dashed #333; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .ad-text { color: #444; font-size: 10px; transform: rotate(-90deg); letter-spacing: 2px; }
 
+        /* Mixer Container */
         .mixer { 
             display: flex; flex-wrap: nowrap; justify-content: center; gap: 8px; 
             background: var(--panel-bg); padding: 20px 10px; border-radius: 24px; 
-            border: 1px solid #222; width: auto; max-width: 100%; overflow-x: auto;
+            border: 1px solid #222; width: auto; max-width: 100%;
             box-shadow: 0 15px 40px rgba(0,0,0,0.9);
         }
-        
-        /* Mobile Breakpoint */
-        @media (max-width: 768px) {
-            .ad-sidebar { display: none; } /* Hide ads on phone to save space */
-            .mixer { 
-                flex-wrap: wrap; /* Let faders wrap to next line */
-                justify-content: center;
-                gap: 12px;
-                padding: 15px;
-            }
-            .chan { flex: 0 0 45%; max-width: 45%; } /* Show 2 faders per row on phone */
-            h1 { font-size: 1.4rem; letter-spacing: 3px; }
-        }
 
+        /* Desktop Fader Style (Vertical) */
         .chan { 
             display: flex; flex-direction: column; align-items: center; 
             flex: 0 0 95px; width: 95px; background: var(--chan-bg); 
             padding: 12px 0; border-radius: 12px; border: 1px solid #202020; 
             transition: border 0.3s, box-shadow 0.3s; box-sizing: border-box;
         }
-        
-        .hz { font-size: 0.8rem; font-weight: 800; margin-bottom: 4px; color: var(--clr); }
-        .desc { font-size: 0.5rem; font-weight: 700; height: 44px; color: #b0b0b0; line-height: 1.2; padding: 0 4px; display: flex; align-items: center; justify-content: center; text-align: center; text-transform: uppercase; }
-        .vol-label { font-size: 0.65rem; font-family: monospace; color: #999; margin-bottom: 6px; }
         input[type=range] { -webkit-appearance: slider-vertical; width: 18px; height: 140px; cursor: pointer; margin-bottom: 12px; }
 
+        /* Mobile Redesign (Horizontal Rows) */
+        @media (max-width: 768px) {
+            .ad-sidebar { display: none; }
+            .mixer { flex-direction: column; width: 95%; gap: 10px; padding: 15px; }
+            .chan { 
+                flex-direction: row; width: 100%; height: 80px; flex: none;
+                justify-content: space-between; padding: 0 15px; align-items: center;
+            }
+            .chan-info { text-align: left; display: flex; flex-direction: column; gap: 4px; width: 50%; }
+            .hz { margin-bottom: 0; font-size: 0.9rem; }
+            .desc { height: auto; justify-content: flex-start; text-align: left; font-size: 0.55rem; }
+            input[type=range] { -webkit-appearance: none; width: 40%; height: 4px; background: #333; border-radius: 2px; margin: 0; }
+            input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 15px; height: 15px; background: #fff; border-radius: 50%; }
+            .btn-row { margin-top: 5px; }
+        }
+
+        .hz { font-size: 0.8rem; font-weight: 800; color: var(--clr); }
+        .desc { font-size: 0.5rem; font-weight: 700; height: 44px; color: #b0b0b0; line-height: 1.2; padding: 0 4px; display: flex; align-items: center; justify-content: center; text-align: center; text-transform: uppercase; }
+        .vol-label { font-size: 0.65rem; font-family: monospace; color: #999; }
         .btn-row { display: flex; gap: 4px; }
         .m-btn, .s-btn { width: 40px; height: 20px; border-radius: 4px; border: 1px solid #333; background: #1a1a1a; color: #aaa; font-size: 0.5rem; cursor: pointer; text-transform: uppercase; font-weight: bold; }
         .m-btn.active-mute { background: #9b2226; color: #fff; border-color: #ff4d4d; }
         .s-btn.active-solo { background: #ffd60a; color: #000; border-color: #fff; }
 
         .main-controls { margin: 20px 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; max-width: 90%; }
-        
-        #startBtn { background: #ffd60a; color: #000; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; width: 220px; }
-        #pauseBtn { background: #55a630; color: #fff; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; display: none; width: 220px; }
+        #startBtn, #pauseBtn { background: #ffd60a; color: #000; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; width: 220px; }
+        #pauseBtn { background: #55a630; color: #fff; display: none; }
         
         .timer-wrap { display: flex; align-items: center; gap: 10px; background: #111; padding: 8px 18px; border-radius: 50px; border: 1px solid #333; }
         .timer-label { font-size: 0.65rem; color: #666; text-transform: uppercase; font-weight: bold; }
@@ -83,22 +78,14 @@
         .btn-utility { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 10px 18px; border-radius: 50px; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: 600; }
         .btn-save { background: #20c997; color: #000; padding: 10px 18px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
 
+        /* Modal Styles */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); z-index: 1000; }
-        .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f0f; padding: 30px; border-radius: 24px; text-align: center; width: 85%; max-width: 400px; border: 1px solid #222; box-shadow: 0 20px 60px rgba(0,0,0,0.8); box-sizing: border-box; }
+        .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f0f; padding: 30px; border-radius: 24px; text-align: center; width: 90%; max-width: 460px; border: 1px solid #222; box-sizing: border-box; }
         .modal-header { color: #ffd60a; font-size: 20px; margin-bottom: 20px; text-transform: uppercase; font-weight: 800; }
-        
-        .info-list { text-align: left; color: #ccc; font-size: 12px; line-height: 1.6; margin-bottom: 20px; }
-        .info-list li { margin-bottom: 10px; list-style: none; }
-        .info-list b { color: #ffd60a; text-transform: uppercase; font-size: 10px; display: block; }
-
-        .auth-buttons { display: flex; flex-direction: column; gap: 10px; }
-        .auth-btn { padding: 14px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 0.7rem; }
-        .g-btn { background: #ffffff; color: #000; }
-        .fb-btn { background: #3b5998; color: #fff; }
-        .email-btn { background: #ffd60a; color: #000; }
+        .info-list { text-align: left; color: #ccc; font-size: 13px; line-height: 1.6; margin-bottom: 20px; }
+        .info-list li { margin-bottom: 12px; list-style: none; }
+        .info-list b { color: #ffd60a; text-transform: uppercase; font-size: 10px; display: block; margin-bottom: 2px; }
         .back-btn { margin-top: 25px; color: #666; cursor: pointer; font-size: 11px; text-transform: uppercase; font-weight: 700; }
-        #successMsg { display: none; margin-top: 15px; padding: 15px; background: #000; border: 1px solid #20c997; border-radius: 12px; color: #fff; font-size: 12px; }
-        .magic-link-box { background: #111; padding: 10px; border-radius: 6px; border: 1px solid #333; margin-top: 10px; word-break: break-all; color: #20c997; font-family: monospace; font-size: 10px; }
 
         .footer-credit { margin: 10px 0 30px 0; font-size: 0.6rem; color: #333; letter-spacing: 1px; text-transform: uppercase; }
     </style>
@@ -132,14 +119,16 @@
                     chData.forEach((ch, i) => {
                         document.write(`
                             <div class="chan" id="c${i}" style="--clr:${ch.c}; --glow:${ch.g}">
-                                <div class="hz">${ch.hz}</div>
-                                <div class="desc">${ch.d}</div>
-                                <div class="vol-label" id="l${i}">0%</div>
-                                <input type="range" id="v${i}" min="0" max="1" step="0.01" value="0" oninput="slide(${i},this.value)">
-                                <div class="btn-row">
-                                    <button class="m-btn" id="m${i}" onclick="muteTrack(${i})">Mute</button>
-                                    <button class="s-btn" id="s${i}" onclick="soloTrack(${i})">Solo</button>
+                                <div class="chan-info">
+                                    <div class="hz">${ch.hz}</div>
+                                    <div class="desc">${ch.d}</div>
+                                    <div class="btn-row">
+                                        <button class="m-btn" id="m${i}" onclick="muteTrack(${i})">Mute</button>
+                                        <button class="s-btn" id="s${i}" onclick="soloTrack(${i})">Solo</button>
+                                    </div>
                                 </div>
+                                <input type="range" id="v${i}" min="0" max="1" step="0.01" value="0" oninput="slide(${i},this.value)">
+                                <div class="vol-label" id="l${i}">0%</div>
                             </div>
                         `);
                     });
@@ -178,26 +167,9 @@
                 <li><b>Immersion</b> Use high-quality headphones at a moderate volume for best results.</li>
                 <li><b>Layering</b> Play multiple frequencies to find a blend that resonates with you.</li>
                 <li><b>The Science</b> Ancient tones used for meditation, sleep, and emotional balance.</li>
-                <li><b>Persistence</b> Use 'Save Preset' to get a link and return to your mix anytime.</li>
+                <li><b>Persistence</b> Use the Save Preset button to generate a 'Magic Link' and return to your custom mix instantly on any device.</li>
             </div>
             <div class="back-btn" onclick="closeInfo()">Close</div>
-        </div>
-    </div>
-
-    <div id="saveModal" class="modal-overlay">
-        <div class="modal-content">
-            <h2 class="modal-header">MIX SAVED!</h2>
-            <div id="authContainer">
-                <p style="font-size:12px; color:#888; margin-bottom:20px;">Get a Magic Link to restore this mix on any device.</p>
-                <div class="auth-buttons">
-                    <button class="auth-btn g-btn" onclick="saveAndSign()">Continue</button>
-                </div>
-            </div>
-            <div id="successMsg">
-                <strong>Link Created!</strong>
-                <div class="magic-link-box" id="linkDisplay"></div>
-            </div>
-            <div class="back-btn" onclick="closeModal()">Back</div>
         </div>
     </div>
 
@@ -213,15 +185,11 @@
             const sBtn = document.getElementById('startBtn');
             const pBtn = document.getElementById('pauseBtn');
             sBtn.innerText = "INITIALIZING...";
-            
-            // Fix for iOS Audio: Explicitly resume on user click
             ctx = new (window.AudioContext || window.webkitAudioContext)();
             if (ctx.state === 'suspended') await ctx.resume();
-            
             master = ctx.createGain();
             master.gain.setValueAtTime(0, ctx.currentTime);
             master.connect(ctx.destination);
-            
             try {
                 audioFiles.forEach((_, i) => {
                     const g = ctx.createGain();
@@ -233,21 +201,17 @@
                     const res = await fetch(f + ".mp3");
                     const buf = await ctx.decodeAudioData(await res.arrayBuffer());
                     const src = ctx.createBufferSource();
-                    src.buffer = buf; 
-                    src.loop = true;
+                    src.buffer = buf; src.loop = true;
                     src.connect(tracks[i].g);
                     src.start(0);
                 }));
                 ready = true;
-                const now = ctx.currentTime;
                 tracks.forEach((t, i) => {
-                    t.g.gain.linearRampToValueAtTime(t.lastVal * 0.7, now + 0.5); 
+                    t.g.gain.linearRampToValueAtTime(t.lastVal * 0.7, ctx.currentTime + 0.5); 
                 });
-                master.gain.linearRampToValueAtTime(0.6, now + 0.8);
-                sBtn.style.display = "none"; 
-                pBtn.style.display = "block";
-                if (timeLeft > 0) startCountdown();
-            } catch (err) { sBtn.innerText = "LOAD ERROR"; console.error(err); }
+                master.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.8);
+                sBtn.style.display = "none"; pBtn.style.display = "block";
+            } catch (err) { sBtn.innerText = "LOAD ERROR"; }
         }
 
         function slide(i, v) {
@@ -256,7 +220,8 @@
             if (ready && tracks[i].g) {
                 const targetGain = (tracks[i].isMuted || (soloIdx !== -1 && soloIdx !== i)) ? 0 : val * 0.7;
                 tracks[i].g.gain.cancelScheduledValues(ctx.currentTime);
-                tracks[i].g.gain.linearRampToValueAtTime(targetGain, ctx.currentTime + 0.05);
+                // Increased to 0.1s to prevent clicking/buzzing on mobile
+                tracks[i].g.gain.linearRampToValueAtTime(targetGain, ctx.currentTime + 0.1);
             }
             updateUI(i, val);
         }
@@ -290,35 +255,11 @@
                 document.getElementById('v' + i).value = 0;
                 slide(i, 0);
             });
+            setTimer(0);
         }
 
         function openInfo() { document.getElementById('infoModal').style.display = 'block'; }
         function closeInfo() { document.getElementById('infoModal').style.display = 'none'; }
-
-        function openModal() { 
-            document.getElementById('authContainer').style.display = 'block';
-            document.getElementById('successMsg').style.display = 'none';
-            document.getElementById('saveModal').style.display = 'block'; 
-            if (ready && master) {
-                master.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.3);
-            }
-        }
-
-        async function closeModal() { 
-            document.getElementById('saveModal').style.display = 'none'; 
-            if (ready && master && !isPaused) {
-                if (ctx.state === 'suspended') await ctx.resume();
-                master.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.5);
-            }
-        }
-
-        function saveAndSign() {
-            const levels = tracks.map(t => Math.round(t.lastVal * 100)).join(',');
-            const magicLink = `${window.location.origin}${window.location.pathname}?preset=${levels}`;
-            document.getElementById('authContainer').style.display = 'none';
-            document.getElementById('linkDisplay').innerText = magicLink;
-            document.getElementById('successMsg').style.display = 'block';
-        }
 
         function updateUI(i, val) {
             document.getElementById('l' + i).innerText = Math.round(val * 100) + "%";
@@ -331,20 +272,13 @@
             if (!ready) return; isPaused = !isPaused;
             master.gain.linearRampToValueAtTime(isPaused ? 0 : 0.6, ctx.currentTime + 0.2);
             document.getElementById('pauseBtn').innerText = isPaused ? "RESUME ALL" : "PAUSE ALL";
-            document.getElementById('pauseBtn').style.background = isPaused ? "#222" : "#55a630";
         }
 
         function setTimer(seconds) {
             clearInterval(timerInterval); 
             timeLeft = parseInt(seconds);
-            if (!ready && timeLeft > 0) { beginSession(); return; }
-            if (ready) {
-                master.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.5);
-                isPaused = false; 
-                document.getElementById('pauseBtn').innerText = "PAUSE ALL";
-                if (timeLeft > 0) startCountdown();
-                else updateTimerDisplay();
-            }
+            if (timeLeft > 0) startCountdown();
+            else updateTimerDisplay();
         }
 
         function startCountdown() {
@@ -353,15 +287,18 @@
                 if (isPaused) return; 
                 timeLeft--; 
                 updateTimerDisplay();
-                if (timeLeft <= 0) { clearInterval(timerInterval); if (!isPaused) toggle(); }
+                if (timeLeft <= 0) { 
+                    clearInterval(timerInterval); 
+                    if (!isPaused) toggle(); 
+                    // Reset UI to 'Disabled'
+                    document.getElementById('timerSelect').value = "0";
+                    document.getElementById('timerDisplay').innerText = "--:--";
+                }
             }, 1000);
         }
 
         function updateTimerDisplay() {
-            if (timeLeft <= 0) {
-                document.getElementById('timerDisplay').innerText = "--:--";
-                return;
-            }
+            if (timeLeft <= 0) { document.getElementById('timerDisplay').innerText = "--:--"; return; }
             const m = Math.floor(timeLeft / 60);
             const s = timeLeft % 60;
             document.getElementById('timerDisplay').innerText = m + ":" + (s < 10 ? '0' : '') + s;
