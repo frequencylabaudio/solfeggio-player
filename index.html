@@ -133,7 +133,6 @@
         .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f0f; padding: 40px; border-radius: 32px; text-align: center; width: 420px; max-width: 90vw; border: 1px solid #222; box-shadow: 0 20px 60px rgba(0,0,0,0.8); box-sizing: border-box; }
         .modal-header { color: var(--start-yellow); font-size: 24px; margin-bottom: 20px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
         .modal-subtext { color: #ccc; font-size: 13px; line-height: 1.6; margin-bottom: 25px; text-align: left; }
-        .modal-subtext strong { color: var(--start-yellow); display: block; margin-top: 15px; margin-bottom: 5px; }
         
         .auth-buttons { display: flex; flex-direction: column; gap: 12px; }
         .auth-btn { padding: 16px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
@@ -247,10 +246,7 @@
                 <strong>🎧 For Best Results</strong>
                 Use <b>headphones</b> to experience the full therapeutic depth of each frequency.
                 <strong>⏳ Pro Tip: Timer</strong>
-                Set a timer to automatically fade out your session. <b>15–30 mins</b> is perfect for a reset; <b>1 hour+</b> is ideal for deep focus or sleep.
-                <strong>💾 Save & Share</strong>
-                • <b>Save:</b> Sign in to create a "Magic Link" that remembers your exact fader levels.<br>
-                • <b>Share:</b> Send your current frequency mix to others via social media or email.
+                Set a timer to automatically fade out your session.
             </div>
             <div class="back-btn" onclick="closeInfo()">Back to Mixer</div>
         </div>
@@ -258,34 +254,30 @@
 
     <div id="saveModal" class="modal-overlay" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h2 class="modal-header">Save Preset</h2>
+            <h2 class="modal-header">Save</h2>
             <div id="authContainer">
-                <p class="modal-subtext" style="text-align: center;">Sign in to receive a secure 'Magic Link' via email. Use it to instantly restore your custom preset anytime, on any device.</p>
+                <p class="modal-subtext" style="text-align: center;">Choose a sharing option below. Audio will resume once closed.</p>
                 <div class="auth-buttons">
-                    <button class="auth-btn g-btn" onclick="saveAndSign('Google')">Continue with Google</button>
-                    <button class="auth-btn fb-btn" onclick="saveAndSign('Facebook')">Continue with Facebook</button>
-                    <button class="auth-btn email-btn" onclick="saveAndSign('Email')">Use Your Email</button>
+                    <button class="auth-btn g-btn" onclick="saveAndSign('Gmail')">Gmail</button>
+                    <button class="auth-btn fb-btn" onclick="saveAndSign('Facebook')">Facebook</button>
+                    <button class="auth-btn email-btn" onclick="saveAndSign('Email')">Email</button>
                 </div>
             </div>
             <div id="successMsg">
-                <strong style="color:#20c997; font-size: 18px;">Preset Captured!</strong><br><br>
-                Use the link below to load this mix on any browser:
                 <div class="magic-link-box" id="linkDisplay"></div>
-                <p style="font-size: 11px; margin-top: 15px; color: #666;">Click the link to select/copy</p>
             </div>
-            <div class="back-btn" onclick="closeModal()">Back to Mixer</div>
+            <div class="back-btn" onclick="closeModal()">Close</div>
         </div>
     </div>
 
     <div id="shareModal" class="modal-overlay" onclick="closeShare()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <h2 class="modal-header" style="color: var(--bright-blue);">Share Mix</h2>
-            <p class="modal-subtext" style="text-align: center;">Spread the harmony with your friends.</p>
             <div class="auth-buttons">
-                <button class="auth-btn g-btn" onclick="shareMix('Gmail')">Share via Gmail</button>
-                <button class="auth-btn fb-btn" onclick="shareMix('Facebook')">Share on Facebook</button>
-                <button class="auth-btn email-btn" onclick="shareMix('Email')">Share via Email</button>
-                <button class="auth-btn link-btn" onclick="shareMix('Link')">Share via Link</button>
+                <button class="auth-btn g-btn" onclick="shareMix('Gmail')">Gmail</button>
+                <button class="auth-btn fb-btn" onclick="shareMix('Facebook')">Facebook</button>
+                <button class="auth-btn email-btn" onclick="shareMix('Email')">Email</button>
+                <button class="auth-btn link-btn" onclick="shareMix('Link')">Copy Link</button>
             </div>
             <div class="back-btn" onclick="closeShare()">Close</div>
         </div>
@@ -294,7 +286,8 @@
     <script>
         const audioFiles = ["69.3Hz","174Hz","285Hz","396Hz","417Hz","432Hz","528Hz","639Hz","741Hz","852Hz","963Hz"];
         let ctx, master, tracks = [], ready = false, isPaused = false, wasPlayingBeforeSave = false;
-        let timerInterval, timeLeft = 0, soloIdx = -1, globalMuted = false;
+        let timerInterval, timeLeft = 0, soloIdx = -1;
+        let isGlobalMuteActive = false; 
 
         for(let i=0; i<11; i++) { tracks[i] = { lastVal: 0, isMuted: false, g: null }; }
 
@@ -386,9 +379,9 @@
             const levels = tracks.map(t => Math.round(t.lastVal * 100)).join(',');
             const link = `${window.location.origin}${window.location.pathname}?preset=${levels}`;
             if(platform === 'Link') {
-                navigator.clipboard.writeText(link).then(() => alert("Link copied to clipboard!"));
+                navigator.clipboard.writeText(link).then(() => alert("Copied!"));
             } else {
-                alert(`Link generated for ${platform}: \n\n${link}`);
+                alert(`Shared to ${platform}`);
             }
         }
 
@@ -441,11 +434,7 @@
             const s = timeLeft % 60;
             const display = document.getElementById('timerDisplay');
             if(display) {
-                if (hrs > 0) {
-                    display.innerText = `${hrs}:${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
-                } else {
-                    display.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
-                }
+                display.innerText = hrs > 0 ? `${hrs}:${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}` : `${m}:${s < 10 ? '0' : ''}${s}`;
             }
         }
 
@@ -470,32 +459,21 @@
             const btn = document.getElementById('m' + i);
             if(btn) btn.classList.toggle('active-mute', tracks[i].isMuted);
             slide(i, tracks[i].lastVal);
-            
-            // Sync global button label if manual changes happen
-            const anyActive = tracks.some(t => !t.isMuted);
-            const mainMuteBtn = document.getElementById('muteAllBtn');
-            globalMuted = !anyActive;
-            mainMuteBtn.innerText = globalMuted ? "Unmute All" : "Mute All";
         }
 
         function toggleMuteAll() {
             if (!ready) return;
             
-            // If any single fader is audible, we want to Mute All.
-            // If everything is already muted, we Unmute All.
-            const anyActive = tracks.some(t => !t.isMuted);
-            const targetMuteState = anyActive; 
+            // Toggle global tracking state
+            isGlobalMuteActive = !isGlobalMuteActive;
             
+            // Apply state to all tracks based on the button's toggle
             tracks.forEach((_, i) => {
-                tracks[i].isMuted = targetMuteState;
-                const btn = document.getElementById('m' + i);
-                if(btn) btn.classList.toggle('active-mute', targetMuteState);
-                slide(i, tracks[i].lastVal);
+                muteTrack(i, isGlobalMuteActive);
             });
 
-            globalMuted = targetMuteState;
             const mainMuteBtn = document.getElementById('muteAllBtn');
-            mainMuteBtn.innerText = globalMuted ? "Unmute All" : "Mute All";
+            mainMuteBtn.innerText = isGlobalMuteActive ? "Unmute All" : "Mute All";
         }
 
         function soloTrack(i) {
