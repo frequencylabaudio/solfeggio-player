@@ -149,7 +149,7 @@
         /* Email Input Area */
         #emailInputArea { display: none; flex-direction: column; gap: 10px; margin-top: 10px; }
         .modal-input { padding: 14px; border-radius: 10px; border: 1px solid #333; background: #000; color: #fff; outline: none; }
-        .send-btn { background: #20c997; color: #000; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; }
+        .send-btn { background: var(--start-yellow); color: #000; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
 
         .back-btn { margin-top: 25px; color: #666; cursor: pointer; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; transition: 0.2s; }
         .footer-credit { position: fixed; bottom: 15px; right: 15px; font-size: 0.65rem; color: #333; letter-spacing: 1px; text-transform: uppercase; z-index: 1; }
@@ -354,7 +354,12 @@
         }
 
         function handleSSO(platform) {
-            alert(`Opening ${platform} Authentication...`);
+            // Using window.open for a standard auth pop-up instead of alert boxes
+            const width = 500;
+            const height = 600;
+            const left = (screen.width / 2) - (width / 2);
+            const top = (screen.height / 2) - (height / 2);
+            window.open('about:blank', `${platform}Login`, `width=${width},height=${height},top=${top},left=${left}`);
         }
 
         function handleCopy() {
@@ -381,8 +386,13 @@
         function sendMagicLink() {
             const email = document.getElementById('userEmail').value;
             if(email.includes('@')) {
-                alert(`Success! Check your inbox at ${email}.`);
-                hideEmailInput();
+                const btn = document.querySelector('.send-btn');
+                btn.innerText = "SENDING...";
+                setTimeout(() => {
+                    alert(`Success! Check your inbox at ${email}.`);
+                    btn.innerText = "SEND MAGIC LINK";
+                    hideEmailInput();
+                }, 1500);
             } else {
                 alert("Please enter a valid email address.");
             }
