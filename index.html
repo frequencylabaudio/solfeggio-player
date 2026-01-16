@@ -43,14 +43,14 @@
         .ad-sidebar-stack {
             display: flex;
             flex-direction: column;
-            gap: 40px; /* Increased gap for better UX balance */
+            gap: 40px;
             width: 140px;
             flex-shrink: 0;
         }
 
         .ad-box { 
             width: 140px; 
-            height: 250px; /* Reduced height to maintain <30% ad-to-content ratio */
+            height: 250px; 
             background: #111; 
             border: 1px dashed #333; 
             display: flex; 
@@ -294,7 +294,7 @@
     <script>
         const audioFiles = ["69.3Hz","174Hz","285Hz","396Hz","417Hz","432Hz","528Hz","639Hz","741Hz","852Hz","963Hz"];
         let ctx, master, tracks = [], ready = false, isPaused = false, wasPlayingBeforeSave = false;
-        let timerInterval, timeLeft = 0, soloIdx = -1;
+        let timerInterval, timeLeft = 0, soloIdx = -1, globalMuted = false;
 
         for(let i=0; i<11; i++) { tracks[i] = { lastVal: 0, isMuted: false, g: null }; }
 
@@ -470,14 +470,32 @@
             const btn = document.getElementById('m' + i);
             if(btn) btn.classList.toggle('active-mute', tracks[i].isMuted);
             slide(i, tracks[i].lastVal);
+            
+            // Sync global button label if manual changes happen
+            const anyActive = tracks.some(t => !t.isMuted);
+            const mainMuteBtn = document.getElementById('muteAllBtn');
+            globalMuted = !anyActive;
+            mainMuteBtn.innerText = globalMuted ? "Unmute All" : "Mute All";
         }
 
         function toggleMuteAll() {
             if (!ready) return;
+            
+            // If any single fader is audible, we want to Mute All.
+            // If everything is already muted, we Unmute All.
             const anyActive = tracks.some(t => !t.isMuted);
-            tracks.forEach((_, i) => muteTrack(i, anyActive));
+            const targetMuteState = anyActive; 
+            
+            tracks.forEach((_, i) => {
+                tracks[i].isMuted = targetMuteState;
+                const btn = document.getElementById('m' + i);
+                if(btn) btn.classList.toggle('active-mute', targetMuteState);
+                slide(i, tracks[i].lastVal);
+            });
+
+            globalMuted = targetMuteState;
             const mainMuteBtn = document.getElementById('muteAllBtn');
-            mainMuteBtn.innerText = anyActive ? "Unmute All" : "Mute All";
+            mainMuteBtn.innerText = globalMuted ? "Unmute All" : "Mute All";
         }
 
         function soloTrack(i) {
