@@ -16,7 +16,8 @@
         
         .header-container { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 20px; }
         h1 { font-weight: 200; letter-spacing: 5px; margin: 0; font-size: 1.8rem; }
-        .info-trigger { cursor: pointer; color: #444; font-size: 1.1rem; border: 1px solid #333; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .info-trigger { cursor: pointer; color: #444; font-size: 1.1rem; border: 1px solid #333; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .info-trigger:hover { color: #ffd60a; border-color: #ffd60a; }
 
         .subtitle { font-size: 0.7rem; letter-spacing: 3px; color: #666; margin: 5px 0 20px 0; text-transform: uppercase; }
         .page-wrapper { display: flex; align-items: flex-start; gap: 15px; padding: 10px; width: 100%; justify-content: center; box-sizing: border-box; }
@@ -47,15 +48,16 @@
             .ad-sidebar { display: none; }
             .mixer { flex-direction: column; width: 95%; gap: 10px; padding: 15px; }
             .chan { 
-                flex-direction: row; width: 100%; height: 80px; flex: none;
-                justify-content: space-between; padding: 0 15px; align-items: center;
+                flex-direction: row; width: 100%; height: auto; flex: none;
+                justify-content: space-between; padding: 12px 15px; align-items: center;
+                gap: 10px;
             }
-            .chan-info { text-align: left; display: flex; flex-direction: column; gap: 4px; width: 50%; }
-            .hz { margin-bottom: 0; font-size: 0.9rem; }
-            .desc { height: auto; justify-content: flex-start; text-align: left; font-size: 0.55rem; }
-            input[type=range] { -webkit-appearance: none; width: 40%; height: 4px; background: #333; border-radius: 2px; margin: 0; }
-            input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 15px; height: 15px; background: #fff; border-radius: 50%; }
-            .btn-row { margin-top: 5px; }
+            .chan-info { text-align: left; display: flex; flex-direction: column; gap: 6px; width: 45%; }
+            .hz { margin-bottom: 0; font-size: 0.85rem; }
+            .desc { height: auto; justify-content: flex-start; text-align: left; font-size: 0.55rem; padding: 0; }
+            input[type=range] { -webkit-appearance: none; width: 35%; height: 4px; background: #333; border-radius: 2px; margin: 0; }
+            input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: #fff; border-radius: 50%; border: 2px solid #555; }
+            .vol-label { min-width: 35px; text-align: right; }
         }
 
         .hz { font-size: 0.8rem; font-weight: 800; color: var(--clr); }
@@ -78,14 +80,15 @@
         .btn-utility { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 10px 18px; border-radius: 50px; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: 600; }
         .btn-save { background: #20c997; color: #000; padding: 10px 18px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
 
-        /* Modal Styles */
+        /* Info Modal Fix */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); z-index: 1000; }
-        .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f0f; padding: 30px; border-radius: 24px; text-align: center; width: 90%; max-width: 460px; border: 1px solid #222; box-sizing: border-box; }
-        .modal-header { color: #ffd60a; font-size: 20px; margin-bottom: 20px; text-transform: uppercase; font-weight: 800; }
-        .info-list { text-align: left; color: #ccc; font-size: 13px; line-height: 1.6; margin-bottom: 20px; }
-        .info-list li { margin-bottom: 12px; list-style: none; }
-        .info-list b { color: #ffd60a; text-transform: uppercase; font-size: 10px; display: block; margin-bottom: 2px; }
-        .back-btn { margin-top: 25px; color: #666; cursor: pointer; font-size: 11px; text-transform: uppercase; font-weight: 700; }
+        .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f0f; padding: 35px; border-radius: 24px; text-align: center; width: 90%; max-width: 500px; border: 1px solid #222; box-sizing: border-box; }
+        .modal-header { color: #ffd60a; font-size: 20px; margin-bottom: 25px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
+        .info-list { text-align: left; color: #ccc; font-size: 13px; line-height: 1.7; margin-bottom: 20px; }
+        .info-list li { margin-bottom: 15px; list-style: none; }
+        .info-list b { color: #ffd60a; text-transform: uppercase; font-size: 10px; display: block; margin-bottom: 4px; letter-spacing: 0.5px; }
+        .back-btn { margin-top: 25px; color: #666; cursor: pointer; font-size: 11px; text-transform: uppercase; font-weight: 700; transition: 0.3s; }
+        .back-btn:hover { color: #fff; }
 
         .footer-credit { margin: 10px 0 30px 0; font-size: 0.6rem; color: #333; letter-spacing: 1px; text-transform: uppercase; }
     </style>
@@ -165,8 +168,8 @@
             <h2 class="modal-header">Information</h2>
             <div class="info-list">
                 <li><b>Immersion</b> Use high-quality headphones at a moderate volume for best results.</li>
-                <li><b>Layering</b> Play multiple frequencies to find a blend that resonates with you.</li>
-                <li><b>The Science</b> Ancient tones used for meditation, sleep, and emotional balance.</li>
+                <li><b>Layering</b> Play multiple frequencies simultaneously to find a blend that resonates with your current state of mind.</li>
+                <li><b>The Science</b> These 9 core Solfeggio frequencies are ancient tones used to aid in meditation, sleep, and emotional balancing.</li>
                 <li><b>Persistence</b> Use the Save Preset button to generate a 'Magic Link' and return to your custom mix instantly on any device.</li>
             </div>
             <div class="back-btn" onclick="closeInfo()">Close</div>
@@ -220,8 +223,8 @@
             if (ready && tracks[i].g) {
                 const targetGain = (tracks[i].isMuted || (soloIdx !== -1 && soloIdx !== i)) ? 0 : val * 0.7;
                 tracks[i].g.gain.cancelScheduledValues(ctx.currentTime);
-                // Increased to 0.1s to prevent clicking/buzzing on mobile
-                tracks[i].g.gain.linearRampToValueAtTime(targetGain, ctx.currentTime + 0.1);
+                // Smoother transition to eliminate buzzing/clicking
+                tracks[i].g.gain.linearRampToValueAtTime(targetGain, ctx.currentTime + 0.12);
             }
             updateUI(i, val);
         }
@@ -261,6 +264,8 @@
         function openInfo() { document.getElementById('infoModal').style.display = 'block'; }
         function closeInfo() { document.getElementById('infoModal').style.display = 'none'; }
 
+        function openModal() { /* Simplified placeholder for Save Modal logic */ }
+
         function updateUI(i, val) {
             document.getElementById('l' + i).innerText = Math.round(val * 100) + "%";
             const el = document.getElementById('c' + i);
@@ -272,13 +277,17 @@
             if (!ready) return; isPaused = !isPaused;
             master.gain.linearRampToValueAtTime(isPaused ? 0 : 0.6, ctx.currentTime + 0.2);
             document.getElementById('pauseBtn').innerText = isPaused ? "RESUME ALL" : "PAUSE ALL";
+            document.getElementById('pauseBtn').style.background = isPaused ? "#222" : "#55a630";
         }
 
         function setTimer(seconds) {
             clearInterval(timerInterval); 
             timeLeft = parseInt(seconds);
             if (timeLeft > 0) startCountdown();
-            else updateTimerDisplay();
+            else {
+                document.getElementById('timerSelect').value = "0";
+                updateTimerDisplay();
+            }
         }
 
         function startCountdown() {
@@ -290,7 +299,7 @@
                 if (timeLeft <= 0) { 
                     clearInterval(timerInterval); 
                     if (!isPaused) toggle(); 
-                    // Reset UI to 'Disabled'
+                    // UI Reset
                     document.getElementById('timerSelect').value = "0";
                     document.getElementById('timerDisplay').innerText = "--:--";
                 }
