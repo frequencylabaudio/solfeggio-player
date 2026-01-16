@@ -28,7 +28,7 @@
         .info-icon { 
             cursor: pointer; width: 20px; height: 20px; border-radius: 50%; 
             border: 1px solid #444; color: #444; font-size: 13px; 
-            display: flex; align-items: center; justify-content: center;
+            display: flex; align-items: center; justify-content: center; 
             font-style: italic; font-family: serif; transition: 0.3s;
         }
         .info-icon:hover { border-color: var(--start-yellow); color: var(--start-yellow); }
@@ -54,7 +54,7 @@
         }
 
         .ad-box { 
-            width: 140px;
+            width: 140px; 
             height: 250px; 
             background: #111; 
             border: 1px dashed #333; 
@@ -92,24 +92,21 @@
         }
 
         .mixer { 
-            display: flex;
-            flex-wrap: nowrap; 
+            display: flex; flex-wrap: nowrap; 
             justify-content: center; 
             gap: 8px; 
             background: var(--panel-bg); 
             padding: 25px 15px; 
             border-radius: 24px; 
-            border: 1px solid #222;
+            border: 1px solid #222; 
             box-shadow: 0 15px 40px rgba(0,0,0,0.9);
             margin-bottom: 30px;
         }
         
         .chan { 
-            display: flex;
-            flex-direction: column; align-items: center; 
+            display: flex; flex-direction: column; align-items: center; 
             flex: 0 0 95px; width: 95px; background: var(--chan-bg); 
-            padding: 12px 0; border-radius: 12px;
-            border: 1px solid #202020; 
+            padding: 12px 0; border-radius: 12px; border: 1px solid #202020; 
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
             box-sizing: border-box;
             position: relative;
@@ -117,49 +114,36 @@
             overflow: hidden;
         }
         
-        .hz { font-size: 0.8rem;
-            font-weight: 800; margin-bottom: 4px; color: var(--clr); }
-        .desc { font-size: 0.5rem; font-weight: 700;
-            height: 44px; color: #b0b0b0; line-height: 1.2; padding: 0 4px; display: flex; align-items: center; justify-content: center; text-align: center; text-transform: uppercase;
-        }
+        .hz { font-size: 0.8rem; font-weight: 800; margin-bottom: 4px; color: var(--clr); }
+        .desc { font-size: 0.5rem; font-weight: 700; height: 44px; color: #b0b0b0; line-height: 1.2; padding: 0 4px; display: flex; align-items: center; justify-content: center; text-align: center; text-transform: uppercase; }
         .vol-label { font-size: 0.65rem; font-family: monospace; color: #999; margin-bottom: 6px; }
         input[type=range] { -webkit-appearance: slider-vertical; width: 18px; height: 150px; cursor: pointer; margin-bottom: 12px; }
 
         .btn-row { display: flex; gap: 4px; }
-        .m-btn, .s-btn { width: 40px; height: 20px; border-radius: 4px;
-            border: 1px solid #333; background: #1a1a1a; color: #aaa; font-size: 0.5rem; cursor: pointer; text-transform: uppercase; font-weight: bold;
-        }
+        .m-btn, .s-btn { width: 40px; height: 20px; border-radius: 4px; border: 1px solid #333; background: #1a1a1a; color: #aaa; font-size: 0.5rem; cursor: pointer; text-transform: uppercase; font-weight: bold; }
         .m-btn.active-mute { background: #9b2226; color: #fff; border-color: #ff4d4d; }
         .s-btn.active-solo { background: var(--start-yellow); color: #000; border-color: #fff; }
 
         .main-controls { display: flex; flex-wrap: nowrap; justify-content: center; align-items: center; gap: 12px; white-space: nowrap; }
         
         #startBtn { background: var(--start-yellow); color: #000; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; }
-        #pauseBtn { background: #55a630; color: #fff; padding: 14px 40px; border-radius: 50px;
-            border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; display: none;
-        }
+        #pauseBtn { background: #55a630; color: #fff; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; display: none; }
         
         .timer-wrap { display: flex; align-items: center; gap: 10px; background: #111; padding: 6px 18px; border-radius: 50px; border: 1px solid #333; }
         .timer-label { font-size: 0.65rem; color: #666; text-transform: uppercase; font-weight: bold; }
         select { background: transparent; color: var(--start-yellow); border: none; font-weight: bold; font-family: monospace; cursor: pointer; outline: none; }
         #timerDisplay { font-family: monospace; color: #55a630; font-size: 0.85rem; min-width: 55px; }
 
-        .btn-utility { background: #1a1a1a; color: #888; border: 1px solid #333;
-            padding: 10px 20px; border-radius: 50px; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: 600;
-        }
-        .btn-save { background: #20c997; color: #000; padding: 10px 24px; border-radius: 50px;
-            border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold;
-        }
-        .btn-share-main { background: #007bff; color: #fff; padding: 10px 24px; border-radius: 50px;
-            border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold;
-        }
+        .btn-utility { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: 600; }
+        .btn-save { background: #20c997; color: #000; padding: 10px 24px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
+        .btn-share-main { background: #007bff; color: #fff; padding: 10px 24px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
 
+        /* MODAL STYLES */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); backdrop-filter: blur(10px); z-index: 1000; }
-        .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: #0f0f0f; padding: 40px; border-radius: 32px; text-align: center; width: 420px; max-width: 90vw; border: 1px solid #222;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8); box-sizing: border-box; }
+        .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f0f; padding: 40px; border-radius: 32px; text-align: center; width: 420px; max-width: 90vw; border: 1px solid #222; box-shadow: 0 20px 60px rgba(0,0,0,0.8); box-sizing: border-box; }
         .modal-header { color: var(--start-yellow); font-size: 24px; margin-bottom: 20px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
         .modal-subtext { color: #ccc; font-size: 13px; line-height: 1.6; margin-bottom: 25px; text-align: center; }
+        
         .auth-buttons { display: flex; flex-direction: column; gap: 12px; }
         .auth-btn { padding: 16px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; transition: 0.2s; }
         .g-btn { background: #ffffff; color: #000; }
@@ -169,37 +153,9 @@
         #emailInputArea { display: none; flex-direction: column; gap: 10px; margin-top: 10px; }
         .modal-input { padding: 14px; border-radius: 10px; border: 1px solid #333; background: #000; color: #fff; outline: none; }
         .send-btn { background: var(--start-yellow); color: #000; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
+
         .back-btn { margin-top: 25px; color: #666; cursor: pointer; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; transition: 0.2s; }
         .footer-credit { position: fixed; bottom: 15px; right: 15px; font-size: 0.65rem; color: #333; letter-spacing: 1px; text-transform: uppercase; z-index: 1; }
-
-        /* ============================================================
-           MOBILE LAYER - INDEPENDENT SCROLL & FIXED FRAME
-           ============================================================ */
-        @media (max-width: 850px) {
-            body { height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
-            .page-wrapper { display: flex; flex-direction: column; padding: 10px; height: 100vh; gap: 0; }
-            
-            /* Fixed Top Section */
-            .title-container, .subtitle, .ad-sidebar-stack:first-of-type, .main-controls { flex-shrink: 0; }
-            .ad-sidebar-stack:first-of-type { flex-direction: row; width: 100%; justify-content: center; gap: 10px; margin-bottom: 10px; }
-            .ad-box { width: 140px; height: 50px; }
-            .ad-text { transform: none; font-size: 8px; }
-
-            /* Scrolling Mixer Middle */
-            .scroll-container { flex: 1; overflow-y: auto; overflow-x: hidden; width: 100%; padding: 0; margin: 10px 0; }
-            .mixer-unit { min-width: auto; width: 100%; }
-            .mixer { flex-direction: column; width: 100%; padding: 15px; box-shadow: none; background: transparent; border: none; }
-            
-            /* Horizontal Card Fix */
-            .chan { flex-direction: row; width: 100%; flex: 0 0 auto; padding: 15px; justify-content: space-between; align-items: center; text-align: left; }
-            .hz { margin: 0; font-size: 1.1rem; }
-            .desc { height: auto; text-align: left; justify-content: flex-start; padding: 0; font-size: 0.6rem; margin: 4px 0; max-width: 50%; }
-            input[type=range] { -webkit-appearance: none; width: 110px; height: 4px; background: #333; margin: 0 10px; cursor: pointer; }
-            input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: #fff; border-radius: 50%; }
-
-            /* Fixed Bottom Section */
-            .ad-sidebar-stack:last-of-type { flex-direction: row; width: 100%; justify-content: center; gap: 10px; margin-top: auto; padding-bottom: 10px; background: #050505; }
-        }
     </style>
 </head>
 <body>
@@ -217,33 +173,6 @@
         </div>
         
         <main>
-            <div class="main-controls">
-                <button id="startBtn" onclick="beginSession()">Start Session</button>
-                <button id="pauseBtn" onclick="toggle()">Pause All</button>
-                <div class="timer-wrap">
-                    <span class="timer-label">Timer:</span>
-                    <select id="timerSelect" onchange="setTimer(this.value)">
-                        <option value="0">Disabled</option>
-                        <option value="60">1 Min</option>
-                        <option value="300">5 Min</option>
-                        <option value="600">10 Min</option>
-                        <option value="900">15 Min</option>
-                        <option value="1200">20 Min</option>
-                        <option value="1800">30 Min</option>
-                        <option value="3600">1 Hr</option>
-                        <option value="7200">2 Hr</option>
-                        <option value="14400">4 Hr</option>
-                        <option value="28800">8 Hr</option>
-                    </select>
-                    <span id="timerDisplay">--:--</span>
-                </div>
-                <button id="muteAllBtn" class="btn-utility" onclick="toggleMuteAll()">Mute All</button>
-                <button class="btn-utility" onclick="randomize()">Randomize</button>
-                <button class="btn-utility" onclick="resetFaders()">Reset</button>
-                <button class="btn-save" onclick="openSaveModal()">Save</button>
-                <button class="btn-share-main" onclick="openShareModal()">Share</button>
-            </div>
-
             <div class="scroll-container">
                 <div class="mixer-unit">
                     <div class="mixer" id="mixer-ui">
@@ -277,6 +206,33 @@
                             });
                         </script>
                     </div>
+
+                    <div class="main-controls">
+                        <button id="startBtn" onclick="beginSession()">Start Session</button>
+                        <button id="pauseBtn" onclick="toggle()">Pause All</button>
+                        <div class="timer-wrap">
+                            <span class="timer-label">Timer:</span>
+                            <select id="timerSelect" onchange="setTimer(this.value)">
+                                <option value="0">Disabled</option>
+                                <option value="60">1 Min</option>
+                                <option value="300">5 Min</option>
+                                <option value="600">10 Min</option>
+                                <option value="900">15 Min</option>
+                                <option value="1200">20 Min</option>
+                                <option value="1800">30 Min</option>
+                                <option value="3600">1 Hr</option>
+                                <option value="7200">2 Hr</option>
+                                <option value="14400">4 Hr</option>
+                                <option value="28800">8 Hr</option>
+                            </select>
+                            <span id="timerDisplay">--:--</span>
+                        </div>
+                        <button id="muteAllBtn" class="btn-utility" onclick="toggleMuteAll()">Mute All</button>
+                        <button class="btn-utility" onclick="randomize()">Randomize</button>
+                        <button class="btn-utility" onclick="resetFaders()">Reset</button>
+                        <button class="btn-save" onclick="openSaveModal()">Save</button>
+                        <button class="btn-share-main" onclick="openShareModal()">Share</button>
+                    </div>
                 </div>
             </div>
         </main>
@@ -291,17 +247,19 @@
     <div id="saveModal" class="modal-overlay" onclick="closeSaveModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <h2 class="modal-header">SAVE</h2>
-            <p class="modal-subtext">Share via Gmail, Facebook, or Email. Audio will pause while open.</p>
+            <p class="modal-subtext">Share your custom preset via Gmail or Email. Audio will resume once closed.</p>
+            
             <div id="mainAuthButtons" class="auth-buttons">
                 <button class="auth-btn g-btn" onclick="handleAuth('Gmail')">GMAIL</button>
-                <button class="auth-btn email-btn" onclick="handleAuth('Facebook')">FACEBOOK</button>
                 <button class="auth-btn email-btn" onclick="showEmailInput()">EMAIL</button>
             </div>
+
             <div id="emailInputArea">
                 <input type="email" id="userEmail" class="modal-input" placeholder="Enter your email address">
                 <button class="send-btn" onclick="sendMagicLink()">SEND MAGIC LINK</button>
                 <div class="back-btn" onclick="hideEmailInput()">← Back</div>
             </div>
+
             <div class="back-btn" onclick="closeSaveModal()">CLOSE</div>
         </div>
     </div>
@@ -309,13 +267,14 @@
     <div id="shareModal" class="modal-overlay" onclick="closeShareModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <h2 class="modal-header" style="color: #007bff;">SHARE LINK</h2>
-            <p class="modal-subtext">Quickly copy the URL for your current mixer levels.</p>
+            <p class="modal-subtext">Quickly copy the URL for your current mixer levels. Audio will continue playing.</p>
             <button class="auth-btn copy-btn" onclick="copyPresetLink()">COPY LINK</button>
             <div class="back-btn" onclick="closeShareModal()">CLOSE</div>
         </div>
     </div>
 
     <script>
+        // --- 1. FIREBASE INITIALIZATION ---
         const firebaseConfig = {
             apiKey: "AIzaSyBUPKqtwRLaai0obSA9u5IRvK5adqKQG20",
             authDomain: "solfeggio-mixer.firebaseapp.com",
@@ -328,30 +287,40 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
+        // --- 2. MIXER ENGINE VARIABLES ---
         const audioFiles = ["69.3Hz","174Hz","285Hz","396Hz","417Hz","432Hz","528Hz","639Hz","741Hz","852Hz","963Hz"];
         let ctx, master, tracks = [], ready = false, isPaused = false, wasPlayingBeforeSave = false;
         let timerInterval, timeLeft = 0, soloIdx = -1, isGlobalMuteActive = false;
+
         for(let i=0; i<11; i++) { tracks[i] = { lastVal: 0, isMuted: false, g: null }; }
 
+        // --- 3. CORE MIXER FUNCTIONS ---
         function loadPresetFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
             const presetData = urlParams.get('preset');
             if (!presetData) return;
             const channelStrings = presetData.split(',');
+            
             channelStrings.forEach((str, i) => {
-                const parts = str.split('-');
+                const parts = str.split('-'); // Format: Vol-Mute-Solo (e.g., 25-1-0)
                 let val = (parts[0] !== undefined) ? parseFloat(parts[0]) / 100 : 0;
                 let muted = parts[1] === "1";
                 let soloed = parts[2] === "1";
+
                 tracks[i].lastVal = val;
                 tracks[i].isMuted = muted;
                 if(soloed) soloIdx = i;
+
                 const inputEl = document.getElementById('v' + i);
                 if(inputEl) inputEl.value = val;
+                
+                // Update button visuals
                 const mBtn = document.getElementById('m' + i);
                 if(mBtn) mBtn.classList.toggle('active-mute', muted);
+                
                 const sBtn = document.getElementById('s' + i);
                 if(sBtn) sBtn.classList.toggle('active-solo', soloed);
+
                 updateUI(i, val);
             });
         }
@@ -360,6 +329,8 @@
             if (ready) return;
             const sBtn = document.getElementById('startBtn');
             const pBtn = document.getElementById('pauseBtn');
+            
+            // Only set default 25% if no preset was loaded
             const urlParams = new URLSearchParams(window.location.search);
             if (!urlParams.get('preset')) {
                 tracks.forEach((t, i) => {
@@ -369,12 +340,14 @@
                     updateUI(i, 0.25);
                 });
             }
+
             sBtn.innerText = "INITIALIZING...";
             ctx = new (window.AudioContext || window.webkitAudioContext)();
             master = ctx.createGain();
             master.gain.setValueAtTime(0, ctx.currentTime);
             master.connect(ctx.destination);
             await ctx.resume();
+            
             try {
                 await Promise.all(audioFiles.map(async (f, i) => {
                     const g = ctx.createGain();
@@ -410,20 +383,34 @@
             updateUI(i, val);
         }
 
+        // --- 4. MODAL & SHARE LOGIC ---
         function openSaveModal() { 
-            if (ready && !isPaused) { toggle(); wasPlayingBeforeSave = true; }
-            document.getElementById('saveModal').style.display = 'block';
+            if (ready && !isPaused) { 
+                toggle(); 
+                wasPlayingBeforeSave = true; 
+            }
+            document.getElementById('saveModal').style.display = 'block'; 
         }
 
         function closeSaveModal() { 
-            document.getElementById('saveModal').style.display = 'none';
-            if (ready && wasPlayingBeforeSave && isPaused) { toggle(); wasPlayingBeforeSave = false; }
+            document.getElementById('saveModal').style.display = 'none'; 
+            hideEmailInput();
+            if (ready && wasPlayingBeforeSave && isPaused) { 
+                toggle(); 
+                wasPlayingBeforeSave = false; 
+            }
         }
 
-        function openShareModal() { document.getElementById('shareModal').style.display = 'block'; }
-        function closeShareModal() { document.getElementById('shareModal').style.display = 'none'; }
+        function openShareModal() {
+            document.getElementById('shareModal').style.display = 'block';
+        }
+
+        function closeShareModal() {
+            document.getElementById('shareModal').style.display = 'none';
+        }
 
         function generatePresetString() {
+            // Converts track data into "Vol-Mute-Solo" encoded segments
             return tracks.map((t, i) => {
                 const vol = Math.round(t.lastVal * 100);
                 const m = t.isMuted ? 1 : 0;
@@ -435,10 +422,78 @@
         function copyPresetLink() {
             const presetData = generatePresetString();
             const presetLink = `${window.location.origin}${window.location.pathname}?preset=${presetData}`;
-            navigator.clipboard.writeText(presetLink).then(() => alert("Link Copied!"));
+            const dummy = document.createElement('input');
+            document.body.appendChild(dummy);
+            dummy.value = presetLink;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            alert("Full preset link (including Mute/Solo) copied!");
         }
 
+        async function handleAuth(platform) {
+            let provider;
+            if(platform === 'Gmail') provider = new firebase.auth.GoogleAuthProvider();
+            if(provider) {
+                try {
+                    const result = await auth.signInWithPopup(provider);
+                    savePresetToFirebase(result.user.uid);
+                } catch (error) { alert(error.message); }
+            }
+        }
+
+        async function savePresetToFirebase(uid) {
+            const presetData = generatePresetString();
+            const userEmail = auth.currentUser.email;
+            const presetLink = `${window.location.origin}${window.location.pathname}?preset=${presetData}`;
+            try {
+                await db.collection("presets").doc(uid).set({
+                    encodedData: presetData,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                await db.collection("mail").add({
+                    to: userEmail,
+                    message: {
+                        subject: 'Your Sacred Soundscape is Ready ✨',
+                        html: `
+                            <p>Welcome back to your resonance.</p>
+                            <p>Your perfect balance of Solfeggio frequencies is ready for your next session. No need to re-adjust your faders or toggle your mutes—we’ve remembered everything for you.</p>
+                            <p><strong><a href="${presetLink}">[Open Your Soundscape]</a></strong></p>
+                            <p>May this soundscape bring you the peace and clarity you seek today.</p>
+                            <p>Much Love by Frequency Lab</p>
+                        `
+                    }
+                });
+                alert("Mix saved successfully! Check " + userEmail + " for your link.");
+                closeSaveModal();
+            } catch (e) { alert("Save failed: " + e.message); }
+        }
+
+        function sendMagicLink() {
+            const email = document.getElementById('userEmail').value;
+            const actionCodeSettings = { url: window.location.href, handleCodeInApp: true };
+            auth.sendSignInLinkToEmail(email, actionCodeSettings)
+                .then(() => {
+                    window.localStorage.setItem('emailForSignIn', email);
+                    alert('Magic link sent to ' + email);
+                    closeSaveModal();
+                })
+                .catch(err => alert(err.message));
+        }
+
+        function showEmailInput() {
+            document.getElementById('mainAuthButtons').style.display = 'none';
+            document.getElementById('emailInputArea').style.display = 'flex';
+        }
+
+        function hideEmailInput() {
+            document.getElementById('mainAuthButtons').style.display = 'flex';
+            document.getElementById('emailInputArea').style.display = 'none';
+        }
+
+        // --- 5. UTILITY LOGIC ---
         window.onload = loadPresetFromUrl;
+
         function updateUI(i, val) {
             const label = document.getElementById('l' + i);
             if(label) label.innerText = Math.round(val * 100) + "%";
@@ -457,16 +512,14 @@
         }
 
         function toggle() {
-            if (!ready) return;
-            isPaused = !isPaused;
+            if (!ready) return; isPaused = !isPaused;
             master.gain.setTargetAtTime(isPaused ? 0 : 0.6, ctx.currentTime, 0.2);
             document.getElementById('pauseBtn').innerText = isPaused ? "RESUME ALL" : "PAUSE ALL";
             document.getElementById('pauseBtn').style.background = isPaused ? "#222" : "#55a630";
         }
 
         function setTimer(seconds) {
-            clearInterval(timerInterval);
-            timeLeft = parseInt(seconds);
+            clearInterval(timerInterval); timeLeft = parseInt(seconds);
             if (!ready && timeLeft > 0) { beginSession(); return; }
             if (ready) {
                 master.gain.setTargetAtTime(0.6, ctx.currentTime, 0.5);
@@ -537,16 +590,9 @@
         function soloTrack(i) {
             soloIdx = (soloIdx === i) ? -1 : i;
             document.querySelectorAll('.s-btn').forEach((b,idx)=>b.classList.toggle('active-solo', idx===soloIdx));
-            tracks.forEach((_, idx) => { if (ready) slide(idx, tracks[idx].lastVal); });
-        }
-        
-        function showEmailInput() {
-            document.getElementById('mainAuthButtons').style.display = 'none';
-            document.getElementById('emailInputArea').style.display = 'flex';
-        }
-        function hideEmailInput() {
-            document.getElementById('mainAuthButtons').style.display = 'flex';
-            document.getElementById('emailInputArea').style.display = 'none';
+            tracks.forEach((_, idx) => {
+                if (ready) slide(idx, tracks[idx].lastVal);
+            });
         }
     </script>
 </body>
