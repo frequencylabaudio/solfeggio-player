@@ -14,6 +14,7 @@
             display: flex; flex-direction: column; align-items: center; 
             justify-content: flex-start;
             position: relative;
+            overflow-x: hidden;
         }
         
         .title-container { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 20px; }
@@ -29,29 +30,46 @@
 
         .subtitle { font-size: 0.75rem; letter-spacing: 3px; color: #666; margin-bottom: 25px; text-transform: uppercase; }
         
-        /* Updated layout for wider ad placement */
+        /* Fixed Layout: Ads pushed to sides, Mixer perfectly centered */
         .page-wrapper { 
             display: flex; 
             align-items: flex-start; 
-            justify-content: space-between; /* Pushes ads to the sides */
-            gap: 20px; 
-            padding: 10px 40px; /* Horizontal padding keeps ads away from direct screen edge */
+            justify-content: center; /* Center the main content */
             width: 100%; 
-            max-width: 1800px; /* Prevents extreme stretching on ultra-wide monitors */
+            position: relative;
+            padding: 10px 0;
             box-sizing: border-box; 
         }
 
-        .ad-sidebar { width: 140px; height: 600px; background: #111; border: 1px dashed #333; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .ad-sidebar { 
+            width: 140px; 
+            height: 600px; 
+            background: #111; 
+            border: 1px dashed #333; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            position: absolute; /* Take ads out of the flow to prevent pushing the mixer */
+            top: 0;
+        }
+        .ad-left { left: 40px; } /* Space from left edge */
+        .ad-right { right: 40px; } /* Space from right edge */
+
         .ad-text { color: #444; font-size: 10px; transform: rotate(-90deg); letter-spacing: 2px; }
+
+        main {
+            width: 100%;
+            max-width: calc(100vw - 400px); /* Ensures it fits between the ads */
+            z-index: 2;
+        }
 
         .mixer { 
             display: flex; flex-wrap: nowrap; 
             justify-content: flex-start; 
             gap: 8px; 
             background: var(--panel-bg); padding: 25px 15px; border-radius: 24px; 
-            border: 1px solid #222; width: auto; 
-            margin: 0 auto; /* Keeps mixer centered between ads */
-            max-width: calc(100vw - 450px); 
+            border: 1px solid #222; width: fit-content; 
+            margin: 0 auto; 
             overflow-x: auto;
             box-shadow: 0 15px 40px rgba(0,0,0,0.9);
             -webkit-overflow-scrolling: touch;
@@ -121,8 +139,9 @@
     <div class="subtitle">By Frequency Lab</div>
     
     <div class="page-wrapper">
-        <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD</span></aside>
-        <main style="flex-grow: 1;">
+        <aside class="ad-sidebar ad-left"><span class="ad-text">SKYSCRAPER AD</span></aside>
+        
+        <main>
             <div class="mixer" id="mixer-ui">
                 <script>
                     const chData = [
@@ -179,7 +198,8 @@
                 <button class="btn-share" onclick="openShare()">Share</button>
             </div>
         </main>
-        <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD</span></aside>
+
+        <aside class="ad-sidebar ad-right"><span class="ad-text">SKYSCRAPER AD</span></aside>
     </div>
     <div class="footer-credit">Created By Keunho Koh</div>
 
@@ -252,7 +272,8 @@
                     val = (levels[i] !== undefined) ? parseFloat(levels[i]) / 100 : 0.3;
                 }
                 t.lastVal = val;
-                document.getElementById('v' + i).value = val;
+                const inputEl = document.getElementById('v' + i);
+                if(inputEl) inputEl.value = val;
                 updateUI(i, val);
             });
         }
@@ -273,7 +294,7 @@
                     g.gain.setValueAtTime(0, ctx.currentTime);
                     g.connect(master);
                     tracks[i].g = g;
-                    const res = await fetch(f + ".wav"); // Note: Ensure file extension matches your hosted assets
+                    const res = await fetch(f + ".wav");
                     const buf = await ctx.decodeAudioData(await res.arrayBuffer());
                     const src = ctx.createBufferSource();
                     src.buffer = buf; src.loop = true;
@@ -312,12 +333,8 @@
             document.getElementById('saveModal').style.display = 'none'; 
             if (ready && wasPlayingBeforeSave && isPaused) { toggle(); wasPlayingBeforeSave = false; }
         }
-        function openShare() { 
-            document.getElementById('shareModal').style.display = 'block'; 
-        }
-        function closeShare() { 
-            document.getElementById('shareModal').style.display = 'none'; 
-        }
+        function openShare() { document.getElementById('shareModal').style.display = 'block'; }
+        function closeShare() { document.getElementById('shareModal').style.display = 'none'; }
         function openInfo() { document.getElementById('infoModal').style.display = 'block'; }
         function closeInfo() { document.getElementById('infoModal').style.display = 'none'; }
 
@@ -342,10 +359,13 @@
         window.onload = loadPresetFromUrl;
 
         function updateUI(i, val) {
-            document.getElementById('l' + i).innerText = Math.round(val * 100) + "%";
+            const label = document.getElementById('l' + i);
+            if(label) label.innerText = Math.round(val * 100) + "%";
             const el = document.getElementById('c' + i);
-            el.style.boxShadow = val > 0.01 ? `0 0 ${val * 45}px var(--glow)` : "none";
-            el.style.borderColor = val > 0.01 ? `rgba(255,255,255,${val * 0.6})` : "#202020";
+            if(el) {
+                el.style.boxShadow = val > 0.01 ? `0 0 ${val * 45}px var(--glow)` : "none";
+                el.style.borderColor = val > 0.01 ? `rgba(255,255,255,${val * 0.6})` : "#202020";
+            }
         }
 
         function toggle() {
@@ -381,24 +401,30 @@
 
         function updateTimerDisplay() {
             const m = Math.floor(timeLeft / 60); const s = timeLeft % 60;
-            document.getElementById('timerDisplay').innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+            const display = document.getElementById('timerDisplay');
+            if(display) display.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
         }
 
         function randomize() {
             tracks.forEach((_, i) => {
                 const v = (Math.random() * 0.4 + 0.1).toFixed(2);
-                document.getElementById('v'+i).value = v; slide(i, v);
+                const input = document.getElementById('v'+i);
+                if(input) { input.value = v; slide(i, v); }
             });
         }
 
         function resetFaders() {
-            tracks.forEach((_, i) => { document.getElementById('v'+i).value = 0; slide(i, 0); });
+            tracks.forEach((_, i) => { 
+                const input = document.getElementById('v'+i);
+                if(input) { input.value = 0; slide(i, 0); }
+            });
         }
 
         function muteTrack(i, forceState = null) {
             if (!ready) return;
             tracks[i].isMuted = (forceState !== null) ? forceState : !tracks[i].isMuted;
-            document.getElementById('m' + i).classList.toggle('active-mute', tracks[i].isMuted);
+            const btn = document.getElementById('m' + i);
+            if(btn) btn.classList.toggle('active-mute', tracks[i].isMuted);
             slide(i, tracks[i].lastVal);
         }
 
