@@ -30,14 +30,21 @@
 
         .subtitle { font-size: 0.75rem; letter-spacing: 3px; color: #666; margin-bottom: 25px; text-transform: uppercase; }
         
+        /* Updated Grid for 4 Ads: 2 Left, 1 Center, 2 Right */
         .page-wrapper { 
             display: grid;
-            grid-template-columns: 140px 1fr 140px; 
+            grid-template-columns: 280px 1fr 280px; 
             align-items: flex-start; 
             width: 100%; 
-            padding: 10px 40px; 
+            padding: 10px 20px; 
             box-sizing: border-box;
             gap: 20px;
+        }
+
+        .ad-column {
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
         }
 
         .ad-sidebar { 
@@ -48,9 +55,8 @@
             display: flex; 
             align-items: center; 
             justify-content: center;
-            flex-shrink: 0;
         }
-        .ad-text { color: #444; font-size: 10px; transform: rotate(-90deg); letter-spacing: 2px; }
+        .ad-text { color: #444; font-size: 10px; transform: rotate(-90deg); letter-spacing: 2px; white-space: nowrap; }
 
         main {
             width: 100%;
@@ -155,7 +161,10 @@
     <div class="subtitle">By Frequency Lab</div>
     
     <div class="page-wrapper">
-        <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD</span></aside>
+        <div class="ad-column">
+            <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD 1</span></aside>
+            <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD 2</span></aside>
+        </div>
         
         <main>
             <div class="scroll-container">
@@ -219,8 +228,12 @@
             </div>
         </main>
 
-        <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD</span></aside>
+        <div class="ad-column">
+            <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD 3</span></aside>
+            <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD 4</span></aside>
+        </div>
     </div>
+    
     <div class="footer-credit">Created By Keunho Koh</div>
 
     <div id="infoModal" class="modal-overlay" onclick="closeInfo()">
@@ -325,10 +338,8 @@
                 const now = ctx.currentTime;
                 tracks.forEach((t, i) => {
                     let target = (t.isMuted || (soloIdx !== -1 && soloIdx !== i)) ? 0 : t.lastVal * 0.7;
-                    // ADJUSTED RAMP: Slightly faster startup fade-in (0.5s instead of 1.5s)
                     t.g.gain.linearRampToValueAtTime(target, now + 0.5); 
                 });
-                // ADJUSTED RAMP: Master gain reaches target faster (0.8s instead of 2.0s)
                 master.gain.linearRampToValueAtTime(0.6, now + 0.8);
                 sBtn.style.display = "none"; pBtn.style.display = "block";
                 if (timeLeft > 0) startCountdown();
