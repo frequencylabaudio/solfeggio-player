@@ -299,12 +299,28 @@
             const urlParams = new URLSearchParams(window.location.search);
             const presetData = urlParams.get('preset');
             if (!presetData) return;
-            const levels = presetData.split(',');
-            tracks.forEach((t, i) => {
-                let val = (levels[i] !== undefined) ? parseFloat(levels[i]) / 100 : 0;
-                t.lastVal = val;
+            const channelStrings = presetData.split(',');
+            
+            channelStrings.forEach((str, i) => {
+                const parts = str.split('-'); // Format: Vol-Mute-Solo (e.g., 25-1-0)
+                let val = (parts[0] !== undefined) ? parseFloat(parts[0]) / 100 : 0;
+                let muted = parts[1] === "1";
+                let soloed = parts[2] === "1";
+
+                tracks[i].lastVal = val;
+                tracks[i].isMuted = muted;
+                if(soloed) soloIdx = i;
+
                 const inputEl = document.getElementById('v' + i);
                 if(inputEl) inputEl.value = val;
+                
+                // Update button visuals
+                const mBtn = document.getElementById('m' + i);
+                if(mBtn) mBtn.classList.toggle('active-mute', muted);
+                
+                const sBtn = document.getElementById('s' + i);
+                if(sBtn) sBtn.classList.toggle('active-solo', soloed);
+
                 updateUI(i, val);
             });
         }
@@ -313,16 +329,19 @@
             if (ready) return;
             const sBtn = document.getElementById('startBtn');
             const pBtn = document.getElementById('pauseBtn');
-            sBtn.innerText = "INITIALIZING...";
             
-            // Start all faders at 25%
-            tracks.forEach((t, i) => {
-                t.lastVal = 0.25;
-                const inputEl = document.getElementById('v' + i);
-                if(inputEl) inputEl.value = 0.25;
-                updateUI(i, 0.25);
-            });
+            // Only set default 25% if no preset was loaded
+            const urlParams = new URLSearchParams(window.location.search);
+            if (!urlParams.get('preset')) {
+                tracks.forEach((t, i) => {
+                    t.lastVal = 0.25;
+                    const inputEl = document.getElementById('v' + i);
+                    if(inputEl) inputEl.value = 0.25;
+                    updateUI(i, 0.25);
+                });
+            }
 
+            sBtn.innerText = "INITIALIZING...";
             ctx = new (window.AudioContext || window.webkitAudioContext)();
             master = ctx.createGain();
             master.gain.setValueAtTime(0, ctx.currentTime);
@@ -384,23 +403,32 @@
 
         function openShareModal() {
             document.getElementById('shareModal').style.display = 'block';
-            // Audio is NOT paused here per instructions
         }
 
         function closeShareModal() {
             document.getElementById('shareModal').style.display = 'none';
         }
 
+        function generatePresetString() {
+            // Converts track data into "Vol-Mute-Solo" encoded segments
+            return tracks.map((t, i) => {
+                const vol = Math.round(t.lastVal * 100);
+                const m = t.isMuted ? 1 : 0;
+                const s = (soloIdx === i) ? 1 : 0;
+                return `${vol}-${m}-${s}`;
+            }).join(',');
+        }
+
         function copyPresetLink() {
-            const levels = tracks.map(t => Math.round(t.lastVal * 100));
-            const presetLink = `${window.location.origin}${window.location.pathname}?preset=${levels.join(',')}`;
+            const presetData = generatePresetString();
+            const presetLink = `${window.location.origin}${window.location.pathname}?preset=${presetData}`;
             const dummy = document.createElement('input');
             document.body.appendChild(dummy);
             dummy.value = presetLink;
             dummy.select();
             document.execCommand('copy');
             document.body.removeChild(dummy);
-            alert("Preset link copied to clipboard!");
+            alert("Full preset link (including Mute/Solo) copied!");
         }
 
         async function handleAuth(platform) {
@@ -415,19 +443,19 @@
         }
 
         async function savePresetToFirebase(uid) {
-            const levels = tracks.map(t => Math.round(t.lastVal * 100));
+            const presetData = generatePresetString();
             const userEmail = auth.currentUser.email;
-            const presetLink = `${window.location.origin}${window.location.pathname}?preset=${levels.join(',')}`;
+            const presetLink = `${window.location.origin}${window.location.pathname}?preset=${presetData}`;
             try {
                 await db.collection("presets").doc(uid).set({
-                    levels: levels,
+                    encodedData: presetData,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 await db.collection("mail").add({
                     to: userEmail,
                     message: {
                         subject: 'Your Magic Link is Here!',
-                        html: `<p>Your unique preset is saved: <a href="${presetLink}">Open Your Preset</a></p>`
+                        html: `<p>Your unique preset (with Mute/Solo settings) is saved: <a href="${presetLink}">Open Your Preset</a></p>`
                     }
                 });
                 alert("Mix saved successfully! Check " + userEmail + " for your link.");
@@ -540,15 +568,13 @@
         }
 
         function muteTrack(i, forceState = null) {
-            if (!ready) return;
             tracks[i].isMuted = (forceState !== null) ? forceState : !tracks[i].isMuted;
             const btn = document.getElementById('m' + i);
             if(btn) btn.classList.toggle('active-mute', tracks[i].isMuted);
-            slide(i, tracks[i].lastVal);
+            if (ready) slide(i, tracks[i].lastVal);
         }
 
         function toggleMuteAll() {
-            if (!ready) return;
             isGlobalMuteActive = !isGlobalMuteActive;
             tracks.forEach((_, i) => muteTrack(i, isGlobalMuteActive));
             const mainMuteBtn = document.getElementById('muteAllBtn');
@@ -556,10 +582,11 @@
         }
 
         function soloTrack(i) {
-            if (!ready) return;
             soloIdx = (soloIdx === i) ? -1 : i;
             document.querySelectorAll('.s-btn').forEach((b,idx)=>b.classList.toggle('active-solo', idx===soloIdx));
-            tracks.forEach((_, idx) => slide(idx, tracks[idx].lastVal));
+            tracks.forEach((_, idx) => {
+                if (ready) slide(idx, tracks[idx].lastVal);
+            });
         }
     </script>
 </body>
