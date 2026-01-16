@@ -3,20 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Frequency Lab | Solfeggio Mixer</title>
+    <title>Frequency Lab | Professional Mixer</title>
     <style>
-        :root { --panel-bg: #0a0a0a; --chan-bg: #141414; --accent: #ffd60a; --green: #55a630; }
+        :root { --panel-bg: #0a0a0a; --chan-bg: #141414; --accent: #ffd60a; --green: #55a630; --save-teal: #20c997; }
         body { 
-            background: #000; color: #e0e0e0; 
-            font-family: 'Inter', -apple-system, sans-serif; 
+            background: #000; color: #e0e0e0; font-family: 'Inter', -apple-system, sans-serif; 
             margin: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; 
         }
 
         /* Header */
         .header { margin-top: 40px; display: flex; align-items: center; gap: 15px; }
         h1 { font-weight: 200; letter-spacing: 12px; margin: 0; font-size: 2.2rem; text-transform: uppercase; }
-        .info-i { border: 1px solid #333; color: #444; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; cursor: pointer; transition: 0.3s; }
-        .info-i:hover { border-color: #fff; color: #fff; }
+        .info-i { border: 1px solid #333; color: #444; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; cursor: pointer; }
 
         /* Mixer Board */
         .mixer-container {
@@ -25,12 +23,11 @@
         }
         .chan { 
             width: 100px; background: var(--chan-bg); border-radius: 20px; border: 1px solid #222;
-            padding: 20px 0; display: flex; flex-direction: column; align-items: center; transition: 0.4s;
+            padding: 20px 0; display: flex; flex-direction: column; align-items: center;
         }
         .hz { font-weight: 900; font-size: 0.85rem; color: var(--clr); margin-bottom: 5px; }
         .desc { font-size: 0.5rem; font-weight: 700; color: #555; height: 35px; text-align: center; text-transform: uppercase; padding: 0 5px; }
         
-        /* Fader Styling */
         .fader-slot { 
             width: 12px; height: 220px; background: #000; border-radius: 10px; margin: 15px 0; 
             border: 1px solid #222; position: relative; transition: 0.4s;
@@ -38,64 +35,53 @@
         input[type=range] { -webkit-appearance: slider-vertical; width: 12px; height: 220px; background: transparent; cursor: pointer; }
 
         .vol-label { font-size: 0.65rem; color: #444; font-weight: bold; margin-bottom: 15px; }
-        .ms-btn { width: 35px; height: 35px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: #444; font-size: 0.6rem; font-weight: bold; margin: 2px; cursor: pointer; }
+        .ms-btn { width: 35px; height: 35px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: #444; font-size: 0.6rem; font-weight: bold; margin: 2px; }
 
-        /* Bottom Controls - Matches Screenshot 1 */
+        /* Bottom Controls */
         .bottom-actions { display: flex; align-items: center; gap: 15px; margin-bottom: 50px; }
         .btn-main { padding: 18px 45px; border-radius: 50px; border: none; font-weight: 900; text-transform: uppercase; cursor: pointer; font-size: 0.85rem; letter-spacing: 1px; }
         .resume-btn { background: var(--green); color: #fff; min-width: 280px; }
         .utility-btn { background: #151515; color: #888; border: 1px solid #222; padding: 15px 30px; border-radius: 50px; font-size: 0.7rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .save-btn { background: #20c997; color: #000; }
+        .save-btn { background: var(--save-teal); color: #000; }
 
-        /* Timer - Custom Professional Look */
+        /* Timer Pill */
         .timer-pill {
             background: #111; border: 1px solid #333; padding: 12px 25px; border-radius: 50px;
             display: flex; align-items: center; gap: 15px;
         }
-        .timer-pill select { 
-            background: transparent; color: #fff; border: none; font-weight: bold; 
-            font-size: 0.9rem; cursor: pointer; outline: none;
-        }
+        .timer-pill select { background: transparent; color: #fff; border: none; font-weight: bold; font-size: 0.9rem; cursor: pointer; outline: none; -webkit-appearance: none; }
         .timer-pill span { color: var(--green); font-family: monospace; font-weight: bold; font-size: 1rem; }
 
-        /* Modal - Matches Screenshot 3 */
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(15px); z-index: 999; align-items: center; justify-content: center; }
+        /* Modals */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.96); backdrop-filter: blur(20px); z-index: 1000; align-items: center; justify-content: center; }
         .modal-card { background: #0a0a0a; width: 90%; max-width: 480px; padding: 50px; border-radius: 40px; border: 1px solid #222; text-align: center; }
-        .modal-card h2 { color: var(--accent); text-transform: uppercase; font-size: 1.6rem; letter-spacing: 2px; margin-bottom: 35px; }
+        
+        /* Save Modal Specifics */
+        .social-btn { width: 100%; padding: 15px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #333; background: #151515; color: #eee; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .back-mixer { background: #1a1a1a; color: #fff; margin-top: 20px; border: none; width: 100%; padding: 18px; border-radius: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; }
+
+        /* Guide Style (Matches Screenshot 3) */
+        .guide-h { color: var(--accent); text-transform: uppercase; font-size: 1.6rem; letter-spacing: 2px; margin-bottom: 35px; font-weight: 900; }
         .info-item { text-align: left; margin-bottom: 25px; }
         .info-item b { color: var(--accent); display: block; font-size: 0.85rem; margin-bottom: 5px; text-transform: uppercase; }
         .info-item p { color: #bbb; margin: 0; font-size: 0.95rem; line-height: 1.5; }
-        .close-link { color: #333; text-transform: uppercase; font-weight: 900; letter-spacing: 2px; cursor: pointer; margin-top: 30px; display: inline-block; }
-
-        @media (max-width: 768px) {
-            .mixer-container { flex-direction: column; width: 90%; padding: 20px; }
-            .chan { flex-direction: row; width: 100%; height: 70px; padding: 0 20px; justify-content: space-between; }
-            .fader-slot, input[type=range] { width: 120px; height: 8px; -webkit-appearance: none; }
-            .bottom-actions { flex-direction: column; width: 90%; }
-            .resume-btn { width: 100%; }
-        }
     </style>
 </head>
 <body>
 
     <div class="header">
         <h1>SOLFEGGIO PLAYER</h1>
-        <div class="info-i" onclick="openInfo()">i</div>
+        <div class="info-i" onclick="openModal('guideModal')">i</div>
     </div>
 
     <div class="mixer-container" id="mixer">
         <script>
             const chData = [
-                {hz:"69.3Hz", d:"Resonance Deepener", c:"#4a00e0"},
-                {hz:"174Hz", d:"Relieves Pain", c:"#ffffff"},
-                {hz:"285Hz", d:"Body Recovery", c:"#9b2226"},
-                {hz:"396Hz", d:"Release Fear", c:"#ae2012"},
-                {hz:"417Hz", d:"Change Cycles", c:"#ca6702"},
-                {hz:"432Hz", d:"Relaxation", c:"#ee9b00"},
-                {hz:"528Hz", d:"DNA Repair", c:"#0a9396"},
-                {hz:"639Hz", d:"Relationships", c:"#005f73"},
-                {hz:"741Hz", d:"Detox Mind", c:"#3e5c76"},
-                {hz:"852Hz", d:"Intuition", c:"#5e548e"},
+                {hz:"69.3Hz", d:"Resonance Deepener", c:"#4a00e0"}, {hz:"174Hz", d:"Relieves Pain", c:"#ffffff"},
+                {hz:"285Hz", d:"Body Recovery", c:"#9b2226"}, {hz:"396Hz", d:"Release Fear", c:"#ae2012"},
+                {hz:"417Hz", d:"Change Cycles", c:"#ca6702"}, {hz:"432Hz", d:"Relaxation", c:"#ee9b00"},
+                {hz:"528Hz", d:"DNA Repair", c:"#0a9396"}, {hz:"639Hz", d:"Relationships", c:"#005f73"},
+                {hz:"741Hz", d:"Detox Mind", c:"#3e5c76"}, {hz:"852Hz", d:"Intuition", c:"#5e548e"},
                 {hz:"963Hz", d:"Consciousness", c:"#9d4edd"}
             ];
             chData.forEach((ch, i) => {
@@ -107,10 +93,7 @@
                             <input type="range" id="v${i}" min="0" max="1" step="0.01" value="0.00" oninput="updateVol(${i}, this.value)">
                         </div>
                         <div class="vol-label" id="l${i}">0%</div>
-                        <div>
-                            <button class="ms-btn">M</button>
-                            <button class="ms-btn">S</button>
-                        </div>
+                        <div><button class="ms-btn">M</button><button class="ms-btn">S</button></div>
                     </div>
                 `);
             });
@@ -126,54 +109,46 @@
             <select id="timerSet" onchange="startTimer()">
                 <option value="0">Timer: Disabled</option>
                 <option value="1800">30 Min</option>
-                <option value="3600">1 Hour</option>
-                <option value="7200">2 Hours</option>
-                <option value="14400">4 Hours</option>
                 <option value="28800">8 Hours</option>
             </select>
             <span id="timerDisplay">--:--</span>
         </div>
 
-        <button class="btn-main save-btn" onclick="alert('Magic Link Copied!')">Save</button>
+        <button class="btn-main save-btn" onclick="openSave()">Save</button>
         <button class="utility-btn">Share Link</button>
     </div>
 
-    <div id="infoModal" class="modal-overlay">
+    <div id="saveModal" class="modal-overlay">
         <div class="modal-card">
-            <h2>How to use Frequency Lab</h2>
-            <div class="info-item">
-                <b>Immersion</b>
-                <p>For the best results, we recommend using high-quality headphones at a comfortable, moderate volume.</p>
-            </div>
-            <div class="info-item">
-                <b>Layering</b>
-                <p>You can play multiple frequencies simultaneously. Use the faders to find a blend that resonates with your current state of mind.</p>
-            </div>
-            <div class="info-item">
-                <b>The Science</b>
-                <p>These 9 core Solfeggio frequencies are ancient tones used to aid in meditation, sleep, and emotional balancing.</p>
-            </div>
-            <div class="info-item">
-                <b>Persistence</b>
-                <p>Use the <b>SAVE PRESET</b> button to generate a 'Magic Link' so you can return to your custom mix instantly on any device.</p>
-            </div>
-            <div class="close-link" onclick="closeInfo()">Close</div>
+            <h2 class="guide-h" style="color:#fff">Login to Save</h2>
+            <button class="social-btn">Continue with Gmail</button>
+            <button class="social-btn">Continue with Facebook</button>
+            <button class="social-btn">Continue with Email</button>
+            <button class="back-mixer" onclick="closeSave()">Back to Mixer</button>
+        </div>
+    </div>
+
+    <div id="guideModal" class="modal-overlay">
+        <div class="modal-card">
+            <h2 class="guide-h">How to use Frequency Lab</h2>
+            <div class="info-item"><b>Immersion</b><p>For the best results, we recommend using high-quality headphones at a comfortable, moderate volume.</p></div>
+            <div class="info-item"><b>Layering</b><p>You can play multiple frequencies simultaneously. Use the faders to find a blend that resonates with your current state of mind.</p></div>
+            <div class="info-item"><b>The Science</b><p>These 9 core Solfeggio frequencies are ancient tones used to aid in meditation, sleep, and emotional balancing.</p></div>
+            <div class="info-item"><b>Persistence</b><p>Use the <b>SAVE PRESET</b> button to generate a 'Magic Link' so you can return to your custom mix instantly on any device.</p></div>
+            <div class="back-mixer" style="background:transparent; color:#333;" onclick="closeModal('guideModal')">Close</div>
         </div>
     </div>
 
     <script>
-        let ctx, master, tracks = [], ready = false, isPaused = false;
+        let ctx, master, tracks = [], ready = false, isPaused = false, wasPlayingBeforeModal = false;
         let timeLeft = 0, timerId = null;
 
         async function initAudio() {
             if(ready) { togglePlay(); return; }
             ctx = new (window.AudioContext || window.webkitAudioContext)();
-            master = ctx.createGain();
-            master.gain.setValueAtTime(0.001, ctx.currentTime);
+            master = ctx.createGain(); master.gain.setValueAtTime(0.001, ctx.currentTime);
             master.connect(ctx.destination);
-            
             document.getElementById('startBtn').innerText = "CALIBRATING...";
-
             await Promise.all(chData.map(async (ch, i) => {
                 const res = await fetch(`${ch.hz}.mp3`);
                 const buf = await ctx.decodeAudioData(await res.arrayBuffer());
@@ -185,7 +160,6 @@
                 src.start(0);
                 tracks[i] = { g: gn, v: 0 };
             }));
-
             ready = true;
             master.gain.linearRampToValueAtTime(0.8, ctx.currentTime + 0.5);
             document.getElementById('startBtn').innerText = "Pause Session";
@@ -195,20 +169,14 @@
             const val = parseFloat(v);
             if(tracks[i]) {
                 tracks[i].v = val;
-                // Stability fix: linearRamp prevents digital clicking on mobile
                 tracks[i].g.gain.linearRampToValueAtTime(isPaused ? 0 : val, ctx.currentTime + 0.1);
             }
             document.getElementById(`l${i}`).innerText = Math.round(val * 100) + "%";
-            
-            // Glow Border Logic for the fader slot only
             const slot = document.getElementById(`slot${i}`);
             if(val > 0.05) {
                 slot.style.borderColor = chData[i].c;
                 slot.style.boxShadow = `0 0 ${val * 25}px ${chData[i].c}`;
-            } else {
-                slot.style.borderColor = "#222";
-                slot.style.boxShadow = "none";
-            }
+            } else { slot.style.borderColor = "#222"; slot.style.boxShadow = "none"; }
         }
 
         function togglePlay() {
@@ -217,6 +185,22 @@
             document.getElementById('startBtn').innerText = isPaused ? "Resume Session" : "Pause Session";
         }
 
+        // SAVE LOGIC: Pause on Open, Resume on Close
+        function openSave() {
+            if(ready && !isPaused) { togglePlay(); wasPlayingBeforeModal = true; }
+            else { wasPlayingBeforeModal = false; }
+            document.getElementById('saveModal').style.display = 'flex';
+        }
+        function closeSave() {
+            document.getElementById('saveModal').style.display = 'none';
+            if(ready && wasPlayingBeforeModal) { togglePlay(); }
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function randomize() { tracks.forEach((_, i) => { const r = (Math.random()*0.5).toFixed(2); document.getElementById(`v${i}`).value = r; updateVol(i, r); }); }
+        function resetAll() { tracks.forEach((_, i) => { document.getElementById(`v${i}`).value = 0; updateVol(i, 0); }); }
+        
         function startTimer() {
             const val = parseInt(document.getElementById('timerSet').value);
             if(val === 0) { clearInterval(timerId); document.getElementById('timerDisplay').innerText = "--:--"; return; }
@@ -225,21 +209,11 @@
             timerId = setInterval(() => {
                 if(!isPaused && timeLeft > 0) {
                     timeLeft--;
-                    let h = Math.floor(timeLeft / 3600);
-                    let m = Math.floor((timeLeft % 3600) / 60);
-                    let s = timeLeft % 60;
+                    let h = Math.floor(timeLeft / 3600), m = Math.floor((timeLeft % 3600) / 60), s = timeLeft % 60;
                     document.getElementById('timerDisplay').innerText = (h > 0 ? h + ":" : "") + (m < 10 && h > 0 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
-                } else if (timeLeft <= 0 && ready) {
-                    togglePlay();
-                    clearInterval(timerId);
-                }
+                } else if (timeLeft <= 0 && ready) { togglePlay(); clearInterval(timerId); }
             }, 1000);
         }
-
-        function randomize() { tracks.forEach((_, i) => { const r = (Math.random()*0.5).toFixed(2); document.getElementById(`v${i}`).value = r; updateVol(i, r); }); }
-        function resetAll() { tracks.forEach((_, i) => { document.getElementById(`v${i}`).value = 0; updateVol(i, 0); }); }
-        function openInfo() { document.getElementById('infoModal').style.display = 'flex'; }
-        function closeInfo() { document.getElementById('infoModal').style.display = 'none'; }
     </script>
 </body>
 </html>
