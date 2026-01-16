@@ -3,379 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solfeggio Mixer | Professional Grade</title>
+    <title>Solfeggio Mixer | Professional Edition</title>
     <style>
         :root {
-            --panel-bg: #0d0d0d;
-            --chan-bg: #151515;
-            --accent-green: #4caf50;
-            --save-teal: #20c997;
-            --start-yellow: #ffd60a;
-            --text-white: #ffffff;
-            --text-dim: #555555;
-            --border-color: #222222;
-            --mute-red: #d90429;
-            --solo-blue: #00b4d8;
+            --panel-bg: #0d0d0d; --chan-bg: #151515; --accent-green: #4caf50;
+            --save-teal: #20c997; --start-yellow: #ffd60a; --text-white: #ffffff;
+            --border-color: #222222; --mute-red: #d90429; --solo-blue: #00b4d8;
         }
+        body { background: #000; color: var(--text-white); font-family: 'Inter', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: auto; }
 
-        body {
-            background: #000;
-            color: var(--text-white);
-            font-family: 'Inter', -apple-system, sans-serif;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            overflow-x: auto;
+        /* Header & Info Icon */
+        .header-container { text-align: center; margin: 40px 0; width: 100%; max-width: 900px; position: relative; }
+        h1 { font-weight: 200; letter-spacing: 15px; margin: 0; font-size: 2.2rem; text-transform: uppercase; display: inline-block; }
+        .info-trigger { 
+            display: inline-block; margin-left: 12px; border: 1px solid #444; border-radius: 50%; 
+            width: 24px; height: 24px; line-height: 24px; font-size: 0.75rem; cursor: pointer; color: #777; 
+            vertical-align: middle; font-weight: bold; text-align: center; transition: 0.3s;
         }
+        .info-trigger:hover { border-color: #fff; color: #fff; box-shadow: 0 0 10px #fff; }
 
-        /* --- Header Section --- */
-        .header-container {
-            text-align: center;
-            margin: 40px 0;
-            position: relative;
-            width: fit-content;
-        }
+        /* Desktop Layout Wrapper */
+        .page-wrapper { display: flex; align-items: flex-start; justify-content: center; width: 100%; min-width: 1450px; padding: 0 40px; gap: 50px; }
+        .ad-sidebar { width: 160px; height: 600px; background: #0a0a0a; border: 1px solid #1a1a1a; display: flex; align-items: center; justify-content: center; border-radius: 12px; flex-shrink: 0; margin-top: 20px; }
+        .ad-label { color: #222; font-size: 11px; transform: rotate(-90deg); letter-spacing: 5px; font-weight: 900; text-transform: uppercase; }
 
-        h1 {
-            font-weight: 200;
-            letter-spacing: 15px;
-            margin: 0;
-            font-size: 2.5rem;
-            text-transform: uppercase;
-            display: inline-block;
-        }
+        /* Professional Mixer UI */
+        .mixer-frame { background: var(--panel-bg); padding: 40px 30px; border-radius: 40px; border: 1px solid #1a1a1a; display: flex; gap: 12px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
+        .channel-strip { display: flex; flex-direction: column; align-items: center; width: 100px; background: var(--chan-bg); padding: 25px 0; border-radius: 24px; border: 1px solid var(--border-color); }
+        .hz-label { font-size: 0.9rem; font-weight: 900; color: var(--chan-color); margin-bottom: 8px; text-shadow: 0 0 10px var(--chan-color); }
+        .benefit-desc { font-size: 0.52rem; font-weight: 700; height: 40px; color: #666; line-height: 1.2; padding: 0 8px; text-align: center; text-transform: uppercase; }
+        
+        /* Fader & Neon Glow */
+        .fader-box { position: relative; padding: 15px 0; }
+        input[type=range] { -webkit-appearance: slider-vertical; width: 20px; height: 230px; cursor: pointer; filter: drop-shadow(0 0 0px var(--chan-color)); transition: filter 0.2s; }
 
-        .info-trigger {
-            display: inline-block;
-            margin-left: 15px;
-            border: 1px solid #444;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            line-height: 24px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            color: #777;
-            vertical-align: middle;
-            transition: all 0.3s;
-            font-weight: bold;
-            text-align: center;
-        }
+        /* Control Bar & Timer */
+        .timer-display { font-family: 'Courier New', monospace; font-size: 1.8rem; font-weight: bold; color: var(--accent-green); background: #111; padding: 10px 25px; border-radius: 12px; border: 1px solid #222; margin-right: 20px; }
+        .controls-row { margin-top: 50px; display: flex; gap: 15px; align-items: center; }
+        
+        #startBtn { background: var(--start-yellow); color: #000; padding: 18px 60px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; min-width: 250px; box-shadow: 0 0 20px rgba(255, 214, 10, 0.3); }
+        #pauseBtn { background: var(--accent-green); color: #fff; padding: 18px 60px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; min-width: 250px; }
+        
+        /* Mute/Solo Buttons */
+        .btn-ms { width: 34px; height: 34px; border-radius: 8px; border: 1px solid #333; background: #222; color: #555; font-size: 0.75rem; font-weight: 900; cursor: pointer; margin: 4px; transition: 0.2s; }
+        .btn-m.active { background: var(--mute-red); color: #fff; border-color: var(--mute-red); box-shadow: 0 0 10px var(--mute-red); }
+        .btn-s.active { background: var(--solo-blue); color: #fff; border-color: var(--solo-blue); box-shadow: 0 0 10px var(--solo-blue); }
 
-        .info-trigger:hover {
-            border-color: #fff;
-            color: #fff;
-            box-shadow: 0 0 10px rgba(255,255,255,0.2);
-        }
+        .save-btn-cta { background: var(--save-teal); color: #000; border: none; padding: 14px 45px; border-radius: 50px; font-weight: 900; cursor: pointer; text-transform: uppercase; }
+        .utility-btn { background: #151515; color: #888; border: 1px solid #222; padding: 14px 28px; border-radius: 50px; cursor: pointer; font-size: 0.75rem; text-transform: uppercase; }
 
-        /* --- Layout Engine --- */
-        .page-wrapper {
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            width: 100%;
-            min-width: 1450px;
-            padding: 0 40px;
-            box-sizing: border-box;
-            gap: 50px;
-        }
-
-        .ad-sidebar {
-            width: 160px;
-            height: 600px;
-            background: #0a0a0a;
-            border: 1px solid #1a1a1a;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-            flex-shrink: 0;
-            margin-top: 20px;
-        }
-
-        .ad-label {
-            color: #222;
-            font-size: 11px;
-            transform: rotate(-90deg);
-            letter-spacing: 5px;
-            font-weight: 900;
-            text-transform: uppercase;
-        }
-
-        /* --- Mixer Board --- */
-        .mixer-frame {
-            background: var(--panel-bg);
-            padding: 40px 30px;
-            border-radius: 40px;
-            border: 1px solid #1a1a1a;
-            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
-            display: flex;
-            gap: 12px;
-        }
-
-        .channel-strip {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100px;
-            background: var(--chan-bg);
-            padding: 25px 0;
-            border-radius: 24px;
-            border: 1px solid var(--border-color);
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .hz-label {
-            font-size: 0.95rem;
-            font-weight: 900;
-            color: var(--chan-color);
-            margin-bottom: 8px;
-            text-shadow: 0 0 10px var(--chan-color);
-        }
-
-        .benefit-desc {
-            font-size: 0.55rem;
-            font-weight: 700;
-            height: 45px;
-            color: #555;
-            line-height: 1.3;
-            padding: 0 8px;
-            text-align: center;
-            text-transform: uppercase;
-        }
-
-        /* --- Custom Range Fader --- */
-        .fader-container {
-            padding: 20px 0;
-            position: relative;
-        }
-
-        input[type=range] {
-            -webkit-appearance: slider-vertical;
-            width: 12px;
-            height: 240px;
-            background: #000;
-            cursor: pointer;
-            outline: none;
-            transition: filter 0.2s;
-        }
-
-        .vol-percent {
-            font-size: 0.75rem;
-            color: #333;
-            font-weight: 800;
-            margin: 10px 0;
-        }
-
-        /* --- MS Buttons --- */
-        .ms-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 5px;
-        }
-
-        .btn-ms {
-            width: 34px;
-            height: 34px;
-            border-radius: 8px;
-            border: 1px solid #2a2a2a;
-            background: #1a1a1a;
-            color: #444;
-            font-size: 0.75rem;
-            font-weight: 900;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .btn-m.active { background: var(--mute-red); color: #fff; border-color: var(--mute-red); box-shadow: 0 0 15px rgba(217, 4, 41, 0.4); }
-        .btn-s.active { background: var(--solo-blue); color: #fff; border-color: var(--solo-blue); box-shadow: 0 0 15px rgba(0, 180, 216, 0.4); }
-
-        /* --- Control Bar --- */
-        .controls-row {
-            margin-top: 50px;
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        #startBtn {
-            background: var(--start-yellow);
-            color: #000;
-            padding: 20px 70px;
-            border-radius: 60px;
-            border: none;
-            font-weight: 900;
-            font-size: 1.1rem;
-            cursor: pointer;
-            text-transform: uppercase;
-            box-shadow: 0 10px 30px rgba(255, 214, 10, 0.2);
-            transition: 0.3s;
-        }
-
-        #startBtn:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(255, 214, 10, 0.4); }
-
-        #pauseBtn {
-            background: var(--accent-green);
-            color: #fff;
-            padding: 20px 70px;
-            border-radius: 60px;
-            border: none;
-            font-weight: 900;
-            font-size: 1.1rem;
-            cursor: pointer;
-            text-transform: uppercase;
-        }
-
-        .utility-btn {
-            background: #111;
-            color: #777;
-            border: 1px solid #222;
-            padding: 15px 35px;
-            border-radius: 50px;
-            font-weight: 800;
-            text-transform: uppercase;
-            cursor: pointer;
-            font-size: 0.75rem;
-        }
-
-        .save-btn-cta {
-            background: var(--save-teal);
-            color: #000;
-            border: none;
-            padding: 15px 45px;
-            border-radius: 50px;
-            font-weight: 900;
-            text-transform: uppercase;
-            cursor: pointer;
-        }
-
-        /* --- Modals --- */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.96);
-            z-index: 5000;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(8px);
-        }
-
-        .modal-card {
-            background: #0a0a0a;
-            padding: 50px;
-            border-radius: 30px;
-            border: 1px solid #222;
-            width: 500px;
-            text-align: center;
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 12px;
-            border: none;
-            font-weight: 900;
-            text-transform: uppercase;
-            cursor: pointer;
-        }
+        /* Modals */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 5000; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+        .modal-card { background: #0a0a0a; padding: 50px; border-radius: 32px; border: 1px solid #222; width: 480px; text-align: center; }
+        .social-btn { width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; border: none; font-weight: 900; text-transform: uppercase; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div class="header-container">
         <h1>Solfeggio Player</h1>
-        <div class="info-trigger" onclick="handleInfoOpen()">i</div>
+        <div class="info-trigger" onclick="openInfo()">i</div>
     </div>
 
     <div class="page-wrapper">
-        <aside class="ad-sidebar"><span class="ad-label">Advertisement</span></aside>
+        <aside class="ad-sidebar"><span class="ad-label">Advertisement Sidebar</span></aside>
 
         <div style="display:flex; flex-direction:column; align-items:center;">
             <div class="mixer-frame" id="mixerBoard">
-                </div>
+                <script>
+                    const chData = [
+                        {hz:"69.3Hz", d:"Resonance Deepener", c:"#4a00e0"}, {hz:"174Hz", d:"Relieves Pain", c:"#ffffff"},
+                        {hz:"285Hz", d:"Body Recovery", c:"#9b2226"}, {hz:"396Hz", d:"Release Fear", c:"#ae2012"},
+                        {hz:"417Hz", d:"Change Cycles", c:"#ca6702"}, {hz:"432Hz", d:"Relaxation", c:"#ee9b00"},
+                        {hz:"528Hz", d:"DNA Repair", c:"#0a9396"}, {hz:"639Hz", d:"Relationships", c:"#005f73"},
+                        {hz:"741Hz", d:"Detox Mind", c:"#3e5c76"}, {hz:"852Hz", d:"Intuition", c:"#5e548e"},
+                        {hz:"963Hz", d:"Consciousness", c:"#9d4edd"}
+                    ];
+                    chData.forEach((ch, i) => {
+                        document.write(`
+                            <div class="channel-strip" style="--chan-color:${ch.c}">
+                                <div class="hz-label">${ch.hz}</div>
+                                <div class="benefit-desc">${ch.d}</div>
+                                <div class="fader-box">
+                                    <input type="range" id="f-${i}" min="0" max="1" step="0.01" value="0.30" oninput="updateVol(${i}, this.value)">
+                                </div>
+                                <div id="l-${i}" style="font-size:0.75rem; color:#444; font-weight:800;">30%</div>
+                                <div style="display:flex; margin-top:10px;">
+                                    <button class="btn-ms btn-m" id="m-${i}" onclick="toggleMute(${i})">M</button>
+                                    <button class="btn-ms btn-s" id="s-${i}" onclick="toggleSolo(${i})">S</button>
+                                </div>
+                            </div>
+                        `);
+                    });
+                </script>
+            </div>
 
             <div class="controls-row">
+                <div class="timer-display" id="timer">30:00</div>
                 <button id="startBtn" onclick="initAudio()">Start Session</button>
-                <button id="pauseBtn" style="display:none;" onclick="toggleMasterPause()">Pause All</button>
+                <button id="pauseBtn" style="display:none;" onclick="togglePause()">Pause All</button>
                 <button class="utility-btn" onclick="randomMix()">Random</button>
                 <button class="utility-btn" onclick="resetMixer()">Reset</button>
-                <button class="save-btn-cta" onclick="handleSaveOpen()">Save</button>
-                <button class="utility-btn" onclick="copyShareURL()">Share Link</button>
+                <button class="save-btn-cta" onclick="openSave()">Save</button>
+                <button class="utility-btn" onclick="copyShare()">Share Link</button>
             </div>
         </div>
 
-        <aside class="ad-sidebar"><span class="ad-label">Advertisement</span></aside>
+        <aside class="ad-sidebar"><span class="ad-label">Advertisement Sidebar</span></aside>
     </div>
 
     <div id="infoModal" class="modal-overlay">
         <div class="modal-card">
-            <h2 style="color:var(--accent-green); font-weight:200; letter-spacing:4px;">USER GUIDE</h2>
-            <div style="text-align:left; color:#888; line-height:1.7; font-size:0.9rem; margin: 25px 0;">
-                <p><strong>HEADPHONES:</strong> Required for the frequencies to stimulate the brain correctly in stereo.</p>
-                <p><strong>VOLUME:</strong> Keep at a comfortable, moderate level. Healing is not dependent on loudness.</p>
-                <p><strong>SAVE:</strong> Connect via Google/Facebook to store your favorites in your library.</p>
-                <p><strong>SHARE:</strong> Generates a custom link with your exact current fader positions.</p>
+            <h2 style="color:var(--accent-green); font-weight:200; letter-spacing:4px;">HOW TO USE</h2>
+            <div style="text-align:left; color:#888; line-height:1.7; font-size:0.9rem; margin:25px 0;">
+                <p><strong>HEADPHONES:</strong> Essential for the best experience. Stereo separation is required for these frequencies to be effective.</p>
+                <p><strong>VOLUME:</strong> Listen at a moderate, comfortable level. High volume is not required for healing benefits.</p>
+                <p><strong>SAVE:</strong> Sign in with Google or Facebook to save your custom frequency mixes to your personal library.</p>
+                <p><strong>SHARE LINK:</strong> Copies a unique URL that saves your exact current fader positions to share with others.</p>
             </div>
-            <button class="login-btn" style="background:#222; color:#fff;" onclick="handleInfoClose()">BACK TO MIXER</button>
+            <button class="social-btn" style="background:#222; color:#fff;" onclick="closeInfo()">BACK TO SESSION</button>
         </div>
     </div>
 
     <div id="saveModal" class="modal-overlay">
         <div class="modal-card">
             <h2 style="font-weight:200; letter-spacing:4px;">SAVE TO LIBRARY</h2>
-            <p style="color:#555; margin-bottom:30px;">Login to sync your presets across all devices.</p>
-            <button class="login-btn" style="background:#db4437; color:white;">Continue with Google</button>
-            <button class="login-btn" style="background:#4267b2; color:white;">Continue with Facebook</button>
-            <button class="login-btn" style="background:#111; color:white; border:1px solid #333;">Login with Email</button>
-            <button class="login-btn" style="background:transparent; color:#444;" onclick="handleSaveClose()">CANCEL</button>
+            <p style="color:#555; margin-bottom:30px;">Sign in to sync your presets across all your devices.</p>
+            <button class="social-btn" style="background:#db4437; color:#fff;">Continue with Google</button>
+            <button class="social-btn" style="background:#4267b2; color:#fff;">Continue with Facebook</button>
+            <button class="social-btn" style="background:#111; color:#fff; border:1px solid #333;">Login with Email</button>
+            <button class="social-btn" style="background:transparent; color:#444;" onclick="closeSave()">CANCEL</button>
         </div>
     </div>
 
     <script>
-        const chData = [
-            {hz:"69.3Hz", d:"Resonance Deepener", c:"#4a00e0"}, {hz:"174Hz", d:"Relieves Pain", c:"#ffffff"},
-            {hz:"285Hz", d:"Body Recovery", c:"#9b2226"}, {hz:"396Hz", d:"Release Fear", c:"#ae2012"},
-            {hz:"417Hz", d:"Change Cycles", c:"#ca6702"}, {hz:"432Hz", d:"Relaxation", c:"#ee9b00"},
-            {hz:"528Hz", d:"DNA Repair", c:"#0a9396"}, {hz:"639Hz", d:"Relationships", c:"#005f73"},
-            {hz:"741Hz", d:"Detox Mind", c:"#3e5c76"}, {hz:"852Hz", d:"Intuition", c:"#5e548e"},
-            {hz:"963Hz", d:"Consciousness", c:"#9d4edd"}
-        ];
-
         let ctx, master, tracks = [], isPaused = false, ready = false, wasPlayingBeforeSave = false;
-        let mutedSet = new Set(), soloIdx = null;
+        let timeLeft = 1800, timerId = null;
+        let mutes = new Set(), soloIdx = null;
 
-        // --- Build Mixer ---
-        const board = document.getElementById('mixerBoard');
-        chData.forEach((ch, i) => {
-            const div = document.createElement('div');
-            div.className = 'channel-strip';
-            div.id = `chan-${i}`;
-            div.style.setProperty('--chan-color', ch.c);
-            div.innerHTML = `
-                <div class="hz-label">${ch.hz}</div>
-                <div class="benefit-desc">${ch.d}</div>
-                <div class="fader-container">
-                    <input type="range" id="fader-${i}" min="0" max="1" step="0.01" value="0.30" oninput="updateVol(${i}, this.value)">
-                </div>
-                <div class="vol-percent" id="perc-${i}">30%</div>
-                <div class="ms-group">
-                    <button class="btn-ms btn-m" id="m-${i}" onclick="toggleMute(${i})">M</button>
-                    <button class="btn-ms btn-s" id="s-${i}" onclick="toggleSolo(${i})">S</button>
-                </div>
-            `;
-            board.appendChild(div);
-        });
-
-        // --- Audio Core ---
         async function initAudio() {
             if(ready) return;
             ctx = new (window.AudioContext || window.webkitAudioContext)();
             master = ctx.createGain(); master.gain.setValueAtTime(0.7, ctx.currentTime); master.connect(ctx.destination);
-            document.getElementById('startBtn').innerText = "CONNECTING...";
+            document.getElementById('startBtn').innerText = "CALIBRATING...";
             
             await Promise.all(chData.map(async (ch, i) => {
                 const res = await fetch(`./${ch.hz}.mp3`);
@@ -385,38 +155,48 @@
                 src.buffer = audio; src.loop = true;
                 const gn = ctx.createGain(); gn.gain.setValueAtTime(0, ctx.currentTime);
                 src.connect(gn); gn.connect(master); src.start(0);
-                tracks[i] = { gainNode: gn, currentLevel: 0.30 };
+                tracks[i] = { g: gn, v: 0.30 };
             }));
 
             ready = true;
             document.getElementById('startBtn').style.display = 'none';
             document.getElementById('pauseBtn').style.display = 'block';
+            startTimer();
             tracks.forEach((_, i) => updateVol(i, 0.30));
         }
 
         function updateVol(i, v) {
-            const val = parseFloat(v);
-            if(!tracks[i]) return;
-            tracks[i].currentLevel = val;
-            
-            // Neon Glow Logic
-            const fader = document.getElementById(`fader-${i}`);
-            fader.style.filter = `drop-shadow(0 0 ${val * 25}px ${chData[i].c})`;
-            document.getElementById(`perc-${i}`).innerText = Math.round(val * 100) + "%";
-            
+            const val = parseFloat(v); if(!tracks[i]) return;
+            tracks[i].v = val;
+            document.getElementById(`f-${i}`).style.filter = `drop-shadow(0 0 ${val * 25}px ${chData[i].c})`;
+            document.getElementById(`l-${i}`).innerText = Math.round(val * 100) + "%";
             applyGain(i);
         }
 
         function applyGain(i) {
-            if(!tracks[i]) return;
-            let target = tracks[i].currentLevel;
-            if (isPaused || mutedSet.has(i) || (soloIdx !== null && soloIdx !== i)) target = 0;
-            tracks[i].gainNode.gain.setTargetAtTime(target, ctx.currentTime, 0.1);
+            let t = tracks[i].v;
+            if(isPaused || mutes.has(i) || (soloIdx !== null && soloIdx !== i)) t = 0;
+            tracks[i].g.gain.setTargetAtTime(t, ctx.currentTime, 0.1);
         }
 
-        // --- Mixer Functions ---
+        function startTimer() {
+            timerId = setInterval(() => {
+                if(!isPaused && timeLeft > 0) {
+                    timeLeft--;
+                    let m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+                    document.getElementById('timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+                }
+            }, 1000);
+        }
+
+        function togglePause() { 
+            isPaused = !isPaused; 
+            master.gain.setTargetAtTime(isPaused ? 0 : 0.7, ctx.currentTime, 0.2); 
+            document.getElementById('pauseBtn').innerText = isPaused ? "RESUME SESSION" : "PAUSE ALL";
+        }
+
         function toggleMute(i) {
-            if(mutedSet.has(i)) mutedSet.delete(i); else mutedSet.add(i);
+            if(mutes.has(i)) mutes.delete(i); else mutes.add(i);
             document.getElementById(`m-${i}`).classList.toggle('active');
             applyGain(i);
         }
@@ -429,35 +209,26 @@
             });
         }
 
-        function toggleMasterPause() {
-            isPaused = !isPaused;
-            master.gain.setTargetAtTime(isPaused ? 0 : 0.7, ctx.currentTime, 0.2);
-            document.getElementById('pauseBtn').innerText = isPaused ? "RESUME SESSION" : "PAUSE ALL";
-        }
+        function openInfo() { document.getElementById('infoModal').style.display = 'flex'; }
+        function closeInfo() { document.getElementById('infoModal').style.display = 'none'; }
 
-        // --- Pop-up Logic (Restored) ---
-        function handleInfoOpen() { document.getElementById('infoModal').style.display = 'flex'; }
-        function handleInfoClose() { document.getElementById('infoModal').style.display = 'none'; }
-
-        function handleSaveOpen() {
-            if(ready && !isPaused) { 
-                toggleMasterPause(); 
-                wasPlayingBeforeSave = true; 
-            }
+        function openSave() {
+            if(ready && !isPaused) { togglePause(); wasPlayingBeforeSave = true; }
             document.getElementById('saveModal').style.display = 'flex';
         }
-
-        function handleSaveClose() {
+        function closeSave() {
             document.getElementById('saveModal').style.display = 'none';
-            if(wasPlayingBeforeSave) { 
-                toggleMasterPause(); 
-                wasPlayingBeforeSave = false; 
-            }
+            if(wasPlayingBeforeSave) { togglePause(); wasPlayingBeforeSave = false; }
         }
 
-        function randomMix() { tracks.forEach((_, i) => { const r = (Math.random()*0.5).toFixed(2); document.getElementById(`fader-${i}`).value = r; updateVol(i, r); }); }
-        function resetMixer() { soloIdx = null; mutedSet.clear(); tracks.forEach((_, i) => { document.getElementById(`fader-${i}`).value = 0; updateVol(i, 0); document.getElementById(`m-${i}`).classList.remove('active'); document.getElementById(`s-${i}`).classList.remove('active'); }); }
-        function copyShareURL() { navigator.clipboard.writeText(window.location.href); alert("Mix settings copied to clipboard!"); }
+        function randomMix() { tracks.forEach((_, i) => { const r = (Math.random()*0.5).toFixed(2); document.getElementById(`f-${i}`).value = r; updateVol(i, r); }); }
+        function resetMixer() { soloIdx = null; mutes.clear(); tracks.forEach((_, i) => { 
+            document.getElementById(`f-${i}`).value = 0; 
+            document.getElementById(`m-${i}`).classList.remove('active'); 
+            document.getElementById(`s-${i}`).classList.remove('active'); 
+            updateVol(i, 0); 
+        }); }
+        function copyShare() { navigator.clipboard.writeText(window.location.href); alert("Mix settings copied!"); }
     </script>
 </body>
 </html>
