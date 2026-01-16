@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solfeggio Player | Frequency Lab</title>
+    <style>
+        :root { --panel-bg: #0a0a0a; --chan-bg: #141414; }
+        body { 
+            background: #050505; color: #e0e0e0; 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            text-align: center; margin: 0; min-height: 100vh; 
+            display: flex; flex-direction: column; align-items: center; 
+            justify-content: flex-start;
+        }
+        
+        h1 { font-weight: 200; letter-spacing: 5px; margin: 20px 0 5px 0; font-size: 2.2rem; }
+        .subtitle { font-size: 0.75rem; letter-spacing: 3px; color: #666; margin-bottom: 25px; text-transform: uppercase; }
+        
+        .page-wrapper { display: flex; align-items: flex-start; gap: 15px; padding: 10px; max-width: 100vw; box-sizing: border-box; }
+        .ad-sidebar { width: 140px; height: 600px; background: #111; border: 1px dashed #333; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .ad-text { color: #444; font-size: 10px; transform: rotate(-90deg); letter-spacing: 2px; }
+
+        .mixer { 
+            display: flex; flex-wrap: nowrap; justify-content: center; gap: 8px; 
+            background: var(--panel-bg); padding: 25px 15px; border-radius: 24px; 
+            border: 1px solid #222; width: auto; max-width: calc(100vw - 350px); overflow-x: auto;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.9);
+        }
+        
+        .chan { 
+            display: flex; flex-direction: column; align-items: center; 
+            flex: 0 0 95px; width: 95px; background: var(--chan-bg); 
+            padding: 12px 0; border-radius: 12px; border: 1px solid #202020; 
+            transition: border 0.3s, box-shadow 0.3s; box-sizing: border-box;
+        }
+        
+        .hz { font-size: 0.8rem; font-weight: 800; margin-bottom: 4px; color: var(--clr); }
+        .desc { font-size: 0.5rem; font-weight: 700; height: 44px; color: #b0b0b0; line-height: 1.2; padding: 0 4px; display: flex; align-items: center; justify-content: center; text-align: center; text-transform: uppercase; }
+        .vol-label { font-size: 0.65rem; font-family: monospace; color: #999; margin-bottom: 6px; }
+        input[type=range] { -webkit-appearance: slider-vertical; width: 18px; height: 150px; cursor: pointer; margin-bottom: 12px; }
+
+        .btn-row { display: flex; gap: 4px; }
+        .m-btn, .s-btn { width: 40px; height: 20px; border-radius: 4px; border: 1px solid #333; background: #1a1a1a; color: #aaa; font-size: 0.5rem; cursor: pointer; text-transform: uppercase; font-weight: bold; }
+        .m-btn.active-mute { background: #9b2226; color: #fff; border-color: #ff4d4d; }
+        .s-btn.active-solo { background: #ffd60a; color: #000; border-color: #fff; }
+
+        .main-controls { margin: 30px 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px; }
+        
+        #startBtn { background: #ffd60a; color: #000; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; }
+        #pauseBtn { background: #55a630; color: #fff; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; display: none; }
+        
+        .timer-wrap { display: flex; align-items: center; gap: 10px; background: #111; padding: 6px 18px; border-radius: 50px; border: 1px solid #333; }
+        .timer-label { font-size: 0.65rem; color: #666; text-transform: uppercase; font-weight: bold; }
+        select { background: transparent; color: #ffd60a; border: none; font-weight: bold; font-family: monospace; cursor: pointer; outline: none; }
+        #timerDisplay { font-family: monospace; color: #55a630; font-size: 0.85rem; min-width: 55px; }
+
+        .btn-utility { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: 600; }
+        .btn-save { background: #20c997; color: #000; padding: 10px 20px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
+
+        /* Modal Overrides for GitHub Link display */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); backdrop-filter: blur(10px); z-index: 1000; }
+        .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f0f; padding: 50px 40px; border-radius: 32px; text-align: center; width: 420px; border: 1px solid #222; box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
+        .modal-header { color: #ffd60a; font-size: 26px; margin-bottom: 20px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
+        .modal-subtext { color: #888; font-size: 14px; line-height: 1.6; margin-bottom: 35px; padding: 0 10px; }
+        .auth-buttons { display: flex; flex-direction: column; gap: 12px; }
+        .auth-btn { padding: 16px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
+        .g-btn { background: #ffffff; color: #000; }
+        .fb-btn { background: #3b5998; color: #fff; }
+        .email-btn { background: #ffd60a; color: #000; }
+        .back-btn { margin-top: 30px; color: #444; cursor: pointer; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+        #successMsg { display: none; margin-top: 20px; padding: 20px; background: #111; border: 1px solid #20c997; border-radius: 12px; color: #fff; font-size: 13px; line-height: 1.4; }
+        .magic-link-box { background: #000; padding: 10px; border-radius: 6px; border: 1px solid #333; margin-top: 15px; word-break: break-all; color: #20c997; font-family: monospace; user-select: all; cursor: pointer; }
+
+        .footer-credit { margin-top: 20px; font-size: 0.65rem; color: #333; letter-spacing: 1px; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+    <h1>SOLFEGGIO PLAYER</h1>
+    <div class="subtitle">By Frequency Lab</div>
+    
+    <div class="page-wrapper">
+        <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD</span></aside>
+        <main>
+            <div class="mixer" id="mixer-ui">
+                <script>
+                    const chData = [
+                        {hz:"69.3Hz", d:"Resonance Deepener", c:"#4a00e0", g:"rgba(74,0,224,0.5)"},
+                        {hz:"174Hz", d:"Relieves Pain and Stress", c:"#ffffff", g:"rgba(255,255,255,0.3)"},
+                        {hz:"285Hz", d:"Accelerates Physical Recovery", c:"#9b2226", g:"rgba(155,34,38,0.5)"},
+                        {hz:"396Hz", d:"Releases Fear and Guilt", c:"#ae2012", g:"rgba(174,32,18,0.5)"},
+                        {hz:"417Hz", d:"Breaks Cycles & Facilitates Change", c:"#ca6702", g:"rgba(202,103,2,0.5)"},
+                        {hz:"432Hz", d:"Physical Relaxation", c:"#ee9b00", g:"rgba(238,155,0,0.5)"},
+                        {hz:"528Hz", d:"Enhances DNA Repair & Transformation", c:"#0a9396", g:"rgba(10,147,150,0.5)"},
+                        {hz:"639Hz", d:"Improves Relationships & Connection", c:"#005f73", g:"rgba(0,95,115,0.5)"},
+                        {hz:"741Hz", d:"Detoxifies the Body and Mind", c:"#3e5c76", g:"rgba(62,92,118,0.5)"},
+                        {hz:"852Hz", d:"Awakens Intuition & Awareness", c:"#5e548e", g:"rgba(94,84,142,0.5)"},
+                        {hz:"963Hz", d:"Connects to Higher Consciousness", c:"#9d4edd", g:"rgba(157,78,221,0.5)"}
+                    ];
+                    chData.forEach((ch, i) => {
+                        document.write(`
+                            <div class="chan" id="c${i}" style="--clr:${ch.c}; --glow:${ch.g}">
+                                <div class="hz">${ch.hz}</div>
+                                <div class="desc">${ch.d}</div>
+                                <div class="vol-label" id="l${i}">0%</div>
+                                <input type="range" id="v${i}" min="0" max="1" step="0.01" value="0" oninput="slide(${i},this.value)">
+                                <div class="btn-row">
+                                    <button class="m-btn" id="m${i}" onclick="muteTrack(${i})">Mute</button>
+                                    <button class="s-btn" id="s${i}" onclick="soloTrack(${i})">Solo</button>
+                                </div>
+                            </div>
+                        `);
+                    });
+                </script>
+            </div>
+
+            <div class="main-controls">
+                <button id="startBtn" onclick="beginSession()">Start Session</button>
+                <button id="pauseBtn" onclick="toggle()">Pause All</button>
+                <div class="timer-wrap">
+                    <span class="timer-label">Timer:</span>
+                    <select id="timerSelect" onchange="setTimer(this.value)">
+                        <option value="0">Disabled</option>
+                        <option value="60">1 Min</option>
+                        <option value="300">5 Min</option>
+                        <option value="600">10 Min</option>
+                        <option value="900">15 Min</option>
+                        <option value="1200">20 Min</option>
+                        <option value="1800">30 Min</option>
+                        <option value="3600">1 Hr</option>
+                    </select>
+                    <span id="timerDisplay">--:--</span>
+                </div>
+                <button id="muteAllBtn" class="btn-utility" onclick="toggleMuteAll()">Mute All</button>
+                <button class="btn-utility" onclick="randomize()">Randomize</button>
+                <button class="btn-utility" onclick="resetFaders()">Reset</button>
+                <button class="btn-save" onclick="openModal()">Save Preset</button>
+            </div>
+            <div class="footer-credit">Created By Keunho Koh</div>
+        </main>
+        <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD</span></aside>
+    </div>
+
+    <div id="saveModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 class="modal-header">MIX SAVED!</h2>
+            <div id="authContainer">
+                <p class="modal-subtext">Sign in to receive a secure 'Magic Link' via email. Use it to instantly restore your custom preset anytime, on any device.</p>
+                <div class="auth-buttons">
+                    <button class="auth-btn g-btn" onclick="saveAndSign('Google')">Continue with Google</button>
+                    <button class="auth-btn fb-btn" onclick="saveAndSign('Facebook')">Continue with Facebook</button>
+                    <button class="auth-btn email-btn" onclick="saveAndSign('Email')">Use Your Email</button>
+                </div>
+            </div>
+            <div id="successMsg">
+                <strong style="color:#20c997; font-size: 18px;">Preset Captured!</strong><br><br>
+                Use the link below to load this mix on any browser:
+                <div class="magic-link-box" id="linkDisplay"></div>
+                <p style="font-size: 11px; margin-top: 15px; color: #666;">Click the link to select/copy</p>
+            </div>
+            <div class="back-btn" onclick="closeModal()">Back to Mixer</div>
+        </div>
+    </div>
+
+    <script>
+        const audioFiles = ["69.3Hz","174Hz","285Hz","396Hz","417Hz","432Hz","528Hz","639Hz","741Hz","852Hz","963Hz"];
+        let ctx, master, tracks = [], ready = false, isPaused = false;
+        let timerInterval, timeLeft = 0, soloIdx = -1;
+
+        for(let i=0; i<11; i++) { tracks[i] = { lastVal: 0, isMuted: false, g: null }; }
+
+        function loadPresetFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const presetData = urlParams.get('preset');
+            tracks.forEach((t, i) => {
+                let val = 0.3; 
+                if (presetData) {
+                    const levels = presetData.split(',');
+                    val = (levels[i] !== undefined) ? parseFloat(levels[i]) / 100 : 0.3;
+                }
+                t.lastVal = val;
+                document.getElementById('v' + i).value = val;
+                updateUI(i, val);
+            });
+        }
+
+        async function beginSession() {
+            if (ready) return;
+            const sBtn = document.getElementById('startBtn');
+            const pBtn = document.getElementById('pauseBtn');
+            sBtn.innerText = "INITIALIZING...";
+            
+            ctx = new (window.AudioContext || window.webkitAudioContext)();
+            master = ctx.createGain();
+            master.gain.setValueAtTime(0, ctx.currentTime);
+            master.connect(ctx.destination);
+            await ctx.resume();
+            
+            try {
+                audioFiles.forEach((_, i) => {
+                    const g = ctx.createGain();
+                    g.gain.setValueAtTime(0, ctx.currentTime);
+                    g.connect(master);
+                    tracks[i].g = g;
+                });
+
+                await Promise.all(audioFiles.map(async (f, i) => {
+                    const res = await fetch(f + ".wav");
+                    const buf = await ctx.decodeAudioData(await res.arrayBuffer());
+                    const src = ctx.createBufferSource();
+                    src.buffer = buf; 
+                    src.loop = true;
+                    src.connect(tracks[i].g);
+                    src.start(0);
+                }));
+
+                ready = true;
+                const now = ctx.currentTime;
+                tracks.forEach((t, i) => {
+                    t.g.gain.cancelScheduledValues(now);
+                    t.g.gain.linearRampToValueAtTime(t.lastVal * 0.7, now + 0.5); 
+                });
+
+                master.gain.linearRampToValueAtTime(0.6, now + 0.8);
+                sBtn.style.display = "none"; 
+                pBtn.style.display = "block";
+                
+                if (timeLeft > 0) startCountdown();
+            } catch (err) { 
+                sBtn.innerText = "LOAD ERROR"; 
+                console.error(err); 
+            }
+        }
+
+        function slide(i, v) {
+            const val = parseFloat(v);
+            tracks[i].lastVal = val;
+            if (ready && tracks[i].g && !tracks[i].isMuted && (soloIdx === -1 || soloIdx === i)) {
+                tracks[i].g.gain.cancelScheduledValues(ctx.currentTime);
+                tracks[i].g.gain.linearRampToValueAtTime(val * 0.7, ctx.currentTime + 0.05);
+            }
+            updateUI(i, val);
+        }
+
+        function openModal() { 
+            document.getElementById('authContainer').style.display = 'block';
+            document.getElementById('successMsg').style.display = 'none';
+            document.getElementById('saveModal').style.display = 'block'; 
+            if (ready && master) {
+                master.gain.cancelScheduledValues(ctx.currentTime);
+                master.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.3);
+            }
+        }
+
+        async function closeModal() { 
+            document.getElementById('saveModal').style.display = 'none'; 
+            if (ready && master && !isPaused) {
+                if (ctx.state === 'suspended') await ctx.resume();
+                master.gain.cancelScheduledValues(ctx.currentTime);
+                master.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.5);
+            }
+        }
+
+        function saveAndSign(provider) {
+            const levels = tracks.map(t => Math.round(t.lastVal * 100)).join(',');
+            const magicLink = `${window.location.origin}${window.location.pathname}?preset=${levels}`;
+            
+            document.getElementById('authContainer').style.display = 'none';
+            document.getElementById('linkDisplay').innerText = magicLink;
+            document.getElementById('successMsg').style.display = 'block';
+        }
+
+        window.onload = loadPresetFromUrl;
+
+        function updateUI(i, val) {
+            document.getElementById('l' + i).innerText = Math.round(val * 100) + "%";
+            const el = document.getElementById('c' + i);
+            el.style.boxShadow = val > 0.01 ? `0 0 ${val * 45}px var(--glow)` : "none";
+            el.style.borderColor = val > 0.01 ? `rgba(255,255,255,${val * 0.6})` : "#202020";
+        }
+
+        function toggle() {
+            if (!ready) return; isPaused = !isPaused;
+            master.gain.linearRampToValueAtTime(isPaused ? 0 : 0.6, ctx.currentTime + 0.2);
+            document.getElementById('pauseBtn').innerText = isPaused ? "RESUME ALL" : "PAUSE ALL";
+            document.getElementById('pauseBtn').style.background = isPaused ? "#222" : "#55a630";
+        }
+
+        function setTimer(seconds) {
+            clearInterval(timerInterval); timeLeft = parseInt(seconds);
+            if (!ready && timeLeft > 0) { beginSession(); return; }
+            if (ready) {
+                master.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.5);
+                isPaused = false; document.getElementById('pauseBtn').innerText = "PAUSE ALL";
+                if (timeLeft > 0) startCountdown();
+            }
+        }
+
+        function startCountdown() {
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                if (isPaused) return; timeLeft--; updateTimerDisplay();
+                if (timeLeft <= 0) { clearInterval(timerInterval); toggle(); }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timeLeft / 60); const s = timeLeft % 60;
+            document.getElementById('timerDisplay').innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+
+        function randomize() {
+            tracks.forEach((_, i) => {
+                const v = (Math.random() * 0.4 + 0.1).toFixed(2);
+                document.getElementById('v'+i).value = v; slide(i, v);
+            });
+        }
+
+        function resetFaders() {
+            tracks.forEach((_, i) => { document.getElementById('v'+i).value = 0; slide(i, 0); });
+        }
+
+        function muteTrack(i, forceState = null) {
+            if (!ready) return;
+            tracks[i].isMuted = (forceState !== null) ? forceState : !tracks[i].isMuted;
+            document.getElementById('m' + i).classList.toggle('active-mute', tracks[i].isMuted);
+            slide(i, tracks[i].lastVal);
+        }
+
+        function toggleMuteAll() {
+            tracks.forEach((_, i) => muteTrack(i, true));
+        }
+
+        function soloTrack(i) {
+            if (!ready) return;
+            soloIdx = (soloIdx === i) ? -1 : i;
+            document.querySelectorAll('.s-btn').forEach((b,idx)=>b.classList.toggle('active-solo', idx===soloIdx));
+            tracks.forEach((_, idx) => slide(idx, tracks[idx].lastVal));
+        }
+    </script>
+</body>
+</html>
