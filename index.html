@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Frequency Lab | Solfeggio Mixer</title>
     <style>
-        :root { --panel-bg: #0a0a0a; --chan-bg: #141414; }
+        :root { --panel-bg: #0a0a0a; --chan-bg: #141414; --accent: #ffd60a; }
         body { 
             background: #050505; color: #e0e0e0; 
             font-family: 'Inter', -apple-system, sans-serif; 
@@ -14,11 +14,10 @@
             overflow-x: hidden;
         }
         
-        /* Header */
         .header-container { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 20px; }
         h1 { font-weight: 200; letter-spacing: 5px; margin: 0; font-size: 1.8rem; }
         .info-trigger { cursor: pointer; color: #444; font-size: 1.1rem; border: 1px solid #333; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .subtitle { font-size: 0.7rem; letter-spacing: 3px; color: #666; margin: 5px 0 20px 0; text-transform: uppercase; }
+        .subtitle { font-size: 0.7rem; letter-spacing: 3px; color: #666; margin: 5px 0 10px 0; text-transform: uppercase; }
 
         .page-wrapper { display: flex; align-items: flex-start; gap: 15px; padding: 10px; width: 100%; justify-content: center; box-sizing: border-box; }
         
@@ -26,7 +25,6 @@
         .ad-sidebar { width: 140px; height: 600px; background: #111; border: 1px dashed #333; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .ad-text { color: #444; font-size: 10px; transform: rotate(-90deg); letter-spacing: 2px; }
 
-        /* Mixer Console */
         .mixer { 
             display: flex; flex-wrap: nowrap; justify-content: center; gap: 8px; 
             background: var(--panel-bg); padding: 20px 10px; border-radius: 24px; 
@@ -34,58 +32,64 @@
             box-shadow: 0 15px 40px rgba(0,0,0,0.9);
         }
 
-        /* Desktop Channel Layout */
         .chan { 
             display: flex; flex-direction: column; align-items: center; 
             flex: 0 0 95px; width: 95px; background: var(--chan-bg); 
             padding: 12px 0; border-radius: 12px; border: 1px solid #202020; 
-            box-sizing: border-box;
         }
         .hz { font-size: 0.8rem; font-weight: 800; color: var(--clr); }
         .desc { font-size: 0.5rem; font-weight: 700; height: 44px; color: #b0b0b0; line-height: 1.2; padding: 0 4px; display: flex; align-items: center; justify-content: center; text-align: center; text-transform: uppercase; }
         input[type=range] { -webkit-appearance: slider-vertical; width: 18px; height: 140px; cursor: pointer; margin-bottom: 12px; }
 
-        /* Controls Area (Desktop: Bottom | Mobile: Top) */
+        /* Controls */
         .main-controls { margin: 25px 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; width: 95%; max-width: 900px; }
-        #startBtn, #pauseBtn { background: #ffd60a; color: #000; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; width: 220px; }
+        #startBtn, #pauseBtn { background: var(--accent); color: #000; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; width: 220px; }
         #pauseBtn { background: #55a630; color: #fff; display: none; }
+        
         .timer-wrap { display: flex; align-items: center; gap: 10px; background: #111; padding: 8px 18px; border-radius: 50px; border: 1px solid #333; }
         .btn-utility { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 10px 18px; border-radius: 50px; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: 600; }
+        
+        /* New Share/Save Styling */
         .btn-save { background: #20c997; color: #000; padding: 10px 18px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
+        .btn-share { background: #0077b6; color: #fff; padding: 10px 18px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
 
-        /* Mobile Ad Banner (Hidden on Desktop) */
         .mobile-ad-banner { display: none; width: 320px; height: 50px; background: #111; border: 1px dashed #333; margin: 20px auto; align-items: center; justify-content: center; color: #444; font-size: 10px; letter-spacing: 2px; }
 
-        /* MOBILE REDESIGN LOGIC */
-        @media (max-width: 768px) {
-            .page-wrapper { flex-direction: column; align-items: center; padding-top: 0; }
-            .ad-sidebar { display: none; } /* Kill the vertical ads on mobile */
-            .mobile-ad-banner { display: flex; } /* Show horizontal ad at bottom */
-            
+        /* ORIENTATION SWITCH: PORTRAIT */
+        @media (max-width: 768px) and (orientation: portrait) {
+            .page-wrapper { flex-direction: column; align-items: center; }
+            .ad-sidebar { display: none; }
+            .mobile-ad-banner { display: flex; }
             .mixer { flex-direction: column; width: 95%; gap: 12px; padding: 15px; order: 2; }
-            .main-controls { order: 1; margin: 10px 0 20px 0; } /* Controls at Top for Mobile */
-            
-            .chan { 
-                flex-direction: row; width: 100%; height: auto; flex: none;
-                justify-content: space-between; padding: 15px; align-items: center; gap: 15px;
-            }
+            .main-controls { order: 1; margin: 10px 0 20px 0; }
+            .chan { flex-direction: row; width: 100%; height: auto; flex: none; justify-content: space-between; padding: 15px; align-items: center; }
             .chan-info { text-align: left; display: flex; flex-direction: column; gap: 4px; width: 55%; }
             .hz { font-size: 1rem; }
             .desc { height: auto; text-align: left; font-size: 0.85rem; padding: 0; display: block; color: #eee; text-transform: none; }
-            
             input[type=range] { -webkit-appearance: none; width: 30%; height: 6px; background: #333; border-radius: 3px; margin: 0; }
             input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; background: #fff; border-radius: 50%; }
         }
 
+        /* ORIENTATION SWITCH: LANDSCAPE */
+        @media (max-width: 950px) and (orientation: landscape) {
+            .header-container { margin-top: 5px; }
+            .ad-sidebar { display: none; }
+            .mixer { flex-direction: row; width: 98%; overflow-x: auto; gap: 5px; order: 1; padding: 10px; }
+            .chan { flex: 0 0 82px; width: 82px; }
+            .desc { font-size: 0.45rem; height: 32px; }
+            input[type=range] { height: 90px; }
+            .main-controls { order: 2; margin: 5px 0; scale: 0.85; }
+        }
+
         .vol-label { font-size: 0.65rem; font-family: monospace; color: #999; }
         .btn-row { display: flex; gap: 4px; margin-top: 5px; }
-        .m-btn, .s-btn { width: 45px; height: 22px; border-radius: 4px; border: 1px solid #333; background: #1a1a1a; color: #aaa; font-size: 0.55rem; cursor: pointer; text-transform: uppercase; font-weight: bold; }
-        .m-btn.active-mute { background: #9b2226; color: #fff; border-color: #ff4d4d; }
-        .s-btn.active-solo { background: #ffd60a; color: #000; border-color: #fff; }
+        .m-btn, .s-btn { width: 45px; height: 22px; border-radius: 4px; border: 1px solid #333; background: #1a1a1a; color: #aaa; font-size: 0.55rem; cursor: pointer; }
+        .m-btn.active-mute { background: #9b2226; color: #fff; }
+        .s-btn.active-solo { background: #ffd60a; color: #000; }
 
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); z-index: 1000; }
-        .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f0f; padding: 35px; border-radius: 24px; text-align: center; width: 90%; max-width: 500px; border: 1px solid #222; box-sizing: border-box; }
-        .footer-credit { margin: 30px 0; font-size: 0.6rem; color: #333; letter-spacing: 1px; text-transform: uppercase; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; }
+        .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f0f; padding: 30px; border-radius: 24px; border: 1px solid #222; width: 85%; max-width: 400px; }
+        .footer-credit { margin: 20px 0; font-size: 0.6rem; color: #333; }
     </style>
 </head>
 <body>
@@ -122,8 +126,8 @@
                                     <div class="hz">${ch.hz}</div>
                                     <div class="desc">${ch.d}</div>
                                     <div class="btn-row">
-                                        <button class="m-btn" id="m${i}" onclick="muteTrack(${i})">Mute</button>
-                                        <button class="s-btn" id="s${i}" onclick="soloTrack(${i})">Solo</button>
+                                        <button class="m-btn" id="m${i}" onclick="muteTrack(${i})">M</button>
+                                        <button class="s-btn" id="s${i}" onclick="soloTrack(${i})">S</button>
                                     </div>
                                 </div>
                                 <input type="range" id="v${i}" min="0" max="1" step="0.01" value="0" oninput="slide(${i},this.value)">
@@ -135,7 +139,10 @@
             </div>
 
             <div class="main-controls">
-                <button id="startBtn" onclick="beginSession()">Start Session</button>
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                    <button id="startBtn" onclick="beginSession()">Start Session</button>
+                    <div class="loading-bar-container" id="loadBar"><div class="loading-fill" id="loadFill"></div></div>
+                </div>
                 <button id="pauseBtn" onclick="toggle()">Pause All</button>
                 <div class="timer-wrap">
                     <select id="timerSelect" onchange="setTimer(this.value)">
@@ -146,12 +153,13 @@
                         <option value="1800">30 Min</option>
                         <option value="3600">1 Hr</option>
                     </select>
-                    <span id="timerDisplay" style="font-family: monospace; color: #55a630; font-size: 0.85rem;">--:--</span>
+                    <span id="timerDisplay" style="font-family: monospace; color: #55a630;">--:--</span>
                 </div>
                 <button class="btn-utility" onclick="toggleMuteAll()">Mute All</button>
                 <button class="btn-utility" onclick="randomize()">Randomize</button>
                 <button class="btn-utility" onclick="resetFaders()">Reset</button>
-                <button class="btn-save" onclick="savePreset()">Save Preset</button>
+                <button class="btn-save" onclick="savePreset()">Save Link</button>
+                <button class="btn-share" onclick="sharePreset()">Share</button>
             </div>
 
             <div class="mobile-ad-banner">MOBILE BANNER AD (320x50)</div>
@@ -163,11 +171,10 @@
 
     <div id="infoModal" class="modal-overlay">
         <div class="modal-content">
-            <h2 style="color:#ffd60a; text-transform:uppercase; font-weight:800; margin-bottom:20px;">Information</h2>
+            <h2 style="color:var(--accent); text-transform:uppercase;">Information</h2>
             <div style="text-align:left; font-size:13px; color:#ccc; line-height:1.7;">
-                <p><b>Immersion:</b> Best experienced with high-quality headphones.</p>
-                <p><b>Layering:</b> Blend multiple frequencies to find your unique resonance.</p>
-                <p><b>Persistence:</b> Use the Save Preset button to generate a 'Magic Link' and return to your mix on any device.</p>
+                <p><b>Immersion:</b> Best with headphones.</p>
+                <p><b>Persistence:</b> Save/Share buttons generate a unique link to this specific mix.</p>
             </div>
             <div class="btn-utility" style="margin-top:20px;" onclick="closeInfo()">Close</div>
         </div>
@@ -182,11 +189,19 @@
 
         async function beginSession() {
             if (ready) return;
+            const btn = document.getElementById('startBtn');
+            const bar = document.getElementById('loadBar');
+            const fill = document.getElementById('loadFill');
+
+            btn.innerText = "LOADING...";
+            bar.style.display = "block";
+
             ctx = new (window.AudioContext || window.webkitAudioContext)();
             master = ctx.createGain();
             master.gain.setValueAtTime(0, ctx.currentTime);
             master.connect(ctx.destination);
             
+            let loadedCount = 0;
             try {
                 await Promise.all(audioFiles.map(async (f, i) => {
                     const g = ctx.createGain();
@@ -199,23 +214,23 @@
                     src.buffer = buf; src.loop = true;
                     src.connect(g);
                     src.start(0);
+                    loadedCount++;
+                    fill.style.width = (loadedCount / 11 * 100) + "%";
                 }));
 
                 ready = true;
-                const now = ctx.currentTime;
-                
                 tracks.forEach((t, i) => {
                     const initVal = (Math.random() * 0.1 + 0.25).toFixed(2);
                     document.getElementById('v' + i).value = initVal;
                     t.lastVal = parseFloat(initVal);
-                    t.g.gain.setTargetAtTime(t.lastVal * 0.7, now, 0.2); // Smooth start
+                    t.g.gain.setTargetAtTime(t.lastVal * 0.7, ctx.currentTime, 0.2); 
                     updateUI(i, t.lastVal);
                 });
-
-                master.gain.setTargetAtTime(0.6, now, 0.2);
-                document.getElementById('startBtn').style.display = "none";
+                master.gain.setTargetAtTime(0.6, ctx.currentTime, 0.2);
+                btn.style.display = "none";
+                bar.style.display = "none";
                 document.getElementById('pauseBtn').style.display = "block";
-            } catch (err) { console.error(err); }
+            } catch (err) { btn.innerText = "RETRY"; }
         }
 
         function slide(i, v) {
@@ -223,7 +238,7 @@
             tracks[i].lastVal = val;
             if (ready && tracks[i].g) {
                 const targetGain = (tracks[i].isMuted || (soloIdx !== -1 && soloIdx !== i)) ? 0 : val * 0.7;
-                tracks[i].g.gain.setTargetAtTime(targetGain, ctx.currentTime, 0.04); // Instant response, zero buzz
+                tracks[i].g.gain.setTargetAtTime(targetGain, ctx.currentTime, 0.04);
             }
             updateUI(i, val);
         }
@@ -315,8 +330,23 @@
         function savePreset() {
             const url = window.location.href;
             navigator.clipboard.writeText(url).then(() => {
-                alert("Magic Link copied to clipboard! Share it or bookmark it to save your mix.");
+                alert("Link copied to clipboard!");
             });
+        }
+
+        async function sharePreset() {
+            const shareData = {
+                title: 'Frequency Lab',
+                text: 'Check out my custom Solfeggio frequency mix!',
+                url: window.location.href
+            };
+            try {
+                if (navigator.share) {
+                    await navigator.share(shareData);
+                } else {
+                    savePreset(); // Fallback to copy link
+                }
+            } catch (err) { console.log("Share cancelled"); }
         }
     </script>
 </body>
