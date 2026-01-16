@@ -7,49 +7,52 @@
     <style>
         :root { 
             --panel-bg: #0d0d0d; --chan-bg: #151515; --accent: #4caf50; 
-            --save-btn: #20c997; --share-btn: #0077b6; --text-main: #ffffff; 
-            --text-dim: #666; --border: #222;
+            --save-btn: #20c997; --text-main: #ffffff; --text-dim: #666; --border: #222;
         }
         body { 
             background: #000; color: var(--text-main); font-family: 'Inter', sans-serif; 
             margin: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; overflow-x: auto;
         }
         
-        /* Header */
-        .header-container { text-align: center; margin: 30px 0; width: 100%; position: relative; max-width: 1400px;}
-        h1 { font-weight: 200; letter-spacing: 12px; margin: 0; font-size: 2.2rem; text-transform: uppercase; }
-        .info-trigger { position: absolute; right: 20px; top: 0; border: 1px solid #333; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #555; font-style: italic; font-family: serif; }
+        /* Header with Small Info Icon */
+        .header-container { text-align: center; margin: 30px 0; width: 100%; position: relative; max-width: 1000px;}
+        h1 { font-weight: 200; letter-spacing: 12px; margin: 0; font-size: 2.2rem; text-transform: uppercase; display: inline-block; }
+        .info-trigger { 
+            display: inline-block; margin-left: 10px; border: 1px solid #444; border-radius: 50%; 
+            width: 20px; height: 20px; line-height: 20px; font-size: 0.65rem; cursor: pointer; color: #777; 
+            vertical-align: middle; transition: 0.3s; font-weight: bold;
+        }
+        .info-trigger:hover { border-color: #fff; color: #fff; }
 
-        /* Layout */
-        .page-wrapper { display: flex; align-items: flex-start; justify-content: center; width: 100%; min-width: 1400px; padding: 20px; box-sizing: border-box; gap: 40px; }
+        /* Desktop Layout Engine */
+        .page-wrapper { display: flex; align-items: flex-start; justify-content: center; width: 100%; min-width: 1450px; padding: 20px; box-sizing: border-box; gap: 60px; }
         .ad-sidebar { width: 160px; height: 600px; background: #0a0a0a; border: 1px solid #1a1a1a; display: flex; align-items: center; justify-content: center; border-radius: 12px; flex-shrink: 0; margin-top: 50px; }
         .ad-text { color: #222; font-size: 11px; transform: rotate(-90deg); letter-spacing: 4px; font-weight: bold; text-transform: uppercase; }
 
-        /* Mixer */
-        .mixer { display: flex; gap: 10px; background: var(--panel-bg); padding: 30px 20px; border-radius: 32px; border: 1px solid #1a1a1a; }
-        .chan { display: flex; flex-direction: column; align-items: center; width: 95px; background: var(--chan-bg); padding: 20px 0; border-radius: 20px; border: 1px solid var(--border); }
-        .hz { font-size: 0.85rem; font-weight: 900; color: var(--clr); margin-bottom: 5px; }
-        .desc { font-size: 0.55rem; font-weight: 700; height: 35px; color: #777; line-height: 1.2; padding: 0 8px; text-align: center; text-transform: uppercase; }
-        input[type=range] { -webkit-appearance: slider-vertical; width: 20px; height: 220px; cursor: pointer; margin: 15px 0; }
+        /* Mixer UI */
+        .mixer { display: flex; gap: 10px; background: var(--panel-bg); padding: 35px 25px; border-radius: 32px; border: 1px solid #1a1a1a; }
+        .chan { display: flex; flex-direction: column; align-items: center; width: 100px; background: var(--chan-bg); padding: 25px 0; border-radius: 20px; border: 1px solid var(--border); }
+        .hz { font-size: 0.9rem; font-weight: 900; color: var(--clr); margin-bottom: 5px; }
+        .desc { font-size: 0.52rem; font-weight: 700; height: 40px; color: #666; line-height: 1.2; padding: 0 10px; text-align: center; text-transform: uppercase; }
+        input[type=range] { -webkit-appearance: slider-vertical; width: 20px; height: 230px; cursor: pointer; margin: 15px 0; }
 
-        /* Popups */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; }
-        .modal-content { background: #111; padding: 40px; border-radius: 24px; border: 1px solid #333; text-align: center; max-width: 500px; }
-        .close-btn { background: var(--accent); color: white; border: none; padding: 10px 30px; border-radius: 50px; margin-top: 20px; cursor: pointer; }
+        /* Modal Design */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .modal-content { background: #0f0f0f; padding: 40px; border-radius: 28px; border: 1px solid #222; text-align: center; max-width: 450px; width: 90%; }
+        .social-btn { width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; }
 
-        /* Controls */
-        .main-controls { margin: 40px 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 15px; }
-        #startBtn, #pauseBtn { background: var(--accent); color: #fff; padding: 18px 60px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; }
-        .ctrl-btn { background: #1a1a1a; color: #aaa; border: 1px solid #333; padding: 12px 25px; border-radius: 50px; cursor: pointer; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
-        .save-btn { background: var(--save-btn); color: #000; border: none; padding: 12px 30px; border-radius: 50px; font-weight: 900; cursor: pointer; text-transform: uppercase; }
-        .share-btn { background: var(--share-btn); color: #fff; border: none; padding: 12px 30px; border-radius: 50px; font-weight: 900; cursor: pointer; text-transform: uppercase; }
+        /* Control Buttons */
+        .main-controls { margin: 45px 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 15px; }
+        #startBtn, #pauseBtn { background: var(--accent); color: #fff; padding: 18px 60px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; min-width: 250px; }
+        .ctrl-btn { background: #151515; color: #888; border: 1px solid #222; padding: 14px 28px; border-radius: 50px; cursor: pointer; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
+        .save-btn { background: var(--save-btn); color: #000; border: none; padding: 14px 50px; border-radius: 50px; font-weight: 900; cursor: pointer; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
     <div class="header-container">
         <h1>Solfeggio Player</h1>
-        <div class="info-trigger" onclick="openModal('infoModal')">i</div>
+        <div class="info-trigger" onclick="openModal('infoModal', false)">i</div>
     </div>
     
     <div class="page-wrapper">
@@ -59,12 +62,12 @@
             <div class="mixer" id="mixer-ui">
                 <script>
                     const chData = [
-                        {hz:"69.3Hz", d:"Resonance Deepener", c:"#4a00e0"}, {hz:"174Hz", d:"Relieve Pain", c:"#ffffff"},
-                        {hz:"285Hz", d:"Body Recovery", c:"#9b2226"}, {hz:"396Hz", d:"Release Fear", c:"#ae2012"},
-                        {hz:"417Hz", d:"Change Cycles", c:"#ca6702"}, {hz:"432Hz", d:"Relaxation", c:"#ee9b00"},
-                        {hz:"528Hz", d:"DNA Repair", c:"#0a9396"}, {hz:"639Hz", d:"Relationships", c:"#005f73"},
-                        {hz:"741Hz", d:"Detox Mind", c:"#3e5c76"}, {hz:"852Hz", d:"Intuition", c:"#5e548e"},
-                        {hz:"963Hz", d:"Consciousness", c:"#9d4edd"}
+                        {hz:"69.3Hz", d:"Resonance Deepener", c:"#4a00e0"}, {hz:"174Hz", d:"Relieves Pain and Stress", c:"#ffffff"},
+                        {hz:"285Hz", d:"Accelerates Physical Recovery", c:"#9b2226"}, {hz:"396Hz", d:"Releases Fear and Guilt", c:"#ae2012"},
+                        {hz:"417Hz", d:"Facilitates Change", c:"#ca6702"}, {hz:"432Hz", d:"Physical Relaxation", c:"#ee9b00"},
+                        {hz:"528Hz", d:"DNA Repair & Transformation", c:"#0a9396"}, {hz:"639Hz", d:"Improves Relationships", c:"#005f73"},
+                        {hz:"741Hz", d:"Detoxifies Mind & Body", c:"#3e5c76"}, {hz:"852Hz", d:"Awakens Intuition", c:"#5e548e"},
+                        {hz:"963Hz", d:"Connects to Higher Self", c:"#9d4edd"}
                     ];
                     chData.forEach((ch, i) => {
                         document.write(`
@@ -72,7 +75,7 @@
                                 <div class="hz">${ch.hz}</div>
                                 <div class="desc">${ch.d}</div>
                                 <input type="range" id="v${i}" min="0" max="1" step="0.01" value="0.30" oninput="slide(${i},this.value)">
-                                <div id="l${i}" style="font-size:0.7rem; color:#444;">30%</div>
+                                <div id="l${i}" style="font-size:0.75rem; color:#444;">30%</div>
                             </div>
                         `);
                     });
@@ -82,25 +85,64 @@
             <div class="main-controls">
                 <button id="startBtn" onclick="beginSession()">Start Session</button>
                 <button id="pauseBtn" style="display:none;" onclick="togglePlay()">Pause All</button>
-                <button class="ctrl-btn" onclick="randomize()">Random Mix</button>
-                <button class="ctrl-btn" onclick="resetAll()">Reset All</button>
-                <button class="save-btn" onclick="openModal('saveModal')">Save Preset</button>
-                <button class="share-btn" onclick="copyLink()">Share</button>
+                <button class="ctrl-btn" onclick="randomize()">Random</button>
+                <button class="ctrl-btn" onclick="resetAll()">Reset</button>
+                <button class="save-btn" onclick="openModal('saveModal', true)">Save</button>
+                <button class="ctrl-btn" onclick="copyShare()">Share Link</button>
             </div>
         </div>
 
         <aside class="ad-sidebar"><span class="ad-text">Skyscraper Ad</span></aside>
     </div>
 
-    <div id="infoModal" class="modal"><div class="modal-content"><h2>About Solfeggio</h2><p>These frequencies are ancient tones used to aid in healing and mental clarity.</p><button class="close-btn" onclick="closeModal('infoModal')">Close</button></div></div>
-    <div id="saveModal" class="modal"><div class="modal-content"><h2>Save Preset</h2><input type="text" placeholder="Preset Name..." style="padding:10px; width:80%; border-radius:5px; border:1px solid #333; background:#000; color:#fff;"><br><button class="close-btn" onclick="closeModal('saveModal')">Save</button></div></div>
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <h2 style="color:var(--accent); font-weight:200;">Frequency Guide</h2>
+            <div style="color:#888; text-align:left; font-size:0.85rem; line-height:1.6; max-height:300px; overflow-y:auto; padding-right:10px;">
+                <p><strong>174 Hz:</strong> Relieves pain and stress.</p>
+                <p><strong>285 Hz:</strong> Accelerates physical recovery.</p>
+                <p><strong>396 Hz:</strong> Releases fear and guilt.</p>
+                <p><strong>417 Hz:</strong> Facilitates change and undoing situations.</p>
+                <p><strong>528 Hz:</strong> DNA repair, transformation, and miracles.</p>
+                <p><strong>639 Hz:</strong> Improves relationships and connection.</p>
+                <p><strong>741 Hz:</strong> Detoxifies mind and body.</p>
+                <p><strong>852 Hz:</strong> Awakens intuition and spiritual order.</p>
+                <p><strong>963 Hz:</strong> Connects to higher self and oneness.</p>
+            </div>
+            <button class="social-btn" style="background:#222; color:#fff; margin-top:20px;" onclick="closeModal('infoModal', false)">Close Guide</button>
+        </div>
+    </div>
+
+    <div id="saveModal" class="modal">
+        <div class="modal-content">
+            <h2 style="font-weight:200;">Save Your Mix</h2>
+            <p style="color:#555; margin-bottom:20px; font-size:0.9rem;">Sign in to sync your presets across devices.</p>
+            <button class="social-btn" style="background:#db4437; color:#fff;">Continue with Google</button>
+            <button class="social-btn" style="background:#4267b2; color:#fff;">Continue with Facebook</button>
+            <button class="social-btn" style="background:#111; color:#fff; border:1px solid #333;">Login with Email</button>
+            <button class="social-btn" style="background:transparent; color:#444; margin-top:10px;" onclick="closeModal('saveModal', true)">Cancel</button>
+        </div>
+    </div>
 
     <script>
-        let ctx, master, tracks = [], ready = false, isPaused = false;
+        let ctx, master, tracks = [], ready = false, isPaused = false, wasPlayingBeforeSave = false;
         const fileNames = ["69.3Hz","174Hz","285Hz","396Hz","417Hz","432Hz","528Hz","639Hz","741Hz","852Hz","963Hz"];
 
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function openModal(id, shouldPause) {
+            if (shouldPause && ready && !isPaused) {
+                togglePlay();
+                wasPlayingBeforeSave = true;
+            }
+            document.getElementById(id).style.display = 'flex';
+        }
+
+        function closeModal(id, shouldResume) {
+            document.getElementById(id).style.display = 'none';
+            if (shouldResume && ready && wasPlayingBeforeSave) {
+                togglePlay();
+                wasPlayingBeforeSave = false;
+            }
+        }
 
         async function loadTrack(name, index) {
             try {
@@ -112,7 +154,7 @@
                 const gn = ctx.createGain(); gn.gain.setValueAtTime(0, ctx.currentTime);
                 src.connect(gn); gn.connect(master); src.start(0);
                 tracks[index] = { g: gn, lastVal: 0.30 };
-            } catch (e) { console.error("Load fail:", name); }
+            } catch (e) { console.error("Missing:", name); }
         }
 
         async function beginSession() {
@@ -120,7 +162,7 @@
             ctx = new (window.AudioContext || window.webkitAudioContext)();
             if (ctx.state === 'suspended') await ctx.resume();
             master = ctx.createGain(); master.gain.setValueAtTime(0.7, ctx.currentTime); master.connect(ctx.destination);
-            document.getElementById('startBtn').innerText = "LOADING...";
+            document.getElementById('startBtn').innerText = "LOADING MIXER...";
             await Promise.all(fileNames.map((name, i) => loadTrack(name, i)));
             ready = true;
             document.getElementById('startBtn').style.display = "none";
@@ -135,10 +177,15 @@
             document.getElementById('l' + i).innerText = Math.round(val * 100) + "%";
         }
 
+        function togglePlay() { 
+            isPaused = !isPaused; 
+            master.gain.setTargetAtTime(isPaused ? 0 : 0.7, ctx.currentTime, 0.2); 
+            document.getElementById('pauseBtn').innerText = isPaused ? "RESUME ALL" : "PAUSE ALL"; 
+        }
+
         function randomize() { tracks.forEach((_, i) => { const v = (Math.random()*0.4 + 0.1).toFixed(2); document.getElementById('v'+i).value = v; slide(i, v); }); }
         function resetAll() { tracks.forEach((_, i) => { document.getElementById('v'+i).value = 0; slide(i, 0); }); }
-        function togglePlay() { isPaused = !isPaused; master.gain.setTargetAtTime(isPaused ? 0 : 0.7, ctx.currentTime, 0.2); document.getElementById('pauseBtn').innerText = isPaused ? "RESUME" : "PAUSE ALL"; }
-        function copyLink() { navigator.clipboard.writeText(window.location.href); alert("Link copied!"); }
+        function copyShare() { navigator.clipboard.writeText(window.location.href); alert("Share link copied!"); }
     </script>
 </body>
 </html>
