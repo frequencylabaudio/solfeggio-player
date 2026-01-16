@@ -4,46 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solfeggio Player | Frequency Lab</title>
-    <link rel="icon" type="image/png" href="favicon.png">
     <style>
-        :root { --panel-bg: #0a0a0a; --chan-bg: #141414; --bright-blue: #007bff; --start-yellow: #ffd60a; }
+        :root { --panel-bg: #0a0a0a; --chan-bg: #141414; }
         body { 
             background: #050505; color: #e0e0e0; 
             font-family: 'Inter', -apple-system, sans-serif; 
             text-align: center; margin: 0; min-height: 100vh; 
             display: flex; flex-direction: column; align-items: center; 
             justify-content: flex-start;
-            position: relative;
         }
         
-        .title-container { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 20px; }
-        h1 { font-weight: 200; letter-spacing: 5px; margin: 0; font-size: 2.2rem; color: #e0e0e0; }
-        
-        .info-icon { 
-            cursor: pointer; width: 20px; height: 20px; border-radius: 50%; 
-            border: 1px solid #444; color: #444; font-size: 13px; 
-            display: flex; align-items: center; justify-content: center; 
-            font-style: italic; font-family: serif; transition: 0.3s;
-        }
-        .info-icon:hover { border-color: var(--start-yellow); color: var(--start-yellow); }
-
+        h1 { font-weight: 200; letter-spacing: 5px; margin: 20px 0 5px 0; font-size: 2.2rem; }
         .subtitle { font-size: 0.75rem; letter-spacing: 3px; color: #666; margin-bottom: 25px; text-transform: uppercase; }
         
-        .page-wrapper { display: flex; align-items: flex-start; gap: 15px; padding: 10px; max-width: 100vw; box-sizing: border-box; }
+        .page-wrapper { 
+            display: flex; 
+            align-items: flex-start; 
+            gap: 40px; /* Increased from 15px to push ads further away */
+            padding: 10px; 
+            max-width: 100vw; 
+            box-sizing: border-box; 
+        }
         .ad-sidebar { width: 140px; height: 600px; background: #111; border: 1px dashed #333; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .ad-text { color: #444; font-size: 10px; transform: rotate(-90deg); letter-spacing: 2px; }
 
         .mixer { 
-            display: flex; flex-wrap: nowrap; 
-            justify-content: flex-start; 
-            gap: 8px; 
+            display: flex; flex-wrap: nowrap; justify-content: center; gap: 8px; 
             background: var(--panel-bg); padding: 25px 15px; border-radius: 24px; 
-            border: 1px solid #222; width: auto; 
-            margin: 0 auto;
-            max-width: calc(100vw - 350px); 
+            border: 1px solid #222; width: auto; max-width: calc(100vw - 400px); /* Adjusted to accommodate wider gap */
             overflow-x: auto;
             box-shadow: 0 15px 40px rgba(0,0,0,0.9);
-            -webkit-overflow-scrolling: touch;
         }
         
         .chan { 
@@ -61,52 +51,40 @@
         .btn-row { display: flex; gap: 4px; }
         .m-btn, .s-btn { width: 40px; height: 20px; border-radius: 4px; border: 1px solid #333; background: #1a1a1a; color: #aaa; font-size: 0.5rem; cursor: pointer; text-transform: uppercase; font-weight: bold; }
         .m-btn.active-mute { background: #9b2226; color: #fff; border-color: #ff4d4d; }
-        .s-btn.active-solo { background: var(--start-yellow); color: #000; border-color: #fff; }
+        .s-btn.active-solo { background: #ffd60a; color: #000; border-color: #fff; }
 
         .main-controls { margin: 30px 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px; }
         
-        #startBtn { background: var(--start-yellow); color: #000; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; }
+        #startBtn { background: #ffd60a; color: #000; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; }
         #pauseBtn { background: #55a630; color: #fff; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; display: none; }
         
         .timer-wrap { display: flex; align-items: center; gap: 10px; background: #111; padding: 6px 18px; border-radius: 50px; border: 1px solid #333; }
         .timer-label { font-size: 0.65rem; color: #666; text-transform: uppercase; font-weight: bold; }
-        select { background: transparent; color: var(--start-yellow); border: none; font-weight: bold; font-family: monospace; cursor: pointer; outline: none; }
+        select { background: transparent; color: #ffd60a; border: none; font-weight: bold; font-family: monospace; cursor: pointer; outline: none; }
         #timerDisplay { font-family: monospace; color: #55a630; font-size: 0.85rem; min-width: 55px; }
 
         .btn-utility { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: 600; }
-        .btn-save { background: #20c997; color: #000; padding: 10px 24px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
-        .btn-share { background: var(--bright-blue); color: #fff; padding: 10px 24px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
+        .btn-save { background: #20c997; color: #000; padding: 10px 20px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
 
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); backdrop-filter: blur(10px); z-index: 1000; }
-        .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f0f; padding: 40px; border-radius: 32px; text-align: center; width: 420px; max-width: 90vw; border: 1px solid #222; box-shadow: 0 20px 60px rgba(0,0,0,0.8); box-sizing: border-box; }
-        .modal-header { color: var(--start-yellow); font-size: 24px; margin-bottom: 20px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
-        .modal-subtext { color: #ccc; font-size: 13px; line-height: 1.6; margin-bottom: 25px; text-align: left; }
-        .modal-subtext strong { color: var(--start-yellow); display: block; margin-top: 15px; margin-bottom: 5px; }
-        
+        .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f0f; padding: 50px 40px; border-radius: 32px; text-align: center; width: 420px; border: 1px solid #222; box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
+        .modal-header { color: #ffd60a; font-size: 26px; margin-bottom: 20px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
+        .modal-subtext { color: #888; font-size: 14px; line-height: 1.6; margin-bottom: 35px; padding: 0 10px; }
         .auth-buttons { display: flex; flex-direction: column; gap: 12px; }
         .auth-btn { padding: 16px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
         .g-btn { background: #ffffff; color: #000; }
         .fb-btn { background: #3b5998; color: #fff; }
-        .email-btn { background: var(--start-yellow); color: #000; }
-        .link-btn { background: var(--bright-blue); color: #fff; }
-        
-        .back-btn { margin-top: 25px; color: #666; cursor: pointer; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; transition: 0.2s; }
+        .email-btn { background: #ffd60a; color: #000; }
+        .back-btn { margin-top: 30px; color: #444; cursor: pointer; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
         #successMsg { display: none; margin-top: 20px; padding: 20px; background: #111; border: 1px solid #20c997; border-radius: 12px; color: #fff; font-size: 13px; line-height: 1.4; }
         .magic-link-box { background: #000; padding: 10px; border-radius: 6px; border: 1px solid #333; margin-top: 15px; word-break: break-all; color: #20c997; font-family: monospace; user-select: all; cursor: pointer; }
 
-        .footer-credit { 
-            position: fixed; bottom: 15px; right: 15px; 
-            font-size: 0.65rem; color: #333; letter-spacing: 1px; 
-            text-transform: uppercase; z-index: 1;
-        }
+        .footer-credit { margin-top: 20px; font-size: 0.65rem; color: #333; letter-spacing: 1px; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-    <div class="title-container">
-        <h1>SOLFEGGIO PLAYER</h1>
-        <div class="info-icon" onclick="openInfo()">i</div>
-    </div>
+    <h1>SOLFEGGIO PLAYER</h1>
     <div class="subtitle">By Frequency Lab</div>
     
     <div class="page-wrapper">
@@ -164,36 +142,18 @@
                 <button id="muteAllBtn" class="btn-utility" onclick="toggleMuteAll()">Mute All</button>
                 <button class="btn-utility" onclick="randomize()">Randomize</button>
                 <button class="btn-utility" onclick="resetFaders()">Reset</button>
-                <button class="btn-save" onclick="openModal()">Save</button>
-                <button class="btn-share" onclick="openShare()">Share</button>
+                <button class="btn-save" onclick="openModal()">Save Preset</button>
             </div>
+            <div class="footer-credit">Created By Keunho Koh</div>
         </main>
         <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD</span></aside>
     </div>
-    <div class="footer-credit">Created By Keunho Koh</div>
 
-    <div id="infoModal" class="modal-overlay" onclick="closeInfo()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <h2 class="modal-header">How to Use</h2>
-            <div class="modal-subtext">
-                <i>A quick guide to finding your perfect harmony.</i>
-                <strong>🎧 For Best Results</strong>
-                Use <b>headphones</b> to experience the full therapeutic depth of each frequency.
-                <strong>⏳ Pro Tip: Timer</strong>
-                Set a timer to automatically fade out your session. <b>15–30 mins</b> is perfect for a reset; <b>1 hour+</b> is ideal for deep focus or sleep.
-                <strong>💾 Save & Share</strong>
-                • <b>Save:</b> Sign in to create a "Magic Link" that remembers your exact fader levels.<br>
-                • <b>Share:</b> Send your current frequency mix to others via social media or email.
-            </div>
-            <div class="back-btn" onclick="closeInfo()">Back to Mixer</div>
-        </div>
-    </div>
-
-    <div id="saveModal" class="modal-overlay" onclick="closeModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <h2 class="modal-header">Save Preset</h2>
+    <div id="saveModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 class="modal-header">MIX SAVED!</h2>
             <div id="authContainer">
-                <p class="modal-subtext" style="text-align: center;">Sign in to receive a secure 'Magic Link' via email. Use it to instantly restore your custom preset anytime, on any device.</p>
+                <p class="modal-subtext">Sign in to receive a secure 'Magic Link' via email. Use it to instantly restore your custom preset anytime, on any device.</p>
                 <div class="auth-buttons">
                     <button class="auth-btn g-btn" onclick="saveAndSign('Google')">Continue with Google</button>
                     <button class="auth-btn fb-btn" onclick="saveAndSign('Facebook')">Continue with Facebook</button>
@@ -210,23 +170,9 @@
         </div>
     </div>
 
-    <div id="shareModal" class="modal-overlay" onclick="closeShare()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <h2 class="modal-header" style="color: var(--bright-blue);">Share Mix</h2>
-            <p class="modal-subtext" style="text-align: center;">Spread the harmony with your friends.</p>
-            <div class="auth-buttons">
-                <button class="auth-btn g-btn" onclick="shareMix('Gmail')">Share via Gmail</button>
-                <button class="auth-btn fb-btn" onclick="shareMix('Facebook')">Share on Facebook</button>
-                <button class="auth-btn email-btn" onclick="shareMix('Email')">Share via Email</button>
-                <button class="auth-btn link-btn" onclick="shareMix('Link')">Share via Link</button>
-            </div>
-            <div class="back-btn" onclick="closeShare()">Close</div>
-        </div>
-    </div>
-
     <script>
         const audioFiles = ["69.3Hz","174Hz","285Hz","396Hz","417Hz","432Hz","528Hz","639Hz","741Hz","852Hz","963Hz"];
-        let ctx, master, tracks = [], ready = false, isPaused = false, wasPlayingBeforeSave = false;
+        let ctx, master, tracks = [], ready = false, isPaused = false;
         let timerInterval, timeLeft = 0, soloIdx = -1;
 
         for(let i=0; i<11; i++) { tracks[i] = { lastVal: 0, isMuted: false, g: null }; }
@@ -251,81 +197,85 @@
             const sBtn = document.getElementById('startBtn');
             const pBtn = document.getElementById('pauseBtn');
             sBtn.innerText = "INITIALIZING...";
+            
             ctx = new (window.AudioContext || window.webkitAudioContext)();
             master = ctx.createGain();
             master.gain.setValueAtTime(0, ctx.currentTime);
             master.connect(ctx.destination);
             await ctx.resume();
+            
             try {
-                await Promise.all(audioFiles.map(async (f, i) => {
+                audioFiles.forEach((_, i) => {
                     const g = ctx.createGain();
                     g.gain.setValueAtTime(0, ctx.currentTime);
                     g.connect(master);
                     tracks[i].g = g;
-                    const res = await fetch(f + ".mp3");
+                });
+
+                await Promise.all(audioFiles.map(async (f, i) => {
+                    const res = await fetch(f + ".wav");
                     const buf = await ctx.decodeAudioData(await res.arrayBuffer());
                     const src = ctx.createBufferSource();
-                    src.buffer = buf; src.loop = true;
-                    src.connect(g);
+                    src.buffer = buf; 
+                    src.loop = true;
+                    src.connect(tracks[i].g);
                     src.start(0);
                 }));
+
                 ready = true;
                 const now = ctx.currentTime;
                 tracks.forEach((t, i) => {
-                    let target = (t.isMuted || (soloIdx !== -1 && soloIdx !== i)) ? 0 : t.lastVal * 0.7;
-                    t.g.gain.linearRampToValueAtTime(target, now + 1.5); 
+                    t.g.gain.cancelScheduledValues(now);
+                    t.g.gain.linearRampToValueAtTime(t.lastVal * 0.7, now + 0.5); 
                 });
-                master.gain.linearRampToValueAtTime(0.6, now + 2.0);
-                sBtn.style.display = "none"; pBtn.style.display = "block";
+
+                master.gain.linearRampToValueAtTime(0.6, now + 0.8);
+                sBtn.style.display = "none"; 
+                pBtn.style.display = "block";
+                
                 if (timeLeft > 0) startCountdown();
-            } catch (err) { sBtn.innerText = "LOAD ERROR"; }
+            } catch (err) { 
+                sBtn.innerText = "LOAD ERROR"; 
+                console.error(err); 
+            }
         }
 
         function slide(i, v) {
             const val = parseFloat(v);
             tracks[i].lastVal = val;
-            if (ready && tracks[i].g) {
-                let target = (tracks[i].isMuted || (soloIdx !== -1 && soloIdx !== i)) ? 0 : val * 0.7;
-                tracks[i].g.gain.setTargetAtTime(target, ctx.currentTime, 0.05);
+            if (ready && tracks[i].g && !tracks[i].isMuted && (soloIdx === -1 || soloIdx === i)) {
+                tracks[i].g.gain.cancelScheduledValues(ctx.currentTime);
+                tracks[i].g.gain.linearRampToValueAtTime(val * 0.7, ctx.currentTime + 0.05);
             }
             updateUI(i, val);
         }
 
         function openModal() { 
-            if (ready && !isPaused) { toggle(); wasPlayingBeforeSave = true; }
             document.getElementById('authContainer').style.display = 'block';
             document.getElementById('successMsg').style.display = 'none';
             document.getElementById('saveModal').style.display = 'block'; 
+            if (ready && master) {
+                master.gain.cancelScheduledValues(ctx.currentTime);
+                master.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.3);
+            }
         }
-        function closeModal() { 
+
+        async function closeModal() { 
             document.getElementById('saveModal').style.display = 'none'; 
-            if (ready && wasPlayingBeforeSave && isPaused) { toggle(); wasPlayingBeforeSave = false; }
+            if (ready && master && !isPaused) {
+                if (ctx.state === 'suspended') await ctx.resume();
+                master.gain.cancelScheduledValues(ctx.currentTime);
+                master.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.5);
+            }
         }
-        function openShare() { 
-            document.getElementById('shareModal').style.display = 'block'; 
-        }
-        function closeShare() { 
-            document.getElementById('shareModal').style.display = 'none'; 
-        }
-        function openInfo() { document.getElementById('infoModal').style.display = 'block'; }
-        function closeInfo() { document.getElementById('infoModal').style.display = 'none'; }
 
         function saveAndSign(provider) {
             const levels = tracks.map(t => Math.round(t.lastVal * 100)).join(',');
             const magicLink = `${window.location.origin}${window.location.pathname}?preset=${levels}`;
+            
             document.getElementById('authContainer').style.display = 'none';
             document.getElementById('linkDisplay').innerText = magicLink;
             document.getElementById('successMsg').style.display = 'block';
-        }
-
-        function shareMix(platform) {
-            const levels = tracks.map(t => Math.round(t.lastVal * 100)).join(',');
-            const link = `${window.location.origin}${window.location.pathname}?preset=${levels}`;
-            if(platform === 'Link') {
-                navigator.clipboard.writeText(link).then(() => alert("Link copied to clipboard!"));
-            } else {
-                alert(`Link generated for ${platform}: \n\n${link}`);
-            }
         }
 
         window.onload = loadPresetFromUrl;
@@ -339,7 +289,7 @@
 
         function toggle() {
             if (!ready) return; isPaused = !isPaused;
-            master.gain.setTargetAtTime(isPaused ? 0 : 0.6, ctx.currentTime, 0.2);
+            master.gain.linearRampToValueAtTime(isPaused ? 0 : 0.6, ctx.currentTime + 0.2);
             document.getElementById('pauseBtn').innerText = isPaused ? "RESUME ALL" : "PAUSE ALL";
             document.getElementById('pauseBtn').style.background = isPaused ? "#222" : "#55a630";
         }
@@ -348,7 +298,7 @@
             clearInterval(timerInterval); timeLeft = parseInt(seconds);
             if (!ready && timeLeft > 0) { beginSession(); return; }
             if (ready) {
-                master.gain.setTargetAtTime(0.6, ctx.currentTime, 0.5);
+                master.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.5);
                 isPaused = false; document.getElementById('pauseBtn').innerText = "PAUSE ALL";
                 if (timeLeft > 0) startCountdown();
             }
@@ -357,14 +307,8 @@
         function startCountdown() {
             updateTimerDisplay();
             timerInterval = setInterval(() => {
-                if (isPaused) return; 
-                timeLeft--; 
-                updateTimerDisplay();
-                if (timeLeft <= 0) { 
-                    clearInterval(timerInterval); 
-                    document.getElementById('timerSelect').value = "0";
-                    if(!isPaused) toggle(); 
-                }
+                if (isPaused) return; timeLeft--; updateTimerDisplay();
+                if (timeLeft <= 0) { clearInterval(timerInterval); toggle(); }
             }, 1000);
         }
 
@@ -391,7 +335,9 @@
             slide(i, tracks[i].lastVal);
         }
 
-        function toggleMuteAll() { tracks.forEach((_, i) => muteTrack(i, true)); }
+        function toggleMuteAll() {
+            tracks.forEach((_, i) => muteTrack(i, true));
+        }
 
         function soloTrack(i) {
             if (!ready) return;
