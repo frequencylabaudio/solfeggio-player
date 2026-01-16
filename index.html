@@ -241,7 +241,7 @@
     </div>
     <div class="footer-credit">Created By Keunho Koh</div>
 
-    <div id="saveModal" class="modal-overlay" onclick="closeModal()">
+    <div id="universalModal" class="modal-overlay" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <h2 class="modal-header" id="modalHeader">SAVE</h2>
             <p class="modal-subtext" style="text-align: center;">Choose an option below. Audio will resume once closed.</p>
@@ -250,7 +250,7 @@
                 <button class="auth-btn g-btn" onclick="handleSSO('Gmail')">GMAIL</button>
                 <button class="auth-btn fb-btn" onclick="handleSSO('Facebook')">FACEBOOK</button>
                 <button class="auth-btn email-btn" onclick="showEmailInput()">EMAIL</button>
-                <button class="auth-btn link-btn" id="copyBtn" onclick="handleCopy()">COPY LINK</button>
+                <button class="auth-btn link-btn" id="modalCopyBtn" onclick="handleCopy()">COPY LINK</button>
             </div>
 
             <div id="emailInputArea">
@@ -331,29 +331,37 @@
             updateUI(i, val);
         }
 
-        /* MODAL LOGIC */
+        /* UNIFIED MODAL LOGIC FOR SAVE & SHARE */
         function openModal(title) { 
-            document.getElementById('modalHeader').innerText = title;
-            document.getElementById('modalHeader').style.color = (title === 'SAVE') ? 'var(--start-yellow)' : 'var(--bright-blue)';
-            if (ready && !isPaused) { toggle(); wasPlayingBeforeSave = true; }
-            document.getElementById('saveModal').style.display = 'block'; 
+            const modalHeader = document.getElementById('modalHeader');
+            modalHeader.innerText = title;
+            modalHeader.style.color = (title === 'SAVE') ? 'var(--start-yellow)' : 'var(--bright-blue)';
+            
+            if (ready && !isPaused) { 
+                toggle(); 
+                wasPlayingBeforeSave = true; 
+            }
+            document.getElementById('universalModal').style.display = 'block'; 
         }
 
         function closeModal() { 
-            document.getElementById('saveModal').style.display = 'none'; 
+            document.getElementById('universalModal').style.display = 'none'; 
             hideEmailInput();
-            if (ready && wasPlayingBeforeSave && isPaused) { toggle(); wasPlayingBeforeSave = false; }
+            if (ready && wasPlayingBeforeSave && isPaused) { 
+                toggle(); 
+                wasPlayingBeforeSave = false; 
+            }
         }
 
         function handleSSO(platform) {
-            alert(`Initializing ${platform} Sign-In...`);
+            alert(`Opening ${platform} Authentication...`);
         }
 
         function handleCopy() {
             const levels = tracks.map(t => Math.round(t.lastVal * 100)).join(',');
             const link = `${window.location.origin}${window.location.pathname}?preset=${levels}`;
             navigator.clipboard.writeText(link).then(() => {
-                const btn = document.getElementById('copyBtn');
+                const btn = document.getElementById('modalCopyBtn');
                 const oldText = btn.innerText;
                 btn.innerText = "COPIED!";
                 setTimeout(() => { btn.innerText = oldText; }, 2000);
@@ -373,14 +381,14 @@
         function sendMagicLink() {
             const email = document.getElementById('userEmail').value;
             if(email.includes('@')) {
-                alert(`Magic link sent to ${email}! Check your inbox.`);
+                alert(`Success! Check your inbox at ${email}.`);
                 hideEmailInput();
             } else {
                 alert("Please enter a valid email address.");
             }
         }
 
-        /* MIXER LOGIC */
+        /* MIXER ENGINE LOGIC */
         window.onload = loadPresetFromUrl;
 
         function updateUI(i, val) {
