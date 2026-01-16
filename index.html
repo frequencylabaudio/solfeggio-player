@@ -454,8 +454,14 @@
                 await db.collection("mail").add({
                     to: userEmail,
                     message: {
-                        subject: 'Your Magic Link is Here!',
-                        html: `<p>Your unique preset (with Mute/Solo settings) is saved: <a href="${presetLink}">Open Your Preset</a></p>`
+                        subject: 'Your Sacred Soundscape is Ready ✨',
+                        html: `
+                            <p>Welcome back to your resonance.</p>
+                            <p>Your perfect balance of Solfeggio frequencies is ready for your next session. No need to re-adjust your faders or toggle your mutes—we’ve remembered everything for you.</p>
+                            <p><strong><a href="${presetLink}">[Open Your Soundscape]</a></strong></p>
+                            <p>May this soundscape bring you the peace and clarity you seek today.</p>
+                            <p>Much Love by Frequency Lab</p>
+                        `
                     }
                 });
                 alert("Mix saved successfully! Check " + userEmail + " for your link.");
