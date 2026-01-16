@@ -7,22 +7,21 @@
     <style>
         :root { 
             --panel-bg: #0d0d0d; --chan-bg: #151515; --accent: #4caf50; 
-            --save-btn: #20c997; --share-btn: #0077b6; --text-main: #ffffff; 
-            --text-dim: #666; --border: #222;
+            --save-btn: #20c997; --text-main: #ffffff; --text-dim: #666; --border: #222;
         }
         body { 
             background: #000; color: var(--text-main); font-family: 'Inter', sans-serif; 
             margin: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; 
         }
         
+        /* Header & Layout */
         .header-container { text-align: center; margin: 30px 0; width: 100%; }
         h1 { font-weight: 200; letter-spacing: 10px; margin: 0; font-size: 2.2rem; text-transform: uppercase; }
         .subtitle { font-size: 0.7rem; letter-spacing: 5px; color: var(--text-dim); margin-top: 8px; text-transform: uppercase; }
 
         .page-wrapper { 
             display: flex; align-items: center; justify-content: center; 
-            width: 100%; max-width: 1600px; padding: 20px; box-sizing: border-box; 
-            gap: 80px; /* Maximum breathing room for ads */
+            width: 100%; max-width: 1600px; padding: 20px; box-sizing: border-box; gap: 80px; 
         }
         
         .ad-sidebar { 
@@ -31,6 +30,7 @@
         }
         .ad-text { color: #222; font-size: 11px; transform: rotate(-90deg); letter-spacing: 4px; font-weight: bold; text-transform: uppercase; }
 
+        /* Mixer UI */
         .mixer { 
             display: flex; gap: 12px; background: var(--panel-bg); padding: 35px 25px; 
             border-radius: 32px; border: 1px solid #1a1a1a; box-shadow: 0 40px 100px rgba(0,0,0,0.8);
@@ -46,11 +46,7 @@
         
         input[type=range] { -webkit-appearance: slider-vertical; width: 20px; height: 220px; cursor: pointer; margin: 20px 0; }
 
-        .btn-row { display: flex; gap: 6px; margin-bottom: 15px; }
-        .m-btn, .s-btn { width: 40px; height: 26px; border-radius: 6px; border: 1px solid #333; background: #000; color: #555; font-size: 0.65rem; cursor: pointer; font-weight: 800; }
-        .m-btn.active-mute { background: #d00000; color: #fff; }
-        .s-btn.active-solo { background: #0077b6; color: #fff; }
-
+        /* Controls */
         .main-controls { margin: 45px 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 15px; }
         #startBtn, #pauseBtn { background: var(--accent); color: #fff; padding: 18px 60px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; font-size: 1.1rem; }
         
@@ -95,12 +91,8 @@
                             <div class="chan" style="--clr:${ch.c}">
                                 <div class="hz">${ch.hz}</div>
                                 <div class="desc">${ch.d}</div>
-                                <div class="btn-row">
-                                    <button class="m-btn" id="m${i}" onclick="muteTrack(${i})">M</button>
-                                    <button class="s-btn" id="s${i}" onclick="soloTrack(${i})">S</button>
-                                </div>
-                                <input type="range" id="v${i}" min="0" max="1" step="0.01" value="0" oninput="slide(${i},this.value)">
-                                <div id="l${i}" style="font-size:0.75rem; color:#444;">0%</div>
+                                <input type="range" id="v${i}" min="0" max="1" step="0.01" value="0.30" oninput="slide(${i},this.value)">
+                                <div id="l${i}" style="font-size:0.75rem; color:#444;">30%</div>
                             </div>
                         `);
                     });
@@ -121,7 +113,7 @@
 
                 <button class="ctrl-btn" onclick="randomize()">Random Mix</button>
                 <button class="ctrl-btn" onclick="resetAll()">Reset All</button>
-                <button class="save-btn" onclick="alert('Mix Saved!')">Save Preset</button>
+                <button class="save-btn" onclick="saveLink()">Save Link</button>
             </div>
         </div>
 
@@ -129,7 +121,7 @@
     </div>
 
     <script>
-        let ctx, master, tracks = [], ready = false, isPaused = false, soloIdx = -1, timerInt, timeLeft = 0;
+        let ctx, master, tracks = [], ready = false, isPaused = false, timerInt, timeLeft = 0;
         const fileNames = ["69.3Hz","174Hz","285Hz","396Hz","417Hz","432Hz","528Hz","639Hz","741Hz","852Hz","963Hz"];
 
         async function loadTrack(name, index) {
@@ -140,7 +132,7 @@
             src.buffer = audioBuf; src.loop = true;
             const gn = ctx.createGain(); gn.gain.setValueAtTime(0, ctx.currentTime);
             src.connect(gn); gn.connect(master); src.start(0);
-            tracks[index] = { g: gn, lastVal: 0, isMuted: false };
+            tracks[index] = { g: gn, lastVal: 0.30 }; // Consistent default
         }
 
         async function beginSession() {
@@ -150,30 +142,32 @@
             master = ctx.createGain(); master.gain.setValueAtTime(0.7, ctx.currentTime); master.connect(ctx.destination);
             
             document.getElementById('startBtn').innerText = "LOADING...";
-
-            // PARALLEL LOADING (Faster)
             await Promise.all(fileNames.map((name, i) => loadTrack(name, i)));
 
             ready = true;
             document.getElementById('startBtn').style.display = "none";
             document.getElementById('pauseBtn').style.display = "block";
-            tracks.forEach((_, i) => randomizeTrack(i));
+            
+            // Set all tracks to 30% immediately on start
+            tracks.forEach((_, i) => slide(i, 0.30));
         }
 
         function slide(i, v) {
             const val = parseFloat(v); if(!tracks[i]) return;
             tracks[i].lastVal = val;
-            const target = (tracks[i].isMuted || (soloIdx !== -1 && soloIdx !== i)) ? 0 : val;
-            tracks[i].g.gain.setTargetAtTime(target, ctx.currentTime, 0.1);
+            tracks[i].g.gain.setTargetAtTime(isPaused ? 0 : val, ctx.currentTime, 0.1);
             document.getElementById('l' + i).innerText = Math.round(val * 100) + "%";
         }
 
-        function muteTrack(i) { tracks[i].isMuted = !tracks[i].isMuted; document.getElementById('m'+i).classList.toggle('active-mute', tracks[i].isMuted); slide(i, tracks[i].lastVal); }
-        function soloTrack(i) { soloIdx = (soloIdx === i) ? -1 : i; document.querySelectorAll('.s-btn').forEach((b, idx) => b.classList.toggle('active-solo', idx === soloIdx)); tracks.forEach((_, idx) => slide(idx, tracks[idx].lastVal)); }
-        function randomizeTrack(i) { const v = (Math.random() * 0.15 + 0.20).toFixed(2); document.getElementById('v'+i).value = v; slide(i, v); }
-        function randomize() { tracks.forEach((_, i) => randomizeTrack(i)); }
+        function randomize() { tracks.forEach((_, i) => { const v = (Math.random()*0.4 + 0.1).toFixed(2); document.getElementById('v'+i).value = v; slide(i, v); }); }
         function resetAll() { tracks.forEach((_, i) => { document.getElementById('v'+i).value = 0; slide(i, 0); }); }
         function togglePlay() { isPaused = !isPaused; master.gain.setTargetAtTime(isPaused ? 0 : 0.7, ctx.currentTime, 0.2); document.getElementById('pauseBtn').innerText = isPaused ? "RESUME" : "PAUSE ALL"; }
+        function saveLink() { 
+            const params = new URLSearchParams();
+            tracks.forEach((t, i) => params.set(`v${i}`, t.lastVal));
+            navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?${params.toString()}`);
+            alert("Mix link copied!");
+        }
         function handleTimer(sec) { clearInterval(timerInt); timeLeft = parseInt(sec); if(timeLeft > 0) timerInt = setInterval(() => { if(!isPaused) { timeLeft--; updateTimerUI(); if(timeLeft <= 0) { togglePlay(); clearInterval(timerInt); }}}, 1000); updateTimerUI(); }
         function updateTimerUI() { const display = document.getElementById('timerDisplay'); if(timeLeft <= 0) { display.innerText = "--:--"; return; } let h = Math.floor(timeLeft/3600), m = Math.floor((timeLeft%3600)/60), s = timeLeft%60; display.innerText = (h > 0 ? h + ":" : "") + (m < 10 ? '0' : '') + m + ":" + (s < 10 ? '0' : '') + s; }
     </script>
