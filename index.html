@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Frequency Lab | Solfeggio Mixer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solfeggio Player</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <style>
         :root { --panel-bg: #0a0a0a; --chan-bg: #141414; }
@@ -12,193 +12,290 @@
             font-family: 'Inter', -apple-system, sans-serif; 
             text-align: center; margin: 0; min-height: 100vh; 
             display: flex; flex-direction: column; align-items: center; 
+            justify-content: center; overflow-x: auto; 
         }
         
-        .header-container { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 20px; }
-        h1 { font-weight: 200; letter-spacing: 5px; margin: 0; font-size: 1.8rem; }
-        .subtitle { font-size: 0.7rem; letter-spacing: 3px; color: #666; margin: 5px 0 10px 0; text-transform: uppercase; }
-
-        .main-controls { margin: 10px 0 20px 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; width: 95%; max-width: 900px; }
-        #startBtn { background: #ffd60a; color: #000; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; width: 220px; }
-        #pauseBtn { display: none; background: #55a630; color: #fff; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; width: 220px; }
+        h1 { font-weight: 200; letter-spacing: 5px; margin: 20px 0 5px 0; font-size: 2.2rem; }
+        .subtitle { font-size: 0.75rem; letter-spacing: 3px; color: #666; margin-bottom: 25px; text-transform: uppercase; }
         
-        .timer-wrap { display: flex; align-items: center; gap: 10px; background: #111; padding: 8px 18px; border-radius: 50px; border: 1px solid #333; }
-        .btn-utility { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 10px 18px; border-radius: 50px; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: 600; }
+        /* AD GUTTERS */
+        .page-wrapper { display: flex; align-items: flex-start; gap: 20px; padding: 20px; }
+        .ad-sidebar { width: 160px; height: 600px; background: #111; border: 1px dashed #333; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .ad-text { color: #444; font-size: 10px; transform: rotate(-90deg); letter-spacing: 2px; }
 
         .mixer { 
-            display: flex; flex-wrap: nowrap; justify-content: center; gap: 8px; 
-            background: var(--panel-bg); padding: 20px 10px; border-radius: 24px; 
-            border: 1px solid #222; width: auto; max-width: 100%;
+            display: flex; flex-wrap: nowrap; justify-content: center; gap: 10px; 
+            background: var(--panel-bg); padding: 30px 20px; border-radius: 24px; 
+            border: 1px solid #222; width: fit-content; min-width: 1180px; 
             box-shadow: 0 15px 40px rgba(0,0,0,0.9);
         }
-
+        
         .chan { 
             display: flex; flex-direction: column; align-items: center; 
-            flex: 0 0 95px; width: 95px; background: var(--chan-bg); 
-            padding: 12px 0; border-radius: 12px; border: 1px solid #202020; 
-            transition: box-shadow 0.3s ease, border-color 0.3s ease;
+            flex: 0 0 100px; width: 100px; background: var(--chan-bg); 
+            padding: 15px 0; border-radius: 12px; border: 1px solid #202020; 
+            transition: border 0.3s, box-shadow 0.3s; box-sizing: border-box;
         }
-        .hz { font-size: 0.8rem; font-weight: 800; color: var(--clr); }
-        .desc { font-size: 0.5rem; font-weight: 700; height: 44px; color: #b0b0b0; line-height: 1.2; padding: 0 4px; display: flex; align-items: center; justify-content: center; text-align: center; text-transform: uppercase; }
-        input[type=range] { -webkit-appearance: slider-vertical; width: 18px; height: 140px; cursor: pointer; margin-bottom: 12px; }
         
-        .vol-label { font-size: 0.65rem; font-family: monospace; color: #999; margin-bottom: 8px; }
-        .ms-row { display: flex; gap: 4px; }
-        .ms-btn { width: 38px; height: 22px; border-radius: 4px; border: 1px solid #333; background: #1a1a1a; color: #666; font-size: 0.55rem; cursor: pointer; font-weight: 900; }
-        .ms-btn.active-m { background: #ae2012; color: #fff; border-color: #ff4d4d; }
-        .ms-btn.active-s { background: #ffd60a; color: #000; border-color: #fff; }
+        .hz { font-size: 0.82rem; font-weight: 800; margin-bottom: 4px; color: var(--clr); }
+        .desc { font-size: 0.52rem; font-weight: 700; height: 48px; color: #b0b0b0; line-height: 1.3; padding: 0 4px; display: flex; align-items: center; justify-content: center; text-align: center; text-transform: uppercase; }
+        .vol-label { font-size: 0.7rem; font-family: monospace; color: #999; margin-bottom: 6px; font-weight: 600; }
+        input[type=range] { -webkit-appearance: slider-vertical; width: 18px; height: 160px; cursor: pointer; margin-bottom: 12px; }
 
-        .footer-credit { margin: 40px 0; font-size: 0.65rem; color: #444; letter-spacing: 2px; text-transform: uppercase; font-weight: bold; }
+        .btn-row { display: flex; gap: 4px; }
+        .m-btn, .s-btn { width: 44px; height: 22px; border-radius: 4px; border: 1px solid #333; background: #1a1a1a; color: #aaa; font-size: 0.55rem; cursor: pointer; text-transform: uppercase; font-weight: bold; }
+        .m-btn.active-mute { background: #9b2226; color: #fff; border-color: #ff4d4d; }
+        .s-btn.active-solo { background: #ffd60a; color: #000; border-color: #fff; }
 
-        @media (max-width: 768px) {
-            .mixer { flex-direction: column; width: 95%; gap: 12px; padding: 15px; }
-            .chan { flex-direction: row; width: 100%; padding: 15px; justify-content: space-between; }
-            input[type=range] { -webkit-appearance: none; width: 30%; height: 6px; background: #333; margin: 0; }
-        }
+        .main-controls { margin: 35px 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 15px; }
+        
+        #startBtn { background: #ffd60a; color: #000; padding: 16px 45px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.85rem; }
+        #pauseBtn { background: #55a630; color: #fff; padding: 16px 45px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.85rem; display: none; }
+        
+        .timer-wrap { display: flex; align-items: center; gap: 10px; background: #111; padding: 8px 20px; border-radius: 50px; border: 1px solid #333; }
+        .timer-label { font-size: 0.7rem; color: #666; text-transform: uppercase; font-weight: bold; }
+        select { background: transparent; color: #ffd60a; border: none; font-weight: bold; font-family: monospace; cursor: pointer; outline: none; }
+        #timerDisplay { font-family: monospace; color: #55a630; font-size: 0.9rem; min-width: 60px; text-align: left; }
+
+        .btn-utility { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 12px 24px; border-radius: 50px; cursor: pointer; font-size: 0.7rem; text-transform: uppercase; font-weight: 600; }
+        .btn-utility.active-mute-all { background: #9b2226; color: #fff; border-color: #ff4d4d; }
+
+        .btn-save { background: #20c997; color: #000; padding: 12px 24px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.7rem; text-transform: uppercase; font-weight: bold; transition: 0.2s; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); z-index: 1000; }
+        .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #111; padding: 40px; border-radius: 24px; text-align: center; width: 380px; border: 1px solid #222; }
+        .modal-header { color: #ffd60a; font-size: 24px; margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
+        .modal-subtext { color: #888; font-size: 14px; line-height: 1.6; margin-bottom: 25px; }
+        .auth-buttons { display: flex; flex-direction: column; gap: 10px; }
+        .auth-btn { padding: 14px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
+        .g-btn { background: white; color: black; }
+        .fb-btn { background: #1877f2; color: white; }
+        .email-btn { background: #ffd60a; color: black; }
+
+        .footer-credit { position: fixed; bottom: 20px; right: 25px; font-size: 0.65rem; color: #444; letter-spacing: 1px; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-    <div class="header-container">
-        <h1>SOLFEGGIO PLAYER</h1>
-    </div>
+    <h1>SOLFEGGIO PLAYER</h1>
     <div class="subtitle">By Frequency Lab</div>
-
-    <div class="main-controls">
-        <button id="startBtn" onclick="beginSession()">Start Session</button>
-        <button id="pauseBtn" onclick="toggle()">Mute All</button>
-        <div class="timer-wrap">
-            <select id="timerSelect" onchange="setTimer(this.value)">
-                <option value="0">Timer: Off</option>
-                <option value="60">1 Min</option>
-                <option value="1800">30 Min</option>
-                <option value="3600">1 Hr</option>
-                <option value="28800">8 Hr</option>
-            </select>
-            <span id="timerDisplay" style="font-family: monospace; color: #55a630; font-size: 0.85rem;">--:--</span>
-        </div>
-        <button class="btn-utility" onclick="resetFaders()">Reset</button>
-    </div>
     
-    <div class="mixer" id="mixer-ui">
-        <script>
-            const chData = [
-                {hz:"69.3Hz", d:"Resonance Deepener", c:"#4a00e0", g:"rgba(74,0,224,0.5)"},
-                {hz:"174Hz", d:"Relieves Pain", c:"#ffffff", g:"rgba(255,255,255,0.3)"},
-                {hz:"285Hz", d:"Physical Recovery", c:"#9b2226", g:"rgba(155,34,38,0.5)"},
-                {hz:"396Hz", d:"Release Fear", c:"#ae2012", g:"rgba(174,32,18,0.5)"},
-                {hz:"417Hz", d:"Change Cycles", c:"#ca6702", g:"rgba(202,103,2,0.5)"},
-                {hz:"432Hz", d:"Relaxation", c:"#ee9b00", g:"rgba(238,155,0,0.5)"},
-                {hz:"528Hz", d:"DNA Repair", c:"#0a9396", g:"rgba(10,147,150,0.5)"},
-                {hz:"639Hz", d:"Relationships", c:"#005f73", g:"rgba(0,95,115,0.5)"},
-                {hz:"741Hz", d:"Detox Mind", c:"#3e5c76", g:"rgba(62,92,118,0.5)"},
-                {hz:"852Hz", d:"Intuition", c:"#5e548e", g:"rgba(94,84,142,0.5)"},
-                {hz:"963Hz", d:"Consciousness", c:"#9d4edd", g:"rgba(157,78,221,0.5)"}
-            ];
-            chData.forEach((ch, i) => {
-                document.write(`
-                    <div class="chan" id="c${i}" style="--clr:${ch.c}; --glow:${ch.g}">
-                        <div class="hz">${ch.hz}</div>
-                        <div class="desc">${ch.d}</div>
-                        <input type="range" id="v${i}" min="0" max="1" step="0.01" value="0" oninput="slide(${i},this.value)">
-                        <div class="vol-label" id="l${i}">0%</div>
-                        <div class="ms-row">
-                            <button class="ms-btn" id="m${i}" onclick="mute(${i})">M</button>
-                            <button class="ms-btn" id="s${i}" onclick="solo(${i})">S</button>
-                        </div>
-                    </div>
-                `);
-            });
-        </script>
+    <div class="page-wrapper">
+        <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD</span></aside>
+
+        <main>
+            <div class="mixer" id="mixer-ui">
+                <script>
+                    const chData = [
+                        {hz:"69.3Hz", d:"Resonance Deepener", c:"#4a00e0", g:"rgba(74,0,224,0.5)"},
+                        {hz:"174Hz", d:"Relieves Pain and Stress", c:"#ffffff", g:"rgba(255,255,255,0.3)"},
+                        {hz:"285Hz", d:"Accelerates Physical Recovery", c:"#9b2226", g:"rgba(155,34,38,0.5)"},
+                        {hz:"396Hz", d:"Releases Fear and Guilt", c:"#ae2012", g:"rgba(174,32,18,0.5)"},
+                        {hz:"417Hz", d:"Breaks Cycles & Facilitates Change", c:"#ca6702", g:"rgba(202,103,2,0.5)"},
+                        {hz:"432Hz", d:"Physical Relaxation", c:"#ee9b00", g:"rgba(238,155,0,0.5)"},
+                        {hz:"528Hz", d:"Enhances DNA Repair & Transformation", c:"#0a9396", g:"rgba(10,147,150,0.5)"},
+                        {hz:"639Hz", d:"Improves Relationships & Connection", c:"#005f73", g:"rgba(0,95,115,0.5)"},
+                        {hz:"741Hz", d:"Detoxifies the Body and Mind", c:"#3e5c76", g:"rgba(62,92,118,0.5)"},
+                        {hz:"852Hz", d:"Awakens Intuition & Awareness", c:"#5e548e", g:"rgba(94,84,142,0.5)"},
+                        {hz:"963Hz", d:"Connects to Higher Consciousness", c:"#9d4edd", g:"rgba(157,78,221,0.5)"}
+                    ];
+                    chData.forEach((ch, i) => {
+                        document.write(`
+                            <div class="chan" id="c${i}" style="--clr:${ch.c}; --glow:${ch.g}">
+                                <div class="hz">${ch.hz}</div>
+                                <div class="desc">${ch.d}</div>
+                                <div class="vol-label" id="l${i}">0%</div>
+                                <input type="range" id="v${i}" min="0" max="1" step="0.01" value="0" oninput="slide(${i},this.value)">
+                                <div class="btn-row">
+                                    <button class="m-btn" id="m${i}" onclick="muteTrack(${i})">Mute</button>
+                                    <button class="s-btn" id="s${i}" onclick="soloTrack(${i})">Solo</button>
+                                </div>
+                            </div>
+                        `);
+                    });
+                </script>
+            </div>
+
+            <div class="main-controls">
+                <button id="startBtn" onclick="beginSession()">Start Session</button>
+                <button id="pauseBtn" onclick="toggle()">Pause All</button>
+                <div class="timer-wrap">
+                    <span class="timer-label">Timer:</span>
+                    <select id="timerSelect" onchange="setTimer(this.value)">
+                        <option value="0">Disabled</option>
+                        <option value="60">1 Min</option>
+                        <option value="300">5 Min</option>
+                        <option value="600">10 Min</option>
+                        <option value="1800">30 Min</option>
+                        <option value="3600">1 Hr</option>
+                        <option value="7200">2 Hr</option>
+                        <option value="28800">8 Hr</option>
+                    </select>
+                    <span id="timerDisplay">--:--</span>
+                </div>
+                <button id="muteAllBtn" class="btn-utility" onclick="toggleMuteAll()">Mute All</button>
+                <button class="btn-utility" onclick="randomize()">Randomize</button>
+                <button class="btn-utility" onclick="resetFaders()">Reset</button>
+                <button class="btn-save" onclick="openSave()">Save</button>
+            </div>
+        </main>
+
+        <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD</span></aside>
     </div>
 
-    <div class="footer-credit">Created by Keunho Koh</div>
+    <div id="saveModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 class="modal-header">Save Preset</h2>
+            <p class="modal-subtext">Sign in to receive a secure 'Magic Link' via email to restore your custom preset.</p>
+            <div class="auth-buttons">
+                <button class="auth-btn g-btn">Continue with Gmail</button>
+                <button class="auth-btn fb-btn">Continue with Facebook</button>
+                <button class="auth-btn email-btn">Continue with Email</button>
+            </div>
+            <p style="margin-top: 25px; color: #444; cursor: pointer; font-size: 11px; text-transform: uppercase;" onclick="closeSave()">Back to Mixer</p>
+        </div>
+    </div>
+
+    <div class="footer-credit">Created By Keunho Koh</div>
 
     <script>
-        let ctx, master, tracks = [], ready = false, isPaused = false;
-        let timerInterval, timeLeft = 0;
+        const files = ["69.3Hz","174Hz","285Hz","396Hz","417Hz","432Hz","528Hz","639Hz","741Hz","852Hz","963Hz"];
+        let ctx, master, tracks = [], ready = false, isPaused = false, allMuted = false, wasPlayingBeforeSave = false;
+        let timerInterval, timeLeft = 0, soloIdx = -1;
 
         async function beginSession() {
             if (ready) return;
+            const sBtn = document.getElementById('startBtn');
+            sBtn.innerText = "INITIALIZING...";
             ctx = new (window.AudioContext || window.webkitAudioContext)();
-            master = ctx.createGain(); master.gain.setValueAtTime(0, ctx.currentTime);
+            master = ctx.createGain();
+            master.gain.setValueAtTime(0, ctx.currentTime);
             master.connect(ctx.destination);
-            await Promise.all(chData.map(async (ch, i) => {
-                const g = ctx.createGain(); g.gain.setValueAtTime(0, ctx.currentTime); g.connect(master);
-                tracks[i] = { g: g, vol: 0, muted: false, soloed: false };
-                const res = await fetch(ch.hz + ".mp3");
-                const buf = await ctx.decodeAudioData(await res.arrayBuffer());
-                const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;
-                src.connect(g); src.start(0);
-            }));
-            ready = true;
-            master.gain.setTargetAtTime(0.7, ctx.currentTime, 0.2);
-            document.getElementById('startBtn').style.display = "none";
-            document.getElementById('pauseBtn').style.display = "block";
+            await ctx.resume();
+            try {
+                await Promise.all(files.map(async (f, i) => {
+                    const res = await fetch(f + ".mp3"); // Using .mp3 as requested
+                    const buf = await ctx.decodeAudioData(await res.arrayBuffer());
+                    const src = ctx.createBufferSource();
+                    src.buffer = buf; src.loop = true;
+                    const g = ctx.createGain();
+                    g.gain.setValueAtTime(0, ctx.currentTime);
+                    src.connect(g);
+                    src.start(0);
+                    tracks[i] = { g, lastVal: 0, isMuted: false }; 
+                }));
+                ready = true;
+                master.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.5);
+                sBtn.style.display = "none";
+                document.getElementById('pauseBtn').style.display = "block";
+            } catch (err) { sBtn.innerText = "LOAD ERROR"; }
         }
 
         function slide(i, v) {
-            const val = parseFloat(v);
-            tracks[i].vol = val;
-            updateNode(i);
-            document.getElementById('l' + i).innerText = Math.round(val * 100) + "%";
-            const el = document.getElementById('c' + i);
-            el.style.boxShadow = val > 0.05 ? `0 0 ${val * 30}px var(--glow)` : "none";
-            el.style.borderColor = val > 0.05 ? `rgba(255,255,255,${val * 0.4})` : "#202020";
-        }
-
-        function updateNode(i) {
             if (!ready) return;
-            let targetVol = tracks[i].vol;
-            if (tracks[i].muted) targetVol = 0;
-            // Solo logic
-            const anySolo = tracks.some(t => t.soloed);
-            if (anySolo && !tracks[i].soloed) targetVol = 0;
-            
-            tracks[i].g.gain.setTargetAtTime(targetVol * 0.7, ctx.currentTime, 0.05);
+            const val = parseFloat(v);
+            tracks[i].lastVal = val;
+            if (!tracks[i].isMuted && (soloIdx === -1 || soloIdx === i)) {
+                tracks[i].g.gain.setTargetAtTime(val * 0.7, ctx.currentTime, 0.05);
+            }
+            updateUI(i, val);
         }
 
-        function mute(i) {
-            tracks[i].muted = !tracks[i].muted;
-            document.getElementById('m'+i).classList.toggle('active-m');
-            updateNode(i);
+        function soloTrack(idx) {
+            if (!ready) return;
+            const btn = document.getElementById('s' + idx);
+            if (soloIdx === idx) {
+                soloIdx = -1;
+                btn.classList.remove('active-solo');
+                tracks.forEach((t, i) => { if (!t.isMuted) t.g.gain.setTargetAtTime(t.lastVal * 0.7, ctx.currentTime, 0.1); });
+            } else {
+                if(soloIdx !== -1) document.getElementById('s' + soloIdx).classList.remove('active-solo');
+                soloIdx = idx;
+                btn.classList.add('active-solo');
+                tracks.forEach((t, i) => {
+                    const target = (i === idx && !t.isMuted) ? t.lastVal * 0.7 : 0;
+                    t.g.gain.setTargetAtTime(target, ctx.currentTime, 0.1);
+                });
+            }
         }
 
-        function solo(i) {
-            tracks[i].soloed = !tracks[i].soloed;
-            document.getElementById('s'+i).classList.toggle('active-s');
-            tracks.forEach((_, idx) => updateNode(idx));
+        function muteTrack(i, forceState = null) {
+            if (!ready) return;
+            const t = tracks[i];
+            t.isMuted = (forceState !== null) ? forceState : !t.isMuted;
+            document.getElementById('m' + i).classList.toggle('active-mute', t.isMuted);
+            document.getElementById('m' + i).innerText = t.isMuted ? "OFF" : "MUTE";
+            const target = (t.isMuted || (soloIdx !== -1 && soloIdx !== i)) ? 0 : t.lastVal * 0.7;
+            t.g.gain.setTargetAtTime(target, ctx.currentTime, 0.1);
+        }
+
+        function toggleMuteAll() {
+            if (!ready) return;
+            allMuted = !allMuted;
+            const btn = document.getElementById('muteAllBtn');
+            btn.innerText = allMuted ? "Unmute All" : "Mute All";
+            btn.classList.toggle('active-mute-all', allMuted);
+            tracks.forEach((_, i) => muteTrack(i, allMuted));
         }
 
         function toggle() {
-            if (!ready) return; isPaused = !isPaused;
-            master.gain.setTargetAtTime(isPaused ? 0 : 0.7, ctx.currentTime, 0.1);
-            document.getElementById('pauseBtn').innerText = isPaused ? "Resume All" : "Mute All";
+            if (!ready) return;
+            isPaused = !isPaused;
+            master.gain.setTargetAtTime(isPaused ? 0 : 0.6, ctx.currentTime, 0.2);
+            document.getElementById('pauseBtn').innerText = isPaused ? "RESUME ALL" : "PAUSE ALL";
+            document.getElementById('pauseBtn').style.background = isPaused ? "#222" : "#55a630";
         }
 
-        function resetFaders() {
-            tracks.forEach((t, i) => {
-                document.getElementById('v'+i).value = 0;
-                t.muted = false; t.soloed = false;
-                document.getElementById('m'+i).classList.remove('active-m');
-                document.getElementById('s'+i).classList.remove('active-s');
-                slide(i, 0);
-            });
+        function openSave() {
+            if (ready && !isPaused) { toggle(); wasPlayingBeforeSave = true; }
+            document.getElementById('saveModal').style.display = 'block';
+        }
+
+        function closeSave() {
+            document.getElementById('saveModal').style.display = 'none';
+            if (wasPlayingBeforeSave && isPaused) { toggle(); wasPlayingBeforeSave = false; }
         }
 
         function setTimer(seconds) {
             clearInterval(timerInterval);
             timeLeft = parseInt(seconds);
-            if (timeLeft > 0) {
-                timerInterval = setInterval(() => {
-                    if (!isPaused && timeLeft > 0) {
-                        timeLeft--;
-                        const m = Math.floor(timeLeft / 60); const s = timeLeft % 60;
-                        document.getElementById('timerDisplay').innerText = m + ":" + (s < 10 ? '0' : '') + s;
-                    }
-                    if (timeLeft <= 0) { clearInterval(timerInterval); if (!isPaused) toggle(); }
-                }, 1000);
-            }
+            if (timeLeft > 0) startCountdown();
+            else document.getElementById('timerDisplay').innerText = "--:--";
+        }
+
+        function startCountdown() {
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                if (!isPaused && timeLeft > 0) { timeLeft--; updateTimerDisplay(); }
+                if (timeLeft <= 0) { clearInterval(timerInterval); if (!isPaused) toggle(); }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const h = Math.floor(timeLeft / 3600), m = Math.floor((timeLeft % 3600) / 60), s = timeLeft % 60;
+            document.getElementById('timerDisplay').innerText = `${h > 0 ? h + ':' : ''}${m < 10 && h > 0 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+
+        function updateUI(i, val) {
+            document.getElementById('l' + i).innerText = Math.round(val * 100) + "%";
+            const el = document.getElementById('c' + i);
+            el.style.boxShadow = val > 0.01 ? `0 0 ${val * 45}px var(--glow)` : "none";
+            el.style.borderColor = val > 0.01 ? `rgba(255,255,255,${val * 0.6})` : "#202020";
+        }
+
+        function randomize() {
+            if (!ready) return;
+            tracks.forEach((_, i) => {
+                const v = (Math.random() * 0.4 + 0.1).toFixed(2);
+                document.getElementById('v'+i).value = v;
+                muteTrack(i, false); slide(i, v);
+            });
+        }
+
+        function resetFaders() {
+            if(!ready) return;
+            tracks.forEach((_, i) => { document.getElementById('v'+i).value = 0; muteTrack(i, false); slide(i, 0); });
+            soloIdx = -1; document.querySelectorAll('.s-btn').forEach(b => b.classList.remove('active-solo'));
         }
     </script>
 </body>
