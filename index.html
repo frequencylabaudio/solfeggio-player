@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solfeggio Player | Frequency Lab</title>
     <style>
         :root { 
@@ -14,14 +14,16 @@
             margin: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; 
         }
         
-        /* Header & Layout */
-        .header-container { text-align: center; margin: 30px 0; width: 100%; }
-        h1 { font-weight: 200; letter-spacing: 10px; margin: 0; font-size: 2.2rem; text-transform: uppercase; }
-        .subtitle { font-size: 0.7rem; letter-spacing: 5px; color: var(--text-dim); margin-top: 8px; text-transform: uppercase; }
+        /* Fixed Header */
+        .header-container { text-align: center; margin: 40px 0; width: 100%; }
+        h1 { font-weight: 200; letter-spacing: 12px; margin: 0; font-size: 2.5rem; text-transform: uppercase; }
+        .subtitle { font-size: 0.8rem; letter-spacing: 6px; color: var(--text-dim); margin-top: 10px; text-transform: uppercase; }
 
+        /* Desktop Layout with Wide Spacing */
         .page-wrapper { 
             display: flex; align-items: center; justify-content: center; 
-            width: 100%; max-width: 1600px; padding: 20px; box-sizing: border-box; gap: 80px; 
+            width: 100%; max-width: 1800px; padding: 40px; box-sizing: border-box; 
+            gap: 100px; /* Restoring the wide gap for ads */
         }
         
         .ad-sidebar { 
@@ -30,39 +32,32 @@
         }
         .ad-text { color: #222; font-size: 11px; transform: rotate(-90deg); letter-spacing: 4px; font-weight: bold; text-transform: uppercase; }
 
-        /* Mixer UI */
+        /* Consistent Mixer UI */
         .mixer { 
-            display: flex; gap: 12px; background: var(--panel-bg); padding: 35px 25px; 
-            border-radius: 32px; border: 1px solid #1a1a1a; box-shadow: 0 40px 100px rgba(0,0,0,0.8);
-            width: fit-content; max-width: 100%; overflow-x: auto;
+            display: flex; gap: 15px; background: var(--panel-bg); padding: 40px 30px; 
+            border-radius: 32px; border: 1px solid #1a1a1a; box-shadow: 0 50px 100px rgba(0,0,0,0.9);
         }
 
         .chan { 
-            display: flex; flex-direction: column; align-items: center; width: 105px; 
-            background: var(--chan-bg); padding: 25px 0; border-radius: 20px; border: 1px solid var(--border); 
+            display: flex; flex-direction: column; align-items: center; width: 110px; 
+            background: var(--chan-bg); padding: 30px 0; border-radius: 24px; border: 1px solid var(--border); 
         }
-        .hz { font-size: 0.9rem; font-weight: 900; color: var(--clr); margin-bottom: 5px; }
-        .desc { font-size: 0.55rem; font-weight: 700; height: 40px; color: #777; line-height: 1.2; padding: 0 10px; text-align: center; text-transform: uppercase; }
+        .hz { font-size: 1rem; font-weight: 900; color: var(--clr); margin-bottom: 8px; }
+        .desc { font-size: 0.6rem; font-weight: 700; height: 45px; color: #888; line-height: 1.3; padding: 0 12px; text-align: center; text-transform: uppercase; }
         
-        input[type=range] { -webkit-appearance: slider-vertical; width: 20px; height: 220px; cursor: pointer; margin: 20px 0; }
+        /* Fader Styling */
+        input[type=range] { -webkit-appearance: slider-vertical; width: 22px; height: 240px; cursor: pointer; margin: 20px 0; }
 
-        /* Controls */
-        .main-controls { margin: 45px 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 15px; }
-        #startBtn, #pauseBtn { background: var(--accent); color: #fff; padding: 18px 60px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; font-size: 1.1rem; }
+        /* Main Control Buttons */
+        .main-controls { margin-top: 50px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 20px; }
+        #startBtn, #pauseBtn { background: var(--accent); color: #fff; padding: 20px 70px; border-radius: 60px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; font-size: 1.2rem; }
         
-        .timer-wrap { display: flex; align-items: center; background: #111; padding: 8px 20px; border-radius: 50px; border: 1px solid #222; }
-        .timer-select { background: transparent; color: #fff; border: none; font-weight: bold; font-size: 0.85rem; cursor: pointer; outline: none; }
-        #timerDisplay { color: #ffd60a; font-family: monospace; font-size: 1rem; margin-left: 12px; border-left: 1px solid #333; padding-left: 12px; min-width: 55px; }
+        .timer-wrap { display: flex; align-items: center; background: #111; padding: 10px 25px; border-radius: 60px; border: 1px solid #222; }
+        .timer-select { background: transparent; color: #fff; border: none; font-weight: bold; font-size: 0.9rem; cursor: pointer; outline: none; }
+        #timerDisplay { color: #ffd60a; font-family: monospace; font-size: 1.1rem; margin-left: 15px; border-left: 1px solid #333; padding-left: 15px; min-width: 60px; }
 
-        .ctrl-btn { background: #1a1a1a; color: #aaa; border: 1px solid #333; padding: 14px 28px; border-radius: 50px; cursor: pointer; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
-        .save-btn { background: var(--save-btn); color: #000; border: none; padding: 14px 35px; border-radius: 50px; font-weight: 900; cursor: pointer; text-transform: uppercase; }
-
-        @media (max-width: 768px) {
-            .ad-sidebar { display: none; }
-            .mixer { flex-direction: column; width: 100%; }
-            .chan { flex-direction: row; width: 100%; padding: 10px 20px; height: 80px; justify-content: space-between; }
-            input[type=range] { -webkit-appearance: none; height: 8px; width: 40%; background: #222; }
-        }
+        .ctrl-btn { background: #1a1a1a; color: #aaa; border: 1px solid #333; padding: 15px 30px; border-radius: 60px; cursor: pointer; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; }
+        .save-btn { background: var(--save-btn); color: #000; border: none; padding: 15px 40px; border-radius: 60px; font-weight: 900; cursor: pointer; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -92,7 +87,7 @@
                                 <div class="hz">${ch.hz}</div>
                                 <div class="desc">${ch.d}</div>
                                 <input type="range" id="v${i}" min="0" max="1" step="0.01" value="0.30" oninput="slide(${i},this.value)">
-                                <div id="l${i}" style="font-size:0.75rem; color:#444;">30%</div>
+                                <div id="l${i}" style="font-size:0.8rem; color:#444; margin-top:5px;">30%</div>
                             </div>
                         `);
                     });
@@ -125,51 +120,99 @@
         const fileNames = ["69.3Hz","174Hz","285Hz","396Hz","417Hz","432Hz","528Hz","639Hz","741Hz","852Hz","963Hz"];
 
         async function loadTrack(name, index) {
-            const res = await fetch(`./${name}.mp3`);
-            const buf = await res.arrayBuffer();
-            const audioBuf = await ctx.decodeAudioData(buf);
-            const src = ctx.createBufferSource();
-            src.buffer = audioBuf; src.loop = true;
-            const gn = ctx.createGain(); gn.gain.setValueAtTime(0, ctx.currentTime);
-            src.connect(gn); gn.connect(master); src.start(0);
-            tracks[index] = { g: gn, lastVal: 0.30 }; // Consistent default
+            try {
+                const res = await fetch(`./${name}.mp3`);
+                if(!res.ok) throw new Error("Missing File");
+                const buf = await res.arrayBuffer();
+                const audioBuf = await ctx.decodeAudioData(buf);
+                const src = ctx.createBufferSource();
+                src.buffer = audioBuf; src.loop = true;
+                const gn = ctx.createGain(); 
+                // Set default volume to 0.30 immediately
+                gn.gain.setValueAtTime(0, ctx.currentTime);
+                src.connect(gn); gn.connect(master); src.start(0);
+                tracks[index] = { g: gn, lastVal: 0.30 };
+            } catch (e) {
+                console.error("Failed to load:", name);
+            }
         }
 
         async function beginSession() {
             if (ready) return;
             ctx = new (window.AudioContext || window.webkitAudioContext)();
             if (ctx.state === 'suspended') await ctx.resume();
-            master = ctx.createGain(); master.gain.setValueAtTime(0.7, ctx.currentTime); master.connect(ctx.destination);
+            master = ctx.createGain(); 
+            master.gain.setValueAtTime(0.7, ctx.currentTime); 
+            master.connect(ctx.destination);
             
             document.getElementById('startBtn').innerText = "LOADING...";
+            
+            // Load all MP3 files in parallel for speed
             await Promise.all(fileNames.map((name, i) => loadTrack(name, i)));
 
             ready = true;
             document.getElementById('startBtn').style.display = "none";
             document.getElementById('pauseBtn').style.display = "block";
             
-            // Set all tracks to 30% immediately on start
-            tracks.forEach((_, i) => slide(i, 0.30));
+            // Apply consistent 30% volume to all loaded tracks
+            tracks.forEach((t, i) => { if(t) slide(i, 0.30); });
         }
 
         function slide(i, v) {
             const val = parseFloat(v); if(!tracks[i]) return;
             tracks[i].lastVal = val;
+            // Ramp gain over 0.1s to avoid pops/clicks
             tracks[i].g.gain.setTargetAtTime(isPaused ? 0 : val, ctx.currentTime, 0.1);
             document.getElementById('l' + i).innerText = Math.round(val * 100) + "%";
         }
 
-        function randomize() { tracks.forEach((_, i) => { const v = (Math.random()*0.4 + 0.1).toFixed(2); document.getElementById('v'+i).value = v; slide(i, v); }); }
-        function resetAll() { tracks.forEach((_, i) => { document.getElementById('v'+i).value = 0; slide(i, 0); }); }
-        function togglePlay() { isPaused = !isPaused; master.gain.setTargetAtTime(isPaused ? 0 : 0.7, ctx.currentTime, 0.2); document.getElementById('pauseBtn').innerText = isPaused ? "RESUME" : "PAUSE ALL"; }
+        function randomize() { 
+            tracks.forEach((_, i) => { 
+                const v = (Math.random()*0.4 + 0.1).toFixed(2); 
+                document.getElementById('v'+i).value = v; 
+                slide(i, v); 
+            }); 
+        }
+
+        function resetAll() { 
+            tracks.forEach((_, i) => { 
+                document.getElementById('v'+i).value = 0; 
+                slide(i, 0); 
+            }); 
+        }
+
+        function togglePlay() { 
+            isPaused = !isPaused; 
+            master.gain.setTargetAtTime(isPaused ? 0 : 0.7, ctx.currentTime, 0.2); 
+            document.getElementById('pauseBtn').innerText = isPaused ? "RESUME" : "PAUSE ALL"; 
+        }
+
         function saveLink() { 
             const params = new URLSearchParams();
             tracks.forEach((t, i) => params.set(`v${i}`, t.lastVal));
             navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?${params.toString()}`);
-            alert("Mix link copied!");
+            alert("Mix link copied to clipboard!");
         }
-        function handleTimer(sec) { clearInterval(timerInt); timeLeft = parseInt(sec); if(timeLeft > 0) timerInt = setInterval(() => { if(!isPaused) { timeLeft--; updateTimerUI(); if(timeLeft <= 0) { togglePlay(); clearInterval(timerInt); }}}, 1000); updateTimerUI(); }
-        function updateTimerUI() { const display = document.getElementById('timerDisplay'); if(timeLeft <= 0) { display.innerText = "--:--"; return; } let h = Math.floor(timeLeft/3600), m = Math.floor((timeLeft%3600)/60), s = timeLeft%60; display.innerText = (h > 0 ? h + ":" : "") + (m < 10 ? '0' : '') + m + ":" + (s < 10 ? '0' : '') + s; }
+
+        function handleTimer(sec) { 
+            clearInterval(timerInt); 
+            timeLeft = parseInt(sec); 
+            if(timeLeft > 0) timerInt = setInterval(() => { 
+                if(!isPaused) { 
+                    timeLeft--; 
+                    updateTimerUI(); 
+                    if(timeLeft <= 0) { togglePlay(); clearInterval(timerInt); }
+                }
+            }, 1000); 
+            updateTimerUI(); 
+        }
+
+        function updateTimerUI() { 
+            const display = document.getElementById('timerDisplay'); 
+            if(timeLeft <= 0) { display.innerText = "--:--"; return; } 
+            let h = Math.floor(timeLeft/3600), m = Math.floor((timeLeft%3600)/60), s = timeLeft%60; 
+            display.innerText = (h > 0 ? h + ":" : "") + (m < 10 ? '0' : '') + m + ":" + (s < 10 ? '0' : '') + s; 
+        }
     </script>
 </body>
 </html>
