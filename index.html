@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Solfeggio Player | Frequency Lab</title>
     <link rel="icon" type="image/png" href="favicon.png">
     
@@ -139,7 +139,7 @@
         .btn-share-main { background: #007bff; color: #fff; padding: 10px 24px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
 
         /* MODAL STYLES */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); backdrop-filter: blur(10px); z-index: 1000; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); backdrop-filter: blur(10px); z-index: 2000; }
         .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f0f; padding: 40px; border-radius: 32px; text-align: center; width: 420px; max-width: 90vw; border: 1px solid #222; box-shadow: 0 20px 60px rgba(0,0,0,0.8); box-sizing: border-box; }
         .modal-header { color: var(--start-yellow); font-size: 24px; margin-bottom: 20px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
         .modal-subtext { color: #ccc; font-size: 13px; line-height: 1.6; margin-bottom: 25px; text-align: center; }
@@ -155,23 +155,120 @@
         .send-btn { background: var(--start-yellow); color: #000; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
 
         .back-btn { margin-top: 25px; color: #666; cursor: pointer; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; transition: 0.2s; }
-        .footer-credit { position: fixed; bottom: 15px; right: 15px; font-size: 0.65rem; color: #333; letter-spacing: 1px; text-transform: uppercase; z-index: 1; }
+        .footer-credit { position: fixed; bottom: 15px; right: 15px; font-size: 0.65rem; color: #333; letter-spacing: 1px; text-transform: uppercase; z-index: 1001; }
+
+        /* MOBILE VERTICAL STYLES (PORTRAIT) */
+        @media (max-width: 768px) {
+            body { height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+            
+            /* Pin Top Frame */
+            .mobile-top-frame { 
+                flex-shrink: 0; width: 100%; background: #050505; z-index: 100; padding-bottom: 10px;
+                border-bottom: 1px solid #1a1a1a;
+            }
+            .title-container { margin-top: 10px; }
+            .subtitle { margin-bottom: 10px; }
+
+            .page-wrapper { 
+                display: flex; flex-direction: column; padding: 0; gap: 0; height: 100%; overflow: hidden;
+            }
+
+            /* Ad Row Logic */
+            .ad-sidebar-stack { 
+                flex-direction: row; width: 100%; height: auto; justify-content: center; gap: 10px; padding: 10px 0;
+            }
+            .ad-box { width: 45%; height: 60px; }
+            .ad-text { transform: none; font-size: 8px; }
+
+            /* Fixed Top Controls Grid */
+            .main-controls { 
+                display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 15px; 
+                margin-top: 10px;
+            }
+            #startBtn, #pauseBtn { grid-column: span 2; padding: 12px; }
+            .timer-wrap { grid-column: span 1; justify-content: center; }
+            #muteAllBtn { grid-column: span 1; }
+
+            /* Middle Scrollable Zone */
+            main { flex-grow: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+            .scroll-container { padding-bottom: 0; overflow: visible; }
+            .mixer-unit { min-width: 100%; padding: 10px 0; }
+            .mixer { 
+                flex-direction: column; width: 92%; margin: 0 auto; gap: 12px; background: transparent; border: none; box-shadow: none; padding: 0;
+            }
+
+            /* Fader Card Refinement */
+            .chan { 
+                flex-direction: row; width: 100%; flex: none; height: auto; padding: 15px; 
+                justify-content: space-between; align-items: center; border-radius: 16px;
+                border: 1px solid #222;
+            }
+            .chan-info { text-align: left; flex: 1; }
+            .hz { margin-bottom: 2px; }
+            .desc { height: auto; text-align: left; justify-content: flex-start; padding: 0; font-size: 0.6rem; }
+            
+            input[type=range] { 
+                -webkit-appearance: none; width: 120px; height: 4px; background: #333; 
+                margin: 0 15px; border-radius: 10px;
+            }
+            input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: #fff; border-radius: 50%; }
+
+            .btn-row { flex-direction: column; gap: 5px; }
+            .vol-label { margin-bottom: 0; font-size: 0.7rem; width: 35px; text-align: right; }
+
+            /* Pin Bottom Frame */
+            .mobile-bottom-frame { 
+                flex-shrink: 0; width: 100%; background: #050505; z-index: 100;
+                border-top: 1px solid #1a1a1a; padding-bottom: 30px;
+            }
+            .bottom-action-row { display: flex; gap: 10px; padding: 10px 15px; }
+            .btn-save, .btn-share-main { flex: 1; padding: 14px; font-size: 0.75rem; }
+            
+            .footer-credit { position: relative; bottom: 0; right: 10px; text-align: right; margin-top: 5px; font-size: 0.55rem; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="title-container">
-        <h1>SOLFEGGIO PLAYER</h1>
-        <div class="info-icon">i</div>
-    </div>
-    <div class="subtitle">By Frequency Lab</div>
-    
-    <div class="page-wrapper">
-        <div class="ad-sidebar-stack">
+    <div class="mobile-top-frame">
+        <div class="title-container">
+            <h1>SOLFEGGIO PLAYER</h1>
+            <div class="info-icon">i</div>
+        </div>
+        <div class="subtitle">By Frequency Lab</div>
+        
+        <div class="ad-sidebar-stack top-ads">
             <aside class="ad-box"><span class="ad-text">AD UNIT 1</span></aside>
             <aside class="ad-box"><span class="ad-text">AD UNIT 2</span></aside>
         </div>
-        
+
+        <div class="main-controls top-controls">
+            <button id="startBtn" onclick="beginSession()">Start Session</button>
+            <button id="pauseBtn" onclick="toggle()">Pause All</button>
+            <div class="timer-wrap">
+                <span class="timer-label">Timer:</span>
+                <select id="timerSelect" onchange="setTimer(this.value)">
+                    <option value="0">Disabled</option>
+                    <option value="60">1 Min</option>
+                    <option value="300">5 Min</option>
+                    <option value="600">10 Min</option>
+                    <option value="900">15 Min</option>
+                    <option value="1200">20 Min</option>
+                    <option value="1800">30 Min</option>
+                    <option value="3600">1 Hr</option>
+                    <option value="7200">2 Hr</option>
+                    <option value="14400">4 Hr</option>
+                    <option value="28800">8 Hr</option>
+                </select>
+                <span id="timerDisplay">--:--</span>
+            </div>
+            <button id="muteAllBtn" class="btn-utility" onclick="toggleMuteAll()">Mute All</button>
+            <button class="btn-utility" onclick="randomize()">Randomize</button>
+            <button class="btn-utility" onclick="resetFaders()">Reset</button>
+        </div>
+    </div>
+    
+    <div class="page-wrapper">
         <main>
             <div class="scroll-container">
                 <div class="mixer-unit">
@@ -193,73 +290,51 @@
                             chData.forEach((ch, i) => {
                                 document.write(`
                                     <div class="chan" id="c${i}" style="--clr:${ch.c}; --glow:${ch.g}">
-                                        <div class="hz">${ch.hz}</div>
-                                        <div class="desc">${ch.d}</div>
-                                        <div class="vol-label" id="l${i}">0%</div>
+                                        <div class="chan-info">
+                                            <div class="hz">${ch.hz}</div>
+                                            <div class="desc">${ch.d}</div>
+                                        </div>
                                         <input type="range" id="v${i}" min="0" max="1" step="0.01" value="0" oninput="slide(${i},this.value)">
+                                        <div class="vol-label" id="l${i}">0%</div>
                                         <div class="btn-row">
-                                            <button class="m-btn" id="m${i}" onclick="muteTrack(${i})">Mute</button>
-                                            <button class="s-btn" id="s${i}" onclick="soloTrack(${i})">Solo</button>
+                                            <button class="m-btn" id="m${i}" onclick="muteTrack(${i})">M</button>
+                                            <button class="s-btn" id="s${i}" onclick="soloTrack(${i})">S</button>
                                         </div>
                                     </div>
                                 `);
                             });
                         </script>
                     </div>
-
-                    <div class="main-controls">
-                        <button id="startBtn" onclick="beginSession()">Start Session</button>
-                        <button id="pauseBtn" onclick="toggle()">Pause All</button>
-                        <div class="timer-wrap">
-                            <span class="timer-label">Timer:</span>
-                            <select id="timerSelect" onchange="setTimer(this.value)">
-                                <option value="0">Disabled</option>
-                                <option value="60">1 Min</option>
-                                <option value="300">5 Min</option>
-                                <option value="600">10 Min</option>
-                                <option value="900">15 Min</option>
-                                <option value="1200">20 Min</option>
-                                <option value="1800">30 Min</option>
-                                <option value="3600">1 Hr</option>
-                                <option value="7200">2 Hr</option>
-                                <option value="14400">4 Hr</option>
-                                <option value="28800">8 Hr</option>
-                            </select>
-                            <span id="timerDisplay">--:--</span>
-                        </div>
-                        <button id="muteAllBtn" class="btn-utility" onclick="toggleMuteAll()">Mute All</button>
-                        <button class="btn-utility" onclick="randomize()">Randomize</button>
-                        <button class="btn-utility" onclick="resetFaders()">Reset</button>
-                        <button class="btn-save" onclick="openSaveModal()">Save</button>
-                        <button class="btn-share-main" onclick="openShareModal()">Share</button>
-                    </div>
                 </div>
             </div>
         </main>
+    </div>
 
-        <div class="ad-sidebar-stack">
+    <div class="mobile-bottom-frame">
+        <div class="bottom-action-row">
+            <button class="btn-save" onclick="openSaveModal()">Save</button>
+            <button class="btn-share-main" onclick="openShareModal()">Share</button>
+        </div>
+        <div class="ad-sidebar-stack bottom-ads">
             <aside class="ad-box"><span class="ad-text">AD UNIT 3</span></aside>
             <aside class="ad-box"><span class="ad-text">AD UNIT 4</span></aside>
         </div>
+        <div class="footer-credit">Created By Keunho Koh</div>
     </div>
-    <div class="footer-credit">Created By Keunho Koh</div>
 
     <div id="saveModal" class="modal-overlay" onclick="closeSaveModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <h2 class="modal-header">SAVE</h2>
-            <p class="modal-subtext">Share your custom preset via Gmail or Email. Audio will resume once closed.</p>
-            
+            <p class="modal-subtext">Share your custom preset via Gmail or Email. Audio will pause and resume once closed.</p>
             <div id="mainAuthButtons" class="auth-buttons">
                 <button class="auth-btn g-btn" onclick="handleAuth('Gmail')">GMAIL</button>
                 <button class="auth-btn email-btn" onclick="showEmailInput()">EMAIL</button>
             </div>
-
             <div id="emailInputArea">
                 <input type="email" id="userEmail" class="modal-input" placeholder="Enter your email address">
                 <button class="send-btn" onclick="sendMagicLink()">SEND MAGIC LINK</button>
                 <div class="back-btn" onclick="hideEmailInput()">← Back</div>
             </div>
-
             <div class="back-btn" onclick="closeSaveModal()">CLOSE</div>
         </div>
     </div>
@@ -294,33 +369,30 @@
 
         for(let i=0; i<11; i++) { tracks[i] = { lastVal: 0, isMuted: false, g: null }; }
 
+        const isMobile = () => window.innerWidth <= 768;
+
         // --- 3. CORE MIXER FUNCTIONS ---
+        window.onload = loadPresetFromUrl;
+
         function loadPresetFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
             const presetData = urlParams.get('preset');
             if (!presetData) return;
             const channelStrings = presetData.split(',');
-            
             channelStrings.forEach((str, i) => {
-                const parts = str.split('-'); // Format: Vol-Mute-Solo (e.g., 25-1-0)
+                const parts = str.split('-'); 
                 let val = (parts[0] !== undefined) ? parseFloat(parts[0]) / 100 : 0;
                 let muted = parts[1] === "1";
                 let soloed = parts[2] === "1";
-
                 tracks[i].lastVal = val;
                 tracks[i].isMuted = muted;
                 if(soloed) soloIdx = i;
-
                 const inputEl = document.getElementById('v' + i);
                 if(inputEl) inputEl.value = val;
-                
-                // Update button visuals
                 const mBtn = document.getElementById('m' + i);
                 if(mBtn) mBtn.classList.toggle('active-mute', muted);
-                
                 const sBtn = document.getElementById('s' + i);
                 if(sBtn) sBtn.classList.toggle('active-solo', soloed);
-
                 updateUI(i, val);
             });
         }
@@ -329,8 +401,6 @@
             if (ready) return;
             const sBtn = document.getElementById('startBtn');
             const pBtn = document.getElementById('pauseBtn');
-            
-            // Only set default 25% if no preset was loaded
             const urlParams = new URLSearchParams(window.location.search);
             if (!urlParams.get('preset')) {
                 tracks.forEach((t, i) => {
@@ -340,14 +410,12 @@
                     updateUI(i, 0.25);
                 });
             }
-
             sBtn.innerText = "INITIALIZING...";
             ctx = new (window.AudioContext || window.webkitAudioContext)();
             master = ctx.createGain();
             master.gain.setValueAtTime(0, ctx.currentTime);
             master.connect(ctx.destination);
             await ctx.resume();
-            
             try {
                 await Promise.all(audioFiles.map(async (f, i) => {
                     const g = ctx.createGain();
@@ -378,12 +446,38 @@
             tracks[i].lastVal = val;
             if (ready && tracks[i].g) {
                 let target = (tracks[i].isMuted || (soloIdx !== -1 && soloIdx !== i)) ? 0 : val * 0.7;
-                tracks[i].g.gain.setTargetAtTime(target, ctx.currentTime, 0.05);
+                // MOBILE FIX: Use a slightly longer ramp time (0.1) to eliminate "static/distortion" buzzing
+                const rampTime = isMobile() ? 0.1 : 0.05;
+                tracks[i].g.gain.setTargetAtTime(target, ctx.currentTime, rampTime);
             }
             updateUI(i, val);
         }
 
-        // --- 4. MODAL & SHARE LOGIC ---
+        function toggle() {
+            if (!ready) return; isPaused = !isPaused;
+            master.gain.setTargetAtTime(isPaused ? 0 : 0.6, ctx.currentTime, 0.2);
+            document.getElementById('pauseBtn').innerText = isPaused ? "RESUME ALL" : "PAUSE ALL";
+            document.getElementById('pauseBtn').style.background = isPaused ? "#222" : "#55a630";
+        }
+
+        function updateUI(i, val) {
+            const label = document.getElementById('l' + i);
+            if(label) label.innerText = Math.round(val * 100) + "%";
+            const el = document.getElementById('c' + i);
+            if(el) {
+                if (val > 0.01) {
+                    const glowColor = el.style.getPropertyValue('--glow');
+                    const neonBase = el.style.getPropertyValue('--clr');
+                    el.style.boxShadow = `inset 0 0 ${val * 20}px ${glowColor}, 0 0 ${val * 10}px ${glowColor}`;
+                    el.style.borderColor = neonBase;
+                } else {
+                    el.style.boxShadow = "none";
+                    el.style.borderColor = "#202020";
+                }
+            }
+        }
+
+        // --- 4. MODAL & SHARE LOGIC (STRICT ADHERENCE TO PRESETS) ---
         function openSaveModal() { 
             if (ready && !isPaused) { 
                 toggle(); 
@@ -401,16 +495,10 @@
             }
         }
 
-        function openShareModal() {
-            document.getElementById('shareModal').style.display = 'block';
-        }
-
-        function closeShareModal() {
-            document.getElementById('shareModal').style.display = 'none';
-        }
+        function openShareModal() { document.getElementById('shareModal').style.display = 'block'; }
+        function closeShareModal() { document.getElementById('shareModal').style.display = 'none'; }
 
         function generatePresetString() {
-            // Converts track data into "Vol-Mute-Solo" encoded segments
             return tracks.map((t, i) => {
                 const vol = Math.round(t.lastVal * 100);
                 const m = t.isMuted ? 1 : 0;
@@ -422,13 +510,7 @@
         function copyPresetLink() {
             const presetData = generatePresetString();
             const presetLink = `${window.location.origin}${window.location.pathname}?preset=${presetData}`;
-            const dummy = document.createElement('input');
-            document.body.appendChild(dummy);
-            dummy.value = presetLink;
-            dummy.select();
-            document.execCommand('copy');
-            document.body.removeChild(dummy);
-            alert("Full preset link (including Mute/Solo) copied!");
+            navigator.clipboard.writeText(presetLink).then(() => alert("Preset link copied!"));
         }
 
         async function handleAuth(platform) {
@@ -455,30 +537,12 @@
                     to: userEmail,
                     message: {
                         subject: 'Your Sacred Soundscape is Ready ✨',
-                        html: `
-                            <p>Welcome back to your resonance.</p>
-                            <p>Your perfect balance of Solfeggio frequencies is ready for your next session. No need to re-adjust your faders or toggle your mutes—we’ve remembered everything for you.</p>
-                            <p><strong><a href="${presetLink}">[Open Your Soundscape]</a></strong></p>
-                            <p>May this soundscape bring you the peace and clarity you seek today.</p>
-                            <p>Much Love by Frequency Lab</p>
-                        `
+                        html: `<p>Your perfect balance is ready: <strong><a href="${presetLink}">[Open Your Soundscape]</a></strong></p>`
                     }
                 });
-                alert("Mix saved successfully! Check " + userEmail + " for your link.");
+                alert("Mix saved successfully! Check " + userEmail);
                 closeSaveModal();
             } catch (e) { alert("Save failed: " + e.message); }
-        }
-
-        function sendMagicLink() {
-            const email = document.getElementById('userEmail').value;
-            const actionCodeSettings = { url: window.location.href, handleCodeInApp: true };
-            auth.sendSignInLinkToEmail(email, actionCodeSettings)
-                .then(() => {
-                    window.localStorage.setItem('emailForSignIn', email);
-                    alert('Magic link sent to ' + email);
-                    closeSaveModal();
-                })
-                .catch(err => alert(err.message));
         }
 
         function showEmailInput() {
@@ -492,32 +556,6 @@
         }
 
         // --- 5. UTILITY LOGIC ---
-        window.onload = loadPresetFromUrl;
-
-        function updateUI(i, val) {
-            const label = document.getElementById('l' + i);
-            if(label) label.innerText = Math.round(val * 100) + "%";
-            const el = document.getElementById('c' + i);
-            if(el) {
-                if (val > 0.01) {
-                    const glowColor = el.style.getPropertyValue('--glow');
-                    const neonBase = el.style.getPropertyValue('--clr');
-                    el.style.boxShadow = `inset 0 0 ${val * 20}px ${glowColor}, 0 0 ${val * 10}px ${glowColor}`;
-                    el.style.borderColor = neonBase;
-                } else {
-                    el.style.boxShadow = "none";
-                    el.style.borderColor = "#202020";
-                }
-            }
-        }
-
-        function toggle() {
-            if (!ready) return; isPaused = !isPaused;
-            master.gain.setTargetAtTime(isPaused ? 0 : 0.6, ctx.currentTime, 0.2);
-            document.getElementById('pauseBtn').innerText = isPaused ? "RESUME ALL" : "PAUSE ALL";
-            document.getElementById('pauseBtn').style.background = isPaused ? "#222" : "#55a630";
-        }
-
         function setTimer(seconds) {
             clearInterval(timerInterval); timeLeft = parseInt(seconds);
             if (!ready && timeLeft > 0) { beginSession(); return; }
@@ -583,16 +621,13 @@
         function toggleMuteAll() {
             isGlobalMuteActive = !isGlobalMuteActive;
             tracks.forEach((_, i) => muteTrack(i, isGlobalMuteActive));
-            const mainMuteBtn = document.getElementById('muteAllBtn');
-            mainMuteBtn.innerText = isGlobalMuteActive ? "Unmute All" : "Mute All";
+            document.getElementById('muteAllBtn').innerText = isGlobalMuteActive ? "Unmute All" : "Mute All";
         }
 
         function soloTrack(i) {
             soloIdx = (soloIdx === i) ? -1 : i;
             document.querySelectorAll('.s-btn').forEach((b,idx)=>b.classList.toggle('active-solo', idx===soloIdx));
-            tracks.forEach((_, idx) => {
-                if (ready) slide(idx, tracks[idx].lastVal);
-            });
+            tracks.forEach((_, idx) => { if (ready) slide(idx, tracks[idx].lastVal); });
         }
     </script>
 </body>
