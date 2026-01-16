@@ -6,7 +6,7 @@
     <title>Solfeggio Player | Frequency Lab</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <style>
-        :root { --panel-bg: #0a0a0a; --chan-bg: #141414; }
+        :root { --panel-bg: #0a0a0a; --chan-bg: #141414; --fader-blue: #4a00e0; }
         body { 
             background: #050505; color: #e0e0e0; 
             font-family: 'Inter', -apple-system, sans-serif; 
@@ -15,7 +15,18 @@
             justify-content: flex-start;
         }
         
-        h1 { font-weight: 200; letter-spacing: 5px; margin: 20px 0 5px 0; font-size: 2.2rem; }
+        .title-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 20px; }
+        h1 { font-weight: 200; letter-spacing: 5px; margin: 0; font-size: 2.2rem; }
+        
+        /* Info Icon Styles */
+        .info-icon { 
+            cursor: pointer; width: 18px; height: 18px; border-radius: 50%; 
+            border: 1px solid #666; color: #666; font-size: 12px; 
+            display: flex; align-items: center; justify-content: center; 
+            font-style: italic; font-family: serif; transition: 0.3s;
+        }
+        .info-icon:hover { border-color: #ffd60a; color: #ffd60a; }
+
         .subtitle { font-size: 0.75rem; letter-spacing: 3px; color: #666; margin-bottom: 25px; text-transform: uppercase; }
         
         .page-wrapper { display: flex; align-items: flex-start; gap: 15px; padding: 10px; max-width: 100vw; box-sizing: border-box; }
@@ -57,17 +68,21 @@
         #timerDisplay { font-family: monospace; color: #55a630; font-size: 0.85rem; min-width: 55px; }
 
         .btn-utility { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: 600; }
-        .btn-save { background: #20c997; color: #000; padding: 10px 20px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
+        .btn-save { background: #20c997; color: #000; padding: 10px 24px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
+        .btn-share { background: var(--fader-blue); color: #fff; padding: 10px 24px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
 
+        /* Modals */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); backdrop-filter: blur(10px); z-index: 1000; }
         .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f0f; padding: 50px 40px; border-radius: 32px; text-align: center; width: 420px; border: 1px solid #222; box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
         .modal-header { color: #ffd60a; font-size: 26px; margin-bottom: 20px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
         .modal-subtext { color: #888; font-size: 14px; line-height: 1.6; margin-bottom: 35px; padding: 0 10px; }
+        
         .auth-buttons { display: flex; flex-direction: column; gap: 12px; }
         .auth-btn { padding: 16px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
         .g-btn { background: #ffffff; color: #000; }
         .fb-btn { background: #3b5998; color: #fff; }
         .email-btn { background: #ffd60a; color: #000; }
+        
         .back-btn { margin-top: 30px; color: #444; cursor: pointer; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
         #successMsg { display: none; margin-top: 20px; padding: 20px; background: #111; border: 1px solid #20c997; border-radius: 12px; color: #fff; font-size: 13px; line-height: 1.4; }
         .magic-link-box { background: #000; padding: 10px; border-radius: 6px; border: 1px solid #333; margin-top: 15px; word-break: break-all; color: #20c997; font-family: monospace; user-select: all; cursor: pointer; }
@@ -77,7 +92,10 @@
 </head>
 <body>
 
-    <h1>SOLFEGGIO PLAYER</h1>
+    <div class="title-container">
+        <h1>SOLFEGGIO PLAYER</h1>
+        <div class="info-icon" onclick="openInfo()">i</div>
+    </div>
     <div class="subtitle">By Frequency Lab</div>
     
     <div class="page-wrapper">
@@ -135,16 +153,25 @@
                 <button id="muteAllBtn" class="btn-utility" onclick="toggleMuteAll()">Mute All</button>
                 <button class="btn-utility" onclick="randomize()">Randomize</button>
                 <button class="btn-utility" onclick="resetFaders()">Reset</button>
-                <button class="btn-save" onclick="openModal()">Save</button>
+                <button class="btn-save" id="saveBtn" onclick="openModal()">Save</button>
+                <button class="btn-share" onclick="openShare()">Share</button>
             </div>
             <div class="footer-credit">Created By Keunho Koh</div>
         </main>
         <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD</span></aside>
     </div>
 
+    <div id="infoModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 class="modal-header">About Solfeggio</h2>
+            <p class="modal-subtext">Solfeggio frequencies are a 9-tone scale used in sacred music. Each frequency is believed to balance your energy and keep your body, mind, and spirit in perfect harmony.</p>
+            <div class="back-btn" onclick="closeInfo()">Close</div>
+        </div>
+    </div>
+
     <div id="saveModal" class="modal-overlay">
         <div class="modal-content">
-            <h2 class="modal-header">MIX SAVED!</h2>
+            <h2 class="modal-header">Save Preset</h2>
             <div id="authContainer">
                 <p class="modal-subtext">Sign in to receive a secure 'Magic Link' via email. Use it to instantly restore your custom preset anytime, on any device.</p>
                 <div class="auth-buttons">
@@ -160,6 +187,19 @@
                 <p style="font-size: 11px; margin-top: 15px; color: #666;">Click the link to select/copy</p>
             </div>
             <div class="back-btn" onclick="closeModal()">Back to Mixer</div>
+        </div>
+    </div>
+
+    <div id="shareModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 class="modal-header">Share Mix</h2>
+            <p class="modal-subtext">Spread the harmony with your friends.</p>
+            <div class="auth-buttons">
+                <button class="auth-btn g-btn" onclick="shareMix('Gmail')">Share via Gmail</button>
+                <button class="auth-btn fb-btn" onclick="shareMix('Facebook')">Share on Facebook</button>
+                <button class="auth-btn email-btn" onclick="shareMix('Email')">Share via Email</button>
+            </div>
+            <div class="back-btn" onclick="closeShare()">Close</div>
         </div>
     </div>
 
@@ -190,56 +230,33 @@
             const sBtn = document.getElementById('startBtn');
             const pBtn = document.getElementById('pauseBtn');
             sBtn.innerText = "INITIALIZING...";
-            
-            // Re-initialize Context on User Gesture
             ctx = new (window.AudioContext || window.webkitAudioContext)();
-            
             master = ctx.createGain();
             master.gain.setValueAtTime(0, ctx.currentTime);
             master.connect(ctx.destination);
-            
-            // Important for Autoplay policies
-            if (ctx.state === 'suspended') {
-                await ctx.resume();
-            }
-            
+            if (ctx.state === 'suspended') await ctx.resume();
             try {
                 await Promise.all(audioFiles.map(async (f, i) => {
                     const g = ctx.createGain();
                     g.gain.setValueAtTime(0, ctx.currentTime);
                     g.connect(master);
                     tracks[i].g = g;
-
                     const res = await fetch(f + ".mp3");
-                    const arrayBuf = await res.arrayBuffer();
-                    const audioBuf = await ctx.decodeAudioData(arrayBuf);
-                    
+                    const buf = await ctx.decodeAudioData(await res.arrayBuffer());
                     const src = ctx.createBufferSource();
-                    src.buffer = audioBuf; 
-                    src.loop = true;
+                    src.buffer = buf; src.loop = true;
                     src.connect(g);
                     src.start(0);
                 }));
-
                 ready = true;
                 const now = ctx.currentTime;
                 tracks.forEach((t, i) => {
-                    t.g.gain.cancelScheduledValues(now);
-                    // Smoothly ramp up based on fader position
                     t.g.gain.linearRampToValueAtTime(t.lastVal * 0.7, now + 1.5); 
                 });
-
-                // Master fade in
                 master.gain.linearRampToValueAtTime(0.6, now + 2.0);
-                
-                sBtn.style.display = "none"; 
-                pBtn.style.display = "block";
-                
+                sBtn.style.display = "none"; pBtn.style.display = "block";
                 if (timeLeft > 0) startCountdown();
-            } catch (err) { 
-                sBtn.innerText = "LOAD ERROR"; 
-                console.error("Audio Load Error:", err);
-            }
+            } catch (err) { sBtn.innerText = "LOAD ERROR"; }
         }
 
         function slide(i, v) {
@@ -251,6 +268,7 @@
             updateUI(i, val);
         }
 
+        /* Modal Logic with Audio Pause/Resume */
         function openModal() { 
             if (ready && !isPaused) { toggle(); wasPlayingBeforeSave = true; }
             document.getElementById('authContainer').style.display = 'block';
@@ -258,10 +276,15 @@
             document.getElementById('saveModal').style.display = 'block'; 
         }
 
-        async function closeModal() { 
+        function closeModal() { 
             document.getElementById('saveModal').style.display = 'none'; 
             if (ready && wasPlayingBeforeSave && isPaused) { toggle(); wasPlayingBeforeSave = false; }
         }
+
+        function openInfo() { document.getElementById('infoModal').style.display = 'block'; }
+        function closeInfo() { document.getElementById('infoModal').style.display = 'none'; }
+        function openShare() { document.getElementById('shareModal').style.display = 'block'; }
+        function closeShare() { document.getElementById('shareModal').style.display = 'none'; }
 
         function saveAndSign(provider) {
             const levels = tracks.map(t => Math.round(t.lastVal * 100)).join(',');
@@ -269,6 +292,12 @@
             document.getElementById('authContainer').style.display = 'none';
             document.getElementById('linkDisplay').innerText = magicLink;
             document.getElementById('successMsg').style.display = 'block';
+        }
+
+        function shareMix(platform) {
+            const levels = tracks.map(t => Math.round(t.lastVal * 100)).join(',');
+            const link = `${window.location.origin}${window.location.pathname}?preset=${levels}`;
+            alert(`Link generated for ${platform}: \n\n${link}`);
         }
 
         window.onload = loadPresetFromUrl;
@@ -328,9 +357,7 @@
             slide(i, tracks[i].lastVal);
         }
 
-        function toggleMuteAll() {
-            tracks.forEach((_, i) => muteTrack(i, true));
-        }
+        function toggleMuteAll() { tracks.forEach((_, i) => muteTrack(i, true)); }
 
         function soloTrack(i) {
             if (!ready) return;
