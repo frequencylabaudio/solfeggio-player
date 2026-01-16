@@ -381,16 +381,43 @@
             }
         }
 
+        // --- INTEGRATED SAVE WITH EMAIL TRIGGER ---
         async function savePresetToFirebase(uid) {
             const levels = tracks.map(t => Math.round(t.lastVal * 100));
+            const userEmail = auth.currentUser.email;
+
             try {
+                // 1. Save Faders to Presets Collection
                 await db.collection("presets").doc(uid).set({
                     levels: levels,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                alert("Mix Saved Successfully!");
+
+                // 2. Trigger the Welcome Email via the "mail" collection
+                await db.collection("mail").add({
+                    to: userEmail,
+                    message: {
+                        subject: 'Your Solfeggio Mix is Saved!',
+                        html: `
+                            <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+                                <h2 style="color: #007bff;">Frequency Lab</h2>
+                                <p>Hello,</p>
+                                <p>Your custom Solfeggio mix has been saved successfully.</p>
+                                <p><b>Saved Levels:</b> ${levels.join(', ')}</p>
+                                <p>Next time you log in, your mixer will automatically return to these settings.</p>
+                                <br>
+                                <p><i>Enjoy your session!</i></p>
+                            </div>
+                        `
+                    }
+                });
+
+                alert("Mix saved! A Welcome Note was sent to " + userEmail);
                 closeModal();
-            } catch (e) { alert("Save failed: " + e.message); }
+            } catch (e) { 
+                console.error(e);
+                alert("Save failed: " + e.message); 
+            }
         }
 
         function sendMagicLink() {
