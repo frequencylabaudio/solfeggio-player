@@ -2,173 +2,276 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solfeggio Mixer | Professional Grade</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Frequency Lab | Professional Solfeggio Mixer</title>
     <style>
-        :root {
-            --p-bg: #000; --c-bg: #0d0d0d; --start-y: #ffd60a; --save-g: #20c997; 
-            --txt: #fff; --dim: #555; --m-red: #d90429; --s-blue: #00b4d8;
-        }
-        body { background: var(--p-bg); color: var(--txt); font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
-        
-        /* Layout & Ads */
-        .master-wrapper { display: flex; justify-content: center; align-items: flex-start; width: 100%; min-width: 1450px; padding-top: 40px; }
-        .ad-zone { width: 160px; height: 600px; background: #0a0a0a; border: 1px solid #1a1a1a; display: flex; align-items: center; justify-content: center; position: sticky; top: 40px; }
-        .ad-txt { color: #222; font-size: 10px; transform: rotate(-90deg); letter-spacing: 4px; font-weight: 900; }
-
-        /* Mixer UI */
-        .main-stage { display: flex; flex-direction: column; align-items: center; padding: 0 40px; }
-        h1 { font-weight: 200; letter-spacing: 12px; font-size: 2.5rem; margin-bottom: 30px; }
-        .info-btn { display: inline-block; border: 1px solid #444; border-radius: 50%; width: 22px; height: 22px; line-height: 22px; cursor: pointer; font-size: 0.7rem; color: #777; margin-left: 10px; vertical-align: middle; }
-
-        .mixer-box { background: #080808; padding: 40px; border-radius: 40px; border: 1px solid #111; display: flex; gap: 12px; }
-        .strip { width: 100px; background: #111; padding: 25px 0; border-radius: 20px; display: flex; flex-direction: column; align-items: center; border: 1px solid #222; }
-        
-        /* THE SPECIFIC BORDER GLOW */
-        .fader-slot { 
-            width: 12px; height: 240px; background: #000; border-radius: 10px; position: relative; 
-            margin: 20px 0; border: 1px solid transparent; transition: 0.3s;
+        :root { --panel-bg: #0a0a0a; --chan-bg: #141414; --accent: #ffd60a; --save-teal: #20c997; }
+        body { 
+            background: #050505; color: #e0e0e0; 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            text-align: center; margin: 0; min-height: 100vh; 
+            display: flex; flex-direction: column; align-items: center; 
+            overflow-x: hidden;
         }
         
-        input[type=range][orient=vertical] { appearance: slider-vertical; width: 12px; height: 240px; background: transparent; cursor: pointer; }
+        /* Header */
+        .header-container { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 40px; }
+        h1 { font-weight: 200; letter-spacing: 8px; margin: 0; font-size: 2.2rem; text-transform: uppercase; }
+        .info-trigger { 
+            cursor: pointer; color: #444; font-size: 0.8rem; border: 1px solid #333; 
+            width: 22px; height: 22px; border-radius: 50%; display: flex; 
+            align-items: center; justify-content: center; transition: 0.3s;
+        }
+        .info-trigger:hover { color: #fff; border-color: #fff; box-shadow: 0 0 10px #fff; }
 
-        /* Control Bar */
-        .controls { margin-top: 40px; display: flex; align-items: center; gap: 15px; }
-        .timer-ctrl { background: #111; border: 1px solid #222; padding: 10px; border-radius: 10px; display: flex; align-items: center; gap: 10px; }
-        select { background: transparent; color: #ffd60a; border: none; font-weight: bold; cursor: pointer; }
+        .page-wrapper { display: flex; align-items: flex-start; gap: 30px; padding: 20px; width: 100%; justify-content: center; box-sizing: border-box; min-width: 1450px; }
+        
+        /* Sidebars */
+        .ad-sidebar { width: 160px; height: 600px; background: #0d0d0d; border: 1px solid #1a1a1a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .ad-text { color: #222; font-size: 11px; transform: rotate(-90deg); letter-spacing: 5px; font-weight: 900; }
 
-        #startBtn { background: var(--start-y); color: #000; padding: 18px 50px; border-radius: 50px; font-weight: 900; border: none; cursor: pointer; }
-        .util-btn { background: #151515; color: #888; border: 1px solid #222; padding: 14px 25px; border-radius: 50px; font-size: 0.7rem; font-weight: 800; cursor: pointer; }
-        .save-btn { background: var(--save-g); color: #000; font-weight: 900; border: none; padding: 14px 40px; border-radius: 50px; cursor: pointer; }
+        /* Mixer Console */
+        .mixer { 
+            display: flex; flex-wrap: nowrap; justify-content: center; gap: 10px; 
+            background: var(--panel-bg); padding: 40px 25px; border-radius: 40px; 
+            border: 1px solid #1a1a1a; width: auto;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+        }
+
+        .chan { 
+            display: flex; flex-direction: column; align-items: center; 
+            width: 100px; background: var(--chan-bg); 
+            padding: 25px 0; border-radius: 20px; border: 1px solid #222; 
+            box-sizing: border-box; transition: border-color 0.4s, box-shadow 0.4s;
+        }
+        .hz { font-size: 0.9rem; font-weight: 900; color: var(--clr); text-shadow: 0 0 5px var(--clr); }
+        .desc { font-size: 0.52rem; font-weight: 700; height: 40px; color: #555; line-height: 1.2; padding: 0 8px; display: flex; align-items: center; justify-content: center; text-align: center; text-transform: uppercase; }
+        
+        /* Fader Slot Logic */
+        .fader-slot { width: 14px; height: 240px; background: #000; border-radius: 10px; margin: 15px 0; position: relative; }
+        input[type=range] { -webkit-appearance: slider-vertical; width: 14px; height: 240px; cursor: pointer; background: transparent; }
+
+        /* Main Controls */
+        .main-controls { margin: 40px 0; display: flex; align-items: center; gap: 15px; }
+        
+        #startBtn { background: var(--accent); color: #000; padding: 18px 50px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; min-width: 240px; }
+        #pauseBtn { background: #4caf50; color: #fff; padding: 18px 50px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; min-width: 240px; display: none; }
+
+        .timer-wrap { display: flex; align-items: center; gap: 12px; background: #111; padding: 12px 25px; border-radius: 50px; border: 1px solid #222; }
+        select { background: transparent; color: var(--accent); border: none; font-weight: 900; font-family: monospace; cursor: pointer; outline: none; }
+        
+        .btn-utility { background: #151515; color: #888; border: 1px solid #222; padding: 14px 28px; border-radius: 50px; cursor: pointer; font-size: 0.75rem; text-transform: uppercase; font-weight: 800; }
+        .btn-save { background: var(--save-teal); color: #000; padding: 14px 45px; border-radius: 50px; border: none; cursor: pointer; font-weight: 900; text-transform: uppercase; }
 
         /* Modals */
-        .overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.97); z-index:9999; align-items:center; justify-content:center; }
-        .card { background:#0a0a0a; padding:50px; border-radius:30px; border:1px solid #222; width:500px; text-align:center; }
-        .card h2 { color: var(--start-y); letter-spacing: 4px; margin-bottom: 30px; } /* YELLOW USER GUIDE */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); backdrop-filter: blur(15px); z-index: 5000; align-items: center; justify-content: center; }
+        .modal-content { background: #0a0a0a; padding: 60px; border-radius: 40px; text-align: center; width: 500px; border: 1px solid #222; }
+        .modal-content h2 { color: var(--accent); letter-spacing: 5px; text-transform: uppercase; margin-bottom: 30px; }
+        
+        .social-login { width: 100%; padding: 16px; margin: 10px 0; border-radius: 12px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; }
+
+        @media (max-width: 1024px) {
+            .page-wrapper { min-width: auto; flex-direction: column; align-items: center; }
+            .ad-sidebar { display: none; }
+            .mixer { flex-direction: column; width: 90%; gap: 15px; }
+            .chan { flex-direction: row; width: 100%; padding: 15px; justify-content: space-around; }
+            input[type=range] { -webkit-appearance: none; width: 40%; height: 8px; background: #222; border-radius: 4px; }
+        }
     </style>
 </head>
 <body>
 
-<div class="master-wrapper">
-    <div class="ad-zone"><span class="ad-txt">ADVERTISEMENT</span></div>
-
-    <div class="main-stage">
-        <h1>SOLFEGGIO PLAYER <div class="info-btn" onclick="openInfo()">i</div></h1>
-
-        <div class="mixer-box" id="board">
+    <div class="header-container">
+        <h1>SOLFEGGIO PLAYER</h1>
+        <div class="info-trigger" onclick="openModal('infoModal')">i</div>
+    </div>
+    <div style="font-size: 0.6rem; letter-spacing: 4px; color: #444; margin-top: 5px;">PROFESSIONAL GRADE MIXER</div>
+    
+    <div class="page-wrapper">
+        <aside class="ad-sidebar"><span class="ad-text">ADVERTISEMENT</span></aside>
+        
+        <main>
+            <div class="mixer" id="mixer-ui">
+                <script>
+                    const chData = [
+                        {hz:"69.3Hz", d:"Resonance Deepener", c:"#4a00e0"},
+                        {hz:"174Hz", d:"Relieves Pain", c:"#ffffff"},
+                        {hz:"285Hz", d:"Body Recovery", c:"#9b2226"},
+                        {hz:"396Hz", d:"Release Fear", c:"#ae2012"},
+                        {hz:"417Hz", d:"Change Cycles", c:"#ca6702"},
+                        {hz:"432Hz", d:"Relaxation", c:"#ee9b00"},
+                        {hz:"528Hz", d:"DNA Repair", c:"#0a9396"},
+                        {hz:"639Hz", d:"Relationships", c:"#005f73"},
+                        {hz:"741Hz", d:"Detox Mind", c:"#3e5c76"},
+                        {hz:"852Hz", d:"Intuition", c:"#5e548e"},
+                        {hz:"963Hz", d:"Consciousness", c:"#9d4edd"}
+                    ];
+                    chData.forEach((ch, i) => {
+                        document.write(`
+                            <div class="chan" id="c${i}" style="--clr:${ch.c}">
+                                <div class="hz">${ch.hz}</div>
+                                <div class="desc">${ch.d}</div>
+                                <div class="fader-slot">
+                                    <input type="range" id="v${i}" min="0" max="1" step="0.01" value="0.30" oninput="updateVol(${i}, this.value)">
+                                </div>
+                                <div id="l${i}" style="font-size:0.75rem; color:#444; font-weight:900;">30%</div>
+                            </div>
+                        `);
+                    });
+                </script>
             </div>
 
-        <div class="controls">
-            <div class="timer-ctrl">
-                <span style="font-size: 0.7rem; color: #444;">TIMER</span>
-                <select id="timerSet">
-                    <option value="1">1 MIN</option>
-                    <option value="15">15 MIN</option>
-                    <option value="30" selected>30 MIN</option>
-                    <option value="60">1 HOUR</option>
-                    <option value="120">2 HOURS</option>
-                    <option value="240">4 HOURS</option>
-                    <option value="480">8 HOURS</option>
-                </select>
-                <div id="countdown" style="font-family: monospace; color: #4caf50; min-width: 50px;">--:--</div>
+            <div class="main-controls">
+                <div class="timer-wrap">
+                    <span style="font-size: 0.65rem; font-weight: 900; color: #333;">TIMER</span>
+                    <select id="timerSet">
+                        <option value="60">1 MIN</option>
+                        <option value="900">15 MIN</option>
+                        <option value="1800" selected>30 MIN</option>
+                        <option value="3600">1 HOUR</option>
+                        <option value="7200">2 HOURS</option>
+                        <option value="14400">4 HOURS</option>
+                        <option value="28800">8 HOURS</option>
+                    </select>
+                    <span id="timerDisplay" style="font-family: monospace; color: #4caf50; font-weight: bold;">--:--</span>
+                </div>
+
+                <button id="startBtn" onclick="initAudio()">Start Session</button>
+                <button id="pauseBtn" onclick="togglePlay()">Pause All</button>
+                
+                <button class="btn-utility" onclick="randomize()">Random</button>
+                <button class="btn-utility" onclick="resetAll()">Reset</button>
+                <button class="btn-save" onclick="openSave()">Save</button>
+                <button class="btn-utility" onclick="copyShare()">Share</button>
             </div>
-            
-            <button id="startBtn" onclick="begin()">START SESSION</button>
-            <button id="pauseBtn" style="display:none; background:#4caf50; color:#fff; padding:18px 50px; border-radius:50px; font-weight:900; border:none;" onclick="toggleP()">PAUSE ALL</button>
-            <button class="util-btn" onclick="randomize()">RANDOM</button>
-            <button class="util-btn" onclick="reset()">RESET</button>
-            <button class="save-btn" onclick="openSave()">SAVE</button>
-            <button class="util-btn" onclick="generateShare()">SHARE</button>
+        </main>
+
+        <aside class="ad-sidebar"><span class="ad-text">ADVERTISEMENT</span></aside>
+    </div>
+
+    <div id="infoModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>User Guide</h2>
+            <div style="text-align:left; color:#888; line-height:1.8; font-size:0.95rem;">
+                <p><strong>HEADPHONES:</strong> Required for the frequencies to stimulate the brain correctly in stereo.</p>
+                <p><strong>VOLUME:</strong> Keep at a comfortable, moderate level. Healing is not dependent on loudness.</p>
+                <p><strong>SAVE:</strong> Connect via Google/Facebook to store your favorites in your library.</p>
+                <p><strong>SHARE:</strong> Generates a custom link with your exact current fader positions.</p>
+            </div>
+            <button class="btn-utility" style="width:100%; margin-top:30px;" onclick="closeModal('infoModal')">Back to Mixer</button>
         </div>
     </div>
 
-    <div class="ad-zone"><span class="ad-txt">ADVERTISEMENT</span></div>
-</div>
-
-<div id="iMod" class="overlay"><div class="card">
-    <h2>USER GUIDE</h2>
-    <div style="text-align:left; color:#888; font-size:0.9rem; line-height:1.8;">
-        <p><strong>HEADPHONES:</strong> Required for stereo brain stimulation.</p>
-        <p><strong>VOLUME:</strong> Moderate levels. Healing is not about loudness.</p>
-        <p><strong>SAVE:</strong> Sync your custom mixes to your library.</p>
-        <p><strong>SHARE:</strong> Creates a link with your exact fader positions.</p>
+    <div id="saveModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Save to Library</h2>
+            <p style="color:#666; margin-bottom:30px;">Login to sync your presets across all your devices.</p>
+            <button class="social-login" style="background:#db4437; color:#fff;">Continue with Google</button>
+            <button class="social-login" style="background:#4267b2; color:#fff;">Continue with Facebook</button>
+            <button class="social-login" style="background:#222; color:#fff; border:1px solid #333;">Email Login</button>
+            <button class="btn-utility" style="width:100%; margin-top:20px; border:none;" onclick="closeSave()">Cancel</button>
+        </div>
     </div>
-    <button class="util-btn" style="width:100%; margin-top:20px;" onclick="closeInfo()">BACK TO MIXER</button>
-</div></div>
 
-<script>
-    const data = [
-        {h:"69.3Hz", d:"Resonance", c:"#4a00e0"}, {h:"174Hz", d:"Relieve Pain", c:"#ffffff"},
-        {h:"285Hz", d:"Body Recovery", c:"#9b2226"}, {h:"396Hz", d:"Release Fear", c:"#ae2012"},
-        {h:"417Hz", d:"Change Cycles", c:"#ca6702"}, {h:"432Hz", d:"Relaxation", c:"#ee9b00"},
-        {h:"528Hz", d:"DNA Repair", c:"#0a9396"}, {h:"639Hz", d:"Relationships", c:"#005f73"},
-        {h:"741Hz", d:"Detox Mind", c:"#3e5c76"}, {h:"852Hz", d:"Intuition", c:"#5e548e"},
-        {h:"963Hz", d:"Consciousness", c:"#9d4edd"}
-    ];
+    <script>
+        let ctx, master, tracks = [], ready = false, isPaused = false, wasPlaying = false;
+        let timeLeft = 0, timerId = null;
 
-    let tracks = [], ctx, master, isP = false, time = 0, timerActive = false;
+        async function initAudio() {
+            if(ready) return;
+            ctx = new (window.AudioContext || window.webkitAudioContext)();
+            master = ctx.createGain(); 
+            master.gain.setValueAtTime(0, ctx.currentTime);
+            master.connect(ctx.destination);
+            
+            document.getElementById('startBtn').innerText = "CALIBRATING...";
 
-    // BUILD MIXER
-    const board = document.getElementById('board');
-    data.forEach((ch, i) => {
-        board.innerHTML += `
-            <div class="strip">
-                <div style="color:${ch.c}; font-weight:900; font-size:0.9rem;">${ch.h}</div>
-                <div style="font-size:0.5rem; color:#444; margin-top:4px;">${ch.d.toUpperCase()}</div>
-                <div class="fader-slot" id="slot-${i}">
-                    <input type="range" orient="vertical" id="v-${i}" min="0" max="1" step="0.01" value="0.30" oninput="slide(${i},this.value)">
-                </div>
-                <div id="p-${i}" style="font-size:0.7rem; color:#333;">30%</div>
-            </div>
-        `;
-    });
+            await Promise.all(chData.map(async (ch, i) => {
+                const res = await fetch(`${ch.hz}.mp3`);
+                const buf = await ctx.decodeAudioData(await res.arrayBuffer());
+                const src = ctx.createBufferSource();
+                const gn = ctx.createGain();
+                
+                src.buffer = buf; src.loop = true;
+                gn.gain.setValueAtTime(0, ctx.currentTime);
+                src.connect(gn); gn.connect(master);
+                src.start(0);
+                
+                tracks[i] = { g: gn, v: 0.30 };
+            }));
 
-    function slide(i, v) {
-        if(tracks[i]) tracks[i].g.gain.setTargetAtTime(isP ? 0 : v, ctx.currentTime, 0.1);
-        document.getElementById(`p-${i}`).innerText = Math.round(v*100) + "%";
-        // TARGETED BORDER GLOW ONLY
-        document.getElementById(`slot-${i}`).style.borderColor = v > 0 ? data[i].c : 'transparent';
-        document.getElementById(`slot-${i}`).style.boxShadow = `0 0 ${v * 20}px ${data[i].c}`;
-    }
-
-    async function begin() {
-        ctx = new AudioContext();
-        master = ctx.createGain(); master.connect(ctx.destination);
-        for(let i=0; i<data.length; i++) {
-            const osc = ctx.createOscillator();
-            const g = ctx.createGain();
-            osc.frequency.value = parseFloat(data[i].h);
-            osc.connect(g); g.connect(master); osc.start();
-            tracks[i] = {o:osc, g:g, v:0.3};
-            slide(i, 0.3);
+            ready = true;
+            master.gain.setTargetAtTime(0.7, ctx.currentTime, 0.5);
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('pauseBtn').style.display = 'block';
+            
+            startTimer();
+            tracks.forEach((_, i) => updateVol(i, 0.30));
         }
-        document.getElementById('startBtn').style.display='none';
-        document.getElementById('pauseBtn').style.display='block';
-        startTimer();
-    }
 
-    function startTimer() {
-        time = document.getElementById('timerSet').value * 60;
-        timerActive = true;
-        setInterval(() => {
-            if(timerActive && !isP && time > 0) {
-                time--;
-                let m = Math.floor(time/60), s = time%60;
-                document.getElementById('countdown').innerText = `${m}:${s<10?'0'+s:s}`;
+        function updateVol(i, v) {
+            const val = parseFloat(v);
+            if(tracks[i]) {
+                tracks[i].v = val;
+                const activeGain = isPaused ? 0 : val;
+                tracks[i].g.gain.setTargetAtTime(activeGain, ctx.currentTime, 0.1);
             }
-        }, 1000);
-    }
+            // TARGETED GLOW LOGIC
+            const el = document.getElementById(`c${i}`);
+            document.getElementById(`l${i}`).innerText = Math.round(val * 100) + "%";
+            el.style.boxShadow = val > 0.05 ? `0 0 ${val * 35}px var(--clr)` : "none";
+            el.style.borderColor = val > 0.05 ? chData[i].c : "#222";
+        }
 
-    function generateShare() {
-        let params = tracks.map((t, i) => `v${i}=${document.getElementById(`v-${i}`).value}`).join('&');
-        let url = window.location.origin + window.location.pathname + '?' + params;
-        navigator.clipboard.writeText(url);
-        alert("Settings copied to link!");
-    }
+        function startTimer() {
+            timeLeft = parseInt(document.getElementById('timerSet').value);
+            if(timerId) clearInterval(timerId);
+            timerId = setInterval(() => {
+                if(!isPaused && timeLeft > 0) {
+                    timeLeft--;
+                    updateTimerDisplay();
+                } else if (timeLeft <= 0) {
+                    if(!isPaused) togglePlay();
+                    alert("Session Complete.");
+                }
+            }, 1000);
+        }
 
-    function openInfo() { document.getElementById('iMod').style.display='flex'; }
-    function closeInfo() { document.getElementById('iMod').style.display='none'; }
-    function toggleP() { isP = !isP; tracks.forEach((t, i) => slide(i, isP ? 0 : document.getElementById(`v-${i}`).value)); }
-</script>
+        function updateTimerDisplay() {
+            let h = Math.floor(timeLeft / 3600);
+            let m = Math.floor((timeLeft % 3600) / 60);
+            let s = timeLeft % 60;
+            document.getElementById('timerDisplay').innerText = 
+                (h > 0 ? h + ":" : "") + (m < 10 && h > 0 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+        }
+
+        function togglePlay() {
+            isPaused = !isPaused;
+            master.gain.setTargetAtTime(isPaused ? 0 : 0.7, ctx.currentTime, 0.2);
+            document.getElementById('pauseBtn').innerText = isPaused ? "Resume Session" : "Pause All";
+        }
+
+        function openSave() {
+            if(ready && !isPaused) { togglePlay(); wasPlaying = true; }
+            openModal('saveModal');
+        }
+
+        function closeSave() {
+            closeModal('saveModal');
+            if(wasPlaying) { togglePlay(); wasPlaying = false; }
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        
+        function randomize() { tracks.forEach((_, i) => { const r = (Math.random()*0.5).toFixed(2); document.getElementById(`v${i}`).value = r; updateVol(i, r); }); }
+        function resetAll() { tracks.forEach((_, i) => { document.getElementById(`v${i}`).value = 0; updateVol(i, 0); }); }
+        
+        function copyShare() {
+            let params = tracks.map((t, i) => `v${i}=${t.v}`).join('&');
+            navigator.clipboard.writeText(window.location.origin + window.location.pathname + "?" + params);
+            alert("Share link copied!");
+        }
+    </script>
 </body>
 </html>
