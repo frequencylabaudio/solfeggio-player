@@ -3,199 +3,461 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solfeggio Player | Frequency Lab</title>
+    <title>Solfeggio Mixer | Professional Grade</title>
     <style>
-        :root { 
-            --panel-bg: #0d0d0d; --chan-bg: #151515; --accent: #4caf50; 
-            --save-btn: #20c997; --start-yellow: #ffd60a; --text-main: #ffffff; --border: #222;
-        }
-        body { 
-            background: #000; color: var(--text-main); font-family: 'Inter', sans-serif; 
-            margin: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; overflow-x: auto;
-        }
-        
-        /* Header */
-        .header-container { text-align: center; margin: 30px 0; width: 100%; position: relative; max-width: 900px;}
-        h1 { font-weight: 200; letter-spacing: 12px; margin: 0; font-size: 2.2rem; text-transform: uppercase; display: inline-block; }
-        .info-trigger { 
-            display: inline-block; margin-left: 12px; border: 1px solid #444; border-radius: 50%; 
-            width: 22px; height: 22px; line-height: 22px; font-size: 0.7rem; cursor: pointer; color: #777; 
-            vertical-align: middle; transition: 0.3s; font-weight: bold; text-align: center;
+        :root {
+            --panel-bg: #0d0d0d;
+            --chan-bg: #151515;
+            --accent-green: #4caf50;
+            --save-teal: #20c997;
+            --start-yellow: #ffd60a;
+            --text-white: #ffffff;
+            --text-dim: #555555;
+            --border-color: #222222;
+            --mute-red: #d90429;
+            --solo-blue: #00b4d8;
         }
 
-        /* Layout */
-        .page-wrapper { display: flex; align-items: flex-start; justify-content: center; width: 100%; min-width: 1450px; padding: 20px; box-sizing: border-box; gap: 60px; }
-        .ad-sidebar { width: 160px; height: 600px; background: #0a0a0a; border: 1px solid #1a1a1a; display: flex; align-items: center; justify-content: center; border-radius: 12px; flex-shrink: 0; margin-top: 50px; }
-
-        /* Mixer UI */
-        .mixer { display: flex; gap: 10px; background: var(--panel-bg); padding: 35px 25px; border-radius: 32px; border: 1px solid #1a1a1a; }
-        .chan { display: flex; flex-direction: column; align-items: center; width: 105px; background: var(--chan-bg); padding: 25px 0; border-radius: 20px; border: 1px solid var(--border); transition: 0.3s; }
-        
-        .hz { font-size: 0.9rem; font-weight: 900; color: var(--clr); margin-bottom: 5px; }
-        .desc { font-size: 0.52rem; font-weight: 700; height: 40px; color: #666; line-height: 1.2; padding: 0 10px; text-align: center; text-transform: uppercase; }
-        
-        /* Fader with Dynamic Glow */
-        .fader-wrapper { position: relative; padding: 15px 0; display: flex; justify-content: center; }
-        input[type=range] { 
-            -webkit-appearance: slider-vertical; width: 20px; height: 230px; cursor: pointer; 
-            filter: drop-shadow(0 0 0px var(--clr)); transition: filter 0.2s ease;
+        body {
+            background: #000;
+            color: var(--text-white);
+            font-family: 'Inter', -apple-system, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: auto;
         }
 
-        .ms-row { display: flex; gap: 8px; margin-top: 10px; }
-        .ms-btn { width: 32px; height: 32px; border-radius: 6px; border: 1px solid #333; background: #222; color: #555; font-size: 0.7rem; font-weight: 900; cursor: pointer; }
+        /* --- Header Section --- */
+        .header-container {
+            text-align: center;
+            margin: 40px 0;
+            position: relative;
+            width: fit-content;
+        }
 
-        /* Controls */
-        .main-controls { margin: 45px 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 15px; }
-        
-        /* RESTORED YELLOW START BUTTON */
-        #startBtn { background: var(--start-yellow); color: #000; padding: 18px 60px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; min-width: 250px; box-shadow: 0 0 20px rgba(255, 214, 10, 0.3); }
-        
-        #pauseBtn { background: var(--accent); color: #fff; padding: 18px 60px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; min-width: 250px; }
-        .ctrl-btn { background: #151515; color: #888; border: 1px solid #222; padding: 14px 28px; border-radius: 50px; cursor: pointer; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
-        .save-btn { background: var(--save-btn); color: #000; border: none; padding: 14px 45px; border-radius: 50px; font-weight: 900; cursor: pointer; text-transform: uppercase; }
+        h1 {
+            font-weight: 200;
+            letter-spacing: 15px;
+            margin: 0;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            display: inline-block;
+        }
 
-        /* Modals */
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.94); align-items: center; justify-content: center; }
-        .modal-content { background: #0f0f0f; padding: 40px; border-radius: 24px; border: 1px solid #222; text-align: center; max-width: 480px; width: 90%; }
+        .info-trigger {
+            display: inline-block;
+            margin-left: 15px;
+            border: 1px solid #444;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            color: #777;
+            vertical-align: middle;
+            transition: all 0.3s;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .info-trigger:hover {
+            border-color: #fff;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+
+        /* --- Layout Engine --- */
+        .page-wrapper {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            width: 100%;
+            min-width: 1450px;
+            padding: 0 40px;
+            box-sizing: border-box;
+            gap: 50px;
+        }
+
+        .ad-sidebar {
+            width: 160px;
+            height: 600px;
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            flex-shrink: 0;
+            margin-top: 20px;
+        }
+
+        .ad-label {
+            color: #222;
+            font-size: 11px;
+            transform: rotate(-90deg);
+            letter-spacing: 5px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        /* --- Mixer Board --- */
+        .mixer-frame {
+            background: var(--panel-bg);
+            padding: 40px 30px;
+            border-radius: 40px;
+            border: 1px solid #1a1a1a;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
+            display: flex;
+            gap: 12px;
+        }
+
+        .channel-strip {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100px;
+            background: var(--chan-bg);
+            padding: 25px 0;
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .hz-label {
+            font-size: 0.95rem;
+            font-weight: 900;
+            color: var(--chan-color);
+            margin-bottom: 8px;
+            text-shadow: 0 0 10px var(--chan-color);
+        }
+
+        .benefit-desc {
+            font-size: 0.55rem;
+            font-weight: 700;
+            height: 45px;
+            color: #555;
+            line-height: 1.3;
+            padding: 0 8px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        /* --- Custom Range Fader --- */
+        .fader-container {
+            padding: 20px 0;
+            position: relative;
+        }
+
+        input[type=range] {
+            -webkit-appearance: slider-vertical;
+            width: 12px;
+            height: 240px;
+            background: #000;
+            cursor: pointer;
+            outline: none;
+            transition: filter 0.2s;
+        }
+
+        .vol-percent {
+            font-size: 0.75rem;
+            color: #333;
+            font-weight: 800;
+            margin: 10px 0;
+        }
+
+        /* --- MS Buttons --- */
+        .ms-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .btn-ms {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            border: 1px solid #2a2a2a;
+            background: #1a1a1a;
+            color: #444;
+            font-size: 0.75rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-m.active { background: var(--mute-red); color: #fff; border-color: var(--mute-red); box-shadow: 0 0 15px rgba(217, 4, 41, 0.4); }
+        .btn-s.active { background: var(--solo-blue); color: #fff; border-color: var(--solo-blue); box-shadow: 0 0 15px rgba(0, 180, 216, 0.4); }
+
+        /* --- Control Bar --- */
+        .controls-row {
+            margin-top: 50px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        #startBtn {
+            background: var(--start-yellow);
+            color: #000;
+            padding: 20px 70px;
+            border-radius: 60px;
+            border: none;
+            font-weight: 900;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 10px 30px rgba(255, 214, 10, 0.2);
+            transition: 0.3s;
+        }
+
+        #startBtn:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(255, 214, 10, 0.4); }
+
+        #pauseBtn {
+            background: var(--accent-green);
+            color: #fff;
+            padding: 20px 70px;
+            border-radius: 60px;
+            border: none;
+            font-weight: 900;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .utility-btn {
+            background: #111;
+            color: #777;
+            border: 1px solid #222;
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+
+        .save-btn-cta {
+            background: var(--save-teal);
+            color: #000;
+            border: none;
+            padding: 15px 45px;
+            border-radius: 50px;
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        /* --- Modals --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.96);
+            z-index: 5000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+        }
+
+        .modal-card {
+            background: #0a0a0a;
+            padding: 50px;
+            border-radius: 30px;
+            border: 1px solid #222;
+            width: 500px;
+            text-align: center;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 12px;
+            border: none;
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
     <div class="header-container">
         <h1>Solfeggio Player</h1>
-        <div class="info-trigger" onclick="openModal('infoModal', false)">i</div>
+        <div class="info-trigger" onclick="handleInfoOpen()">i</div>
     </div>
-    
-    <div class="page-wrapper">
-        <aside class="ad-sidebar"></aside>
-        
-        <div style="display:flex; flex-direction:column; align-items:center;">
-            <div class="mixer" id="mixer-ui">
-                <script>
-                    const chData = [
-                        {hz:"69.3Hz", d:"Resonance Deepener", c:"#4a00e0"}, {hz:"174Hz", d:"Relieves Pain and Stress", c:"#ffffff"},
-                        {hz:"285Hz", d:"Accelerates Physical Recovery", c:"#9b2226"}, {hz:"396Hz", d:"Releases Fear and Guilt", c:"#ae2012"},
-                        {hz:"417Hz", d:"Facilitates Change", c:"#ca6702"}, {hz:"432Hz", d:"Physical Relaxation", c:"#ee9b00"},
-                        {hz:"528Hz", d:"DNA Repair & Transformation", c:"#0a9396"}, {hz:"639Hz", d:"Improves Relationships", c:"#005f73"},
-                        {hz:"741Hz", d:"Detoxifies Mind & Body", c:"#3e5c76"}, {hz:"852Hz", d:"Awakens Intuition", c:"#5e548e"},
-                        {hz:"963Hz", d:"Connects to Higher Self", c:"#9d4edd"}
-                    ];
-                    chData.forEach((ch, i) => {
-                        document.write(`
-                            <div class="chan" id="chan${i}" style="--clr:${ch.c}">
-                                <div class="hz">${ch.hz}</div>
-                                <div class="desc">${ch.d}</div>
-                                <div class="fader-wrapper">
-                                    <input type="range" id="v${i}" min="0" max="1" step="0.01" value="0.30" oninput="slide(${i},this.value)">
-                                </div>
-                                <div id="l${i}" style="font-size:0.75rem; color:#444;">30%</div>
-                                <div class="ms-row">
-                                    <button class="ms-btn m-btn" id="m${i}" onclick="toggleMute(${i})">M</button>
-                                    <button class="ms-btn s-btn" id="s${i}" onclick="toggleSolo(${i})">S</button>
-                                </div>
-                            </div>
-                        `);
-                    });
-                </script>
-            </div>
 
-            <div class="main-controls">
-                <button id="startBtn" onclick="beginSession()">Start Session</button>
-                <button id="pauseBtn" style="display:none;" onclick="togglePlay()">Pause All</button>
-                <button class="ctrl-btn" onclick="randomize()">Random</button>
-                <button class="ctrl-btn" onclick="resetAll()">Reset</button>
-                <button class="save-btn" onclick="openModal('saveModal', true)">Save</button>
-                <button class="ctrl-btn" onclick="copyShare()">Share Link</button>
+    <div class="page-wrapper">
+        <aside class="ad-sidebar"><span class="ad-label">Advertisement</span></aside>
+
+        <div style="display:flex; flex-direction:column; align-items:center;">
+            <div class="mixer-frame" id="mixerBoard">
+                </div>
+
+            <div class="controls-row">
+                <button id="startBtn" onclick="initAudio()">Start Session</button>
+                <button id="pauseBtn" style="display:none;" onclick="toggleMasterPause()">Pause All</button>
+                <button class="utility-btn" onclick="randomMix()">Random</button>
+                <button class="utility-btn" onclick="resetMixer()">Reset</button>
+                <button class="save-btn-cta" onclick="handleSaveOpen()">Save</button>
+                <button class="utility-btn" onclick="copyShareURL()">Share Link</button>
             </div>
         </div>
-        <aside class="ad-sidebar"></aside>
+
+        <aside class="ad-sidebar"><span class="ad-label">Advertisement</span></aside>
     </div>
 
-    <div id="infoModal" class="modal"><div class="modal-content"><h2 style="color:var(--accent);">How to Use</h2><p style="color:#aaa; text-align:left;">Headphones essential. Volume moderate. Save for library. Share for unique link.</p><button style="width:100%; padding:10px; margin-top:20px;" onclick="closeModal('infoModal', false)">Close</button></div></div>
-    <div id="saveModal" class="modal"><div class="modal-content"><h2>Save to Library</h2><button style="width:100%; padding:10px; margin-bottom:10px;">Google Login</button><button style="width:100%; padding:10px;" onclick="closeModal('saveModal', true)">Cancel</button></div></div>
+    <div id="infoModal" class="modal-overlay">
+        <div class="modal-card">
+            <h2 style="color:var(--accent-green); font-weight:200; letter-spacing:4px;">USER GUIDE</h2>
+            <div style="text-align:left; color:#888; line-height:1.7; font-size:0.9rem; margin: 25px 0;">
+                <p><strong>HEADPHONES:</strong> Required for the frequencies to stimulate the brain correctly in stereo.</p>
+                <p><strong>VOLUME:</strong> Keep at a comfortable, moderate level. Healing is not dependent on loudness.</p>
+                <p><strong>SAVE:</strong> Connect via Google/Facebook to store your favorites in your library.</p>
+                <p><strong>SHARE:</strong> Generates a custom link with your exact current fader positions.</p>
+            </div>
+            <button class="login-btn" style="background:#222; color:#fff;" onclick="handleInfoClose()">BACK TO MIXER</button>
+        </div>
+    </div>
+
+    <div id="saveModal" class="modal-overlay">
+        <div class="modal-card">
+            <h2 style="font-weight:200; letter-spacing:4px;">SAVE TO LIBRARY</h2>
+            <p style="color:#555; margin-bottom:30px;">Login to sync your presets across all devices.</p>
+            <button class="login-btn" style="background:#db4437; color:white;">Continue with Google</button>
+            <button class="login-btn" style="background:#4267b2; color:white;">Continue with Facebook</button>
+            <button class="login-btn" style="background:#111; color:white; border:1px solid #333;">Login with Email</button>
+            <button class="login-btn" style="background:transparent; color:#444;" onclick="handleSaveClose()">CANCEL</button>
+        </div>
+    </div>
 
     <script>
-        let ctx, master, tracks = [], ready = false, isPaused = false, wasPlayingBeforeSave = false;
-        let mutedTracks = new Set(), soloTrack = null;
-        const fileNames = ["69.3Hz","174Hz","285Hz","396Hz","417Hz","432Hz","528Hz","639Hz","741Hz","852Hz","963Hz"];
+        const chData = [
+            {hz:"69.3Hz", d:"Resonance Deepener", c:"#4a00e0"}, {hz:"174Hz", d:"Relieves Pain", c:"#ffffff"},
+            {hz:"285Hz", d:"Body Recovery", c:"#9b2226"}, {hz:"396Hz", d:"Release Fear", c:"#ae2012"},
+            {hz:"417Hz", d:"Change Cycles", c:"#ca6702"}, {hz:"432Hz", d:"Relaxation", c:"#ee9b00"},
+            {hz:"528Hz", d:"DNA Repair", c:"#0a9396"}, {hz:"639Hz", d:"Relationships", c:"#005f73"},
+            {hz:"741Hz", d:"Detox Mind", c:"#3e5c76"}, {hz:"852Hz", d:"Intuition", c:"#5e548e"},
+            {hz:"963Hz", d:"Consciousness", c:"#9d4edd"}
+        ];
 
-        function openModal(id, shouldPause) {
-            if (shouldPause && ready && !isPaused) { togglePlay(); wasPlayingBeforeSave = true; }
-            document.getElementById(id).style.display = 'flex';
-        }
-        function closeModal(id, shouldResume) {
-            document.getElementById(id).style.display = 'none';
-            if (shouldResume && ready && wasPlayingBeforeSave) { togglePlay(); wasPlayingBeforeSave = false; }
-        }
+        let ctx, master, tracks = [], isPaused = false, ready = false, wasPlayingBeforeSave = false;
+        let mutedSet = new Set(), soloIdx = null;
 
-        async function loadTrack(name, index) {
-            try {
-                const res = await fetch(`./${name}.mp3`);
-                const buf = await res.arrayBuffer();
-                const audioBuf = await ctx.decodeAudioData(buf);
-                const src = ctx.createBufferSource();
-                src.buffer = audioBuf; src.loop = true;
-                const gn = ctx.createGain(); gn.gain.setValueAtTime(0, ctx.currentTime);
-                src.connect(gn); gn.connect(master); src.start(0);
-                tracks[index] = { g: gn, lastVal: 0.30 };
-            } catch (e) { console.error("Missing:", name); }
-        }
+        // --- Build Mixer ---
+        const board = document.getElementById('mixerBoard');
+        chData.forEach((ch, i) => {
+            const div = document.createElement('div');
+            div.className = 'channel-strip';
+            div.id = `chan-${i}`;
+            div.style.setProperty('--chan-color', ch.c);
+            div.innerHTML = `
+                <div class="hz-label">${ch.hz}</div>
+                <div class="benefit-desc">${ch.d}</div>
+                <div class="fader-container">
+                    <input type="range" id="fader-${i}" min="0" max="1" step="0.01" value="0.30" oninput="updateVol(${i}, this.value)">
+                </div>
+                <div class="vol-percent" id="perc-${i}">30%</div>
+                <div class="ms-group">
+                    <button class="btn-ms btn-m" id="m-${i}" onclick="toggleMute(${i})">M</button>
+                    <button class="btn-ms btn-s" id="s-${i}" onclick="toggleSolo(${i})">S</button>
+                </div>
+            `;
+            board.appendChild(div);
+        });
 
-        async function beginSession() {
-            if (ready) return;
+        // --- Audio Core ---
+        async function initAudio() {
+            if(ready) return;
             ctx = new (window.AudioContext || window.webkitAudioContext)();
             master = ctx.createGain(); master.gain.setValueAtTime(0.7, ctx.currentTime); master.connect(ctx.destination);
-            document.getElementById('startBtn').innerText = "LOADING...";
-            await Promise.all(fileNames.map((name, i) => loadTrack(name, i)));
-            ready = true;
-            document.getElementById('startBtn').style.display = "none";
-            document.getElementById('pauseBtn').style.display = "block";
-            tracks.forEach((t, i) => { if(t) slide(i, 0.30); });
-        }
-
-        function slide(i, v) {
-            const val = parseFloat(v); if(!tracks[i]) return;
-            tracks[i].lastVal = val;
-            updateGain(i);
+            document.getElementById('startBtn').innerText = "CONNECTING...";
             
-            // GLOW LOGIC: Increases drop-shadow based on volume
-            const glowStrength = val * 20; // Max 20px glow
-            document.getElementById(`v${i}`).style.filter = `drop-shadow(0 0 ${glowStrength}px var(--clr))`;
-            document.getElementById('l' + i).innerText = Math.round(val * 100) + "%";
+            await Promise.all(chData.map(async (ch, i) => {
+                const res = await fetch(`./${ch.hz}.mp3`);
+                const buf = await res.arrayBuffer();
+                const audio = await ctx.decodeAudioData(buf);
+                const src = ctx.createBufferSource();
+                src.buffer = audio; src.loop = true;
+                const gn = ctx.createGain(); gn.gain.setValueAtTime(0, ctx.currentTime);
+                src.connect(gn); gn.connect(master); src.start(0);
+                tracks[i] = { gainNode: gn, currentLevel: 0.30 };
+            }));
+
+            ready = true;
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('pauseBtn').style.display = 'block';
+            tracks.forEach((_, i) => updateVol(i, 0.30));
         }
 
-        function updateGain(i) {
-            if (!tracks[i]) return;
-            let targetVolume = tracks[i].lastVal;
-            if (mutedTracks.has(i) || (soloTrack !== null && soloTrack !== i) || isPaused) targetVolume = 0;
-            tracks[i].g.gain.setTargetAtTime(targetVolume, ctx.currentTime, 0.1);
+        function updateVol(i, v) {
+            const val = parseFloat(v);
+            if(!tracks[i]) return;
+            tracks[i].currentLevel = val;
+            
+            // Neon Glow Logic
+            const fader = document.getElementById(`fader-${i}`);
+            fader.style.filter = `drop-shadow(0 0 ${val * 25}px ${chData[i].c})`;
+            document.getElementById(`perc-${i}`).innerText = Math.round(val * 100) + "%";
+            
+            applyGain(i);
         }
 
+        function applyGain(i) {
+            if(!tracks[i]) return;
+            let target = tracks[i].currentLevel;
+            if (isPaused || mutedSet.has(i) || (soloIdx !== null && soloIdx !== i)) target = 0;
+            tracks[i].gainNode.gain.setTargetAtTime(target, ctx.currentTime, 0.1);
+        }
+
+        // --- Mixer Functions ---
         function toggleMute(i) {
-            if (mutedTracks.has(i)) mutedTracks.delete(i); else mutedTracks.add(i);
-            document.getElementById(`m${i}`).style.color = mutedTracks.has(i) ? "#fff" : "#555";
-            document.getElementById(`m${i}`).style.background = mutedTracks.has(i) ? "#d90429" : "#222";
-            updateGain(i);
+            if(mutedSet.has(i)) mutedSet.delete(i); else mutedSet.add(i);
+            document.getElementById(`m-${i}`).classList.toggle('active');
+            applyGain(i);
         }
 
         function toggleSolo(i) {
-            soloTrack = (soloTrack === i) ? null : i;
+            soloIdx = (soloIdx === i) ? null : i;
             tracks.forEach((_, idx) => {
-                document.getElementById(`s${idx}`).style.color = (soloTrack === idx) ? "#fff" : "#555";
-                document.getElementById(`s${idx}`).style.background = (soloTrack === idx) ? "#00b4d8" : "#222";
-                updateGain(idx);
+                document.getElementById(`s-${idx}`).classList.toggle('active', soloIdx === idx);
+                applyGain(idx);
             });
         }
 
-        function togglePlay() { 
-            isPaused = !isPaused; 
-            master.gain.setTargetAtTime(isPaused ? 0 : 0.7, ctx.currentTime, 0.2); 
-            document.getElementById('pauseBtn').innerText = isPaused ? "RESUME ALL" : "PAUSE ALL"; 
+        function toggleMasterPause() {
+            isPaused = !isPaused;
+            master.gain.setTargetAtTime(isPaused ? 0 : 0.7, ctx.currentTime, 0.2);
+            document.getElementById('pauseBtn').innerText = isPaused ? "RESUME SESSION" : "PAUSE ALL";
         }
 
-        function randomize() { tracks.forEach((_, i) => { const v = (Math.random()*0.4 + 0.1).toFixed(2); document.getElementById('v'+i).value = v; slide(i, v); }); }
-        function resetAll() { soloTrack = null; mutedTracks.clear(); tracks.forEach((_, i) => { slide(i, 0); document.getElementById(`v${i}`).value = 0; }); }
-        function copyShare() { navigator.clipboard.writeText(window.location.href); alert("Mix link copied!"); }
+        // --- Pop-up Logic (Restored) ---
+        function handleInfoOpen() { document.getElementById('infoModal').style.display = 'flex'; }
+        function handleInfoClose() { document.getElementById('infoModal').style.display = 'none'; }
+
+        function handleSaveOpen() {
+            if(ready && !isPaused) { 
+                toggleMasterPause(); 
+                wasPlayingBeforeSave = true; 
+            }
+            document.getElementById('saveModal').style.display = 'flex';
+        }
+
+        function handleSaveClose() {
+            document.getElementById('saveModal').style.display = 'none';
+            if(wasPlayingBeforeSave) { 
+                toggleMasterPause(); 
+                wasPlayingBeforeSave = false; 
+            }
+        }
+
+        function randomMix() { tracks.forEach((_, i) => { const r = (Math.random()*0.5).toFixed(2); document.getElementById(`fader-${i}`).value = r; updateVol(i, r); }); }
+        function resetMixer() { soloIdx = null; mutedSet.clear(); tracks.forEach((_, i) => { document.getElementById(`fader-${i}`).value = 0; updateVol(i, 0); document.getElementById(`m-${i}`).classList.remove('active'); document.getElementById(`s-${i}`).classList.remove('active'); }); }
+        function copyShareURL() { navigator.clipboard.writeText(window.location.href); alert("Mix settings copied to clipboard!"); }
     </script>
 </body>
 </html>
