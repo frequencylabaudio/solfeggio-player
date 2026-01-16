@@ -136,6 +136,7 @@
 
         .btn-utility { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: 600; }
         .btn-save { background: #20c997; color: #000; padding: 10px 24px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
+        .btn-share-main { background: #007bff; color: #fff; padding: 10px 24px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
 
         /* MODAL STYLES */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); backdrop-filter: blur(10px); z-index: 1000; }
@@ -147,7 +148,7 @@
         .auth-btn { padding: 16px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; transition: 0.2s; }
         .g-btn { background: #ffffff; color: #000; }
         .email-btn { background: var(--start-yellow); color: #000; }
-        .fb-btn { background: #1877f2; color: #fff; }
+        .copy-btn { background: #007bff; color: #fff; width: 100%; }
         
         #emailInputArea { display: none; flex-direction: column; gap: 10px; margin-top: 10px; }
         .modal-input { padding: 14px; border-radius: 10px; border: 1px solid #333; background: #000; color: #fff; outline: none; }
@@ -229,7 +230,8 @@
                         <button id="muteAllBtn" class="btn-utility" onclick="toggleMuteAll()">Mute All</button>
                         <button class="btn-utility" onclick="randomize()">Randomize</button>
                         <button class="btn-utility" onclick="resetFaders()">Reset</button>
-                        <button class="btn-save" onclick="openModal('Save')">Save</button>
+                        <button class="btn-save" onclick="openSaveModal()">Save</button>
+                        <button class="btn-share-main" onclick="openShareModal()">Share</button>
                     </div>
                 </div>
             </div>
@@ -242,14 +244,13 @@
     </div>
     <div class="footer-credit">Created By Keunho Koh</div>
 
-    <div id="universalModal" class="modal-overlay" onclick="closeModal()">
+    <div id="saveModal" class="modal-overlay" onclick="closeSaveModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h2 class="modal-header" id="modalHeader">SAVE</h2>
-            <p class="modal-subtext">Share your custom preset. Audio will resume once closed.</p>
+            <h2 class="modal-header">SAVE</h2>
+            <p class="modal-subtext">Share your custom preset via Gmail or Email. Audio will resume once closed.</p>
             
             <div id="mainAuthButtons" class="auth-buttons">
                 <button class="auth-btn g-btn" onclick="handleAuth('Gmail')">GMAIL</button>
-                <button class="auth-btn fb-btn" onclick="handleAuth('Facebook')">FACEBOOK</button>
                 <button class="auth-btn email-btn" onclick="showEmailInput()">EMAIL</button>
             </div>
 
@@ -259,7 +260,16 @@
                 <div class="back-btn" onclick="hideEmailInput()">← Back</div>
             </div>
 
-            <div class="back-btn" onclick="closeModal()">CLOSE</div>
+            <div class="back-btn" onclick="closeSaveModal()">CLOSE</div>
+        </div>
+    </div>
+
+    <div id="shareModal" class="modal-overlay" onclick="closeShareModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h2 class="modal-header" style="color: #007bff;">SHARE LINK</h2>
+            <p class="modal-subtext">Quickly copy the URL for your current mixer levels. Audio will continue playing.</p>
+            <button class="auth-btn copy-btn" onclick="copyPresetLink()">COPY LINK</button>
+            <div class="back-btn" onclick="closeShareModal()">CLOSE</div>
         </div>
     </div>
 
@@ -305,7 +315,7 @@
             const pBtn = document.getElementById('pauseBtn');
             sBtn.innerText = "INITIALIZING...";
             
-            // User requested: Start session starting all faders at 25%
+            // Start all faders at 25%
             tracks.forEach((t, i) => {
                 t.lastVal = 0.25;
                 const inputEl = document.getElementById('v' + i);
@@ -354,33 +364,48 @@
             updateUI(i, val);
         }
 
-        // --- 4. MODAL & AUTH LOGIC ---
-        function openModal(title) { 
-            const modalHeader = document.getElementById('modalHeader');
-            modalHeader.innerText = title;
-            // Per instructions: Audio should pause when this pop-up is active
+        // --- 4. MODAL & SHARE LOGIC ---
+        function openSaveModal() { 
             if (ready && !isPaused) { 
                 toggle(); 
                 wasPlayingBeforeSave = true; 
             }
-            document.getElementById('universalModal').style.display = 'block'; 
+            document.getElementById('saveModal').style.display = 'block'; 
         }
 
-        function closeModal() { 
-            document.getElementById('universalModal').style.display = 'none'; 
+        function closeSaveModal() { 
+            document.getElementById('saveModal').style.display = 'none'; 
             hideEmailInput();
-            // Per instructions: Audio should resume playing when the pop-up is closed
             if (ready && wasPlayingBeforeSave && isPaused) { 
                 toggle(); 
                 wasPlayingBeforeSave = false; 
             }
         }
 
+        function openShareModal() {
+            document.getElementById('shareModal').style.display = 'block';
+            // Audio is NOT paused here per instructions
+        }
+
+        function closeShareModal() {
+            document.getElementById('shareModal').style.display = 'none';
+        }
+
+        function copyPresetLink() {
+            const levels = tracks.map(t => Math.round(t.lastVal * 100));
+            const presetLink = `${window.location.origin}${window.location.pathname}?preset=${levels.join(',')}`;
+            const dummy = document.createElement('input');
+            document.body.appendChild(dummy);
+            dummy.value = presetLink;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            alert("Preset link copied to clipboard!");
+        }
+
         async function handleAuth(platform) {
             let provider;
             if(platform === 'Gmail') provider = new firebase.auth.GoogleAuthProvider();
-            if(platform === 'Facebook') provider = new firebase.auth.FacebookAuthProvider();
-            
             if(provider) {
                 try {
                     const result = await auth.signInWithPopup(provider);
@@ -393,33 +418,20 @@
             const levels = tracks.map(t => Math.round(t.lastVal * 100));
             const userEmail = auth.currentUser.email;
             const presetLink = `${window.location.origin}${window.location.pathname}?preset=${levels.join(',')}`;
-
             try {
                 await db.collection("presets").doc(uid).set({
                     levels: levels,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
-
                 await db.collection("mail").add({
                     to: userEmail,
                     message: {
                         subject: 'Your Magic Link is Here!',
-                        html: `
-                            <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 12px; max-width: 500px;">
-                                <h2 style="color: #ffd60a; background: #000; padding: 10px; text-align: center; border-radius: 8px;">FREQUENCY LAB</h2>
-                                <p>Welcome to the Frequency Lab family.</p>
-                                <p>We’ve captured the exact frequencies from your last session. Whenever you need to return to this specific state of mind, simply click your personal magic link below:</p>
-                                <p style="text-align:center;"><a href="${presetLink}" style="background:#ffd60a; color:#000; padding:12px 24px; text-decoration:none; font-weight:bold; border-radius:5px;">Open Your Preset</a></p>
-                                <p>Your unique preset is saved and ready for your next journey.</p>
-                                <hr style="border: none; border-top: 1px solid #eee;">
-                                <p style="font-size: 12px; color: #888;">Created by Frequency Lab</p>
-                            </div>
-                        `
+                        html: `<p>Your unique preset is saved: <a href="${presetLink}">Open Your Preset</a></p>`
                     }
                 });
-
-                alert("Mix saved successfully! Check " + userEmail + " for your magic link.");
-                closeModal();
+                alert("Mix saved successfully! Check " + userEmail + " for your link.");
+                closeSaveModal();
             } catch (e) { alert("Save failed: " + e.message); }
         }
 
@@ -430,7 +442,7 @@
                 .then(() => {
                     window.localStorage.setItem('emailForSignIn', email);
                     alert('Magic link sent to ' + email);
-                    closeModal();
+                    closeSaveModal();
                 })
                 .catch(err => alert(err.message));
         }
