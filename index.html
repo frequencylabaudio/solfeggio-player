@@ -16,7 +16,6 @@
         }
         
         .title-container { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 20px; }
-        /* Restored original title color */
         h1 { font-weight: 200; letter-spacing: 5px; margin: 0; font-size: 2.2rem; color: #e0e0e0; }
         
         .info-icon { 
@@ -29,15 +28,23 @@
 
         .subtitle { font-size: 0.75rem; letter-spacing: 3px; color: #666; margin-bottom: 25px; text-transform: uppercase; }
         
+        /* Sidebar positioning remains unchanged */
         .page-wrapper { display: flex; align-items: flex-start; gap: 15px; padding: 10px; max-width: 100vw; box-sizing: border-box; }
         .ad-sidebar { width: 140px; height: 600px; background: #111; border: 1px dashed #333; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .ad-text { color: #444; font-size: 10px; transform: rotate(-90deg); letter-spacing: 2px; }
 
+        /* Updated Mixer for full horizontal scroll access */
         .mixer { 
-            display: flex; flex-wrap: nowrap; justify-content: center; gap: 8px; 
+            display: flex; flex-wrap: nowrap; 
+            justify-content: flex-start; /* Fixes left-side scroll access */
+            gap: 8px; 
             background: var(--panel-bg); padding: 25px 15px; border-radius: 24px; 
-            border: 1px solid #222; width: auto; max-width: calc(100vw - 350px); overflow-x: auto;
+            border: 1px solid #222; width: auto; 
+            margin: 0 auto; /* Keeps it centered when not overflowing */
+            max-width: calc(100vw - 350px); 
+            overflow-x: auto;
             box-shadow: 0 15px 40px rgba(0,0,0,0.9);
+            -webkit-overflow-scrolling: touch;
         }
         
         .chan { 
@@ -262,7 +269,6 @@
                 ready = true;
                 const now = ctx.currentTime;
                 tracks.forEach((t, i) => {
-                    // Check Solo/Mute logic on initialization
                     let target = (t.isMuted || (soloIdx !== -1 && soloIdx !== i)) ? 0 : t.lastVal * 0.7;
                     t.g.gain.linearRampToValueAtTime(target, now + 1.5); 
                 });
@@ -276,7 +282,6 @@
             const val = parseFloat(v);
             tracks[i].lastVal = val;
             if (ready && tracks[i].g) {
-                // If muted or someone else is soloed, keep at 0
                 let target = (tracks[i].isMuted || (soloIdx !== -1 && soloIdx !== i)) ? 0 : val * 0.7;
                 tracks[i].g.gain.setTargetAtTime(target, ctx.currentTime, 0.05);
             }
@@ -356,7 +361,6 @@
                 updateTimerDisplay();
                 if (timeLeft <= 0) { 
                     clearInterval(timerInterval); 
-                    // Change back to 'Disabled' in UI
                     document.getElementById('timerSelect').value = "0";
                     if(!isPaused) toggle(); 
                 }
@@ -383,7 +387,6 @@
             if (!ready) return;
             tracks[i].isMuted = (forceState !== null) ? forceState : !tracks[i].isMuted;
             document.getElementById('m' + i).classList.toggle('active-mute', tracks[i].isMuted);
-            // Refresh gain level
             slide(i, tracks[i].lastVal);
         }
 
@@ -393,7 +396,6 @@
             if (!ready) return;
             soloIdx = (soloIdx === i) ? -1 : i;
             document.querySelectorAll('.s-btn').forEach((b,idx)=>b.classList.toggle('active-solo', idx===soloIdx));
-            // Refresh gain levels for all tracks to apply solo logic
             tracks.forEach((_, idx) => slide(idx, tracks[idx].lastVal));
         }
     </script>
