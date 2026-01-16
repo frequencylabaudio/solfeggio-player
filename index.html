@@ -30,26 +30,28 @@
 
         .subtitle { font-size: 0.75rem; letter-spacing: 3px; color: #666; margin-bottom: 25px; text-transform: uppercase; }
         
-        /* Updated Grid for 4 Ads: 2 Left, 1 Center, 2 Right */
         .page-wrapper { 
             display: grid;
-            grid-template-columns: 280px 1fr 280px; 
+            grid-template-columns: 140px 1fr 140px; 
             align-items: flex-start; 
             width: 100%; 
-            padding: 10px 20px; 
+            padding: 10px 40px; 
             box-sizing: border-box;
             gap: 20px;
         }
 
-        .ad-column {
+        /* Sidebar container for stacked ads */
+        .ad-sidebar-stack {
             display: flex;
-            gap: 10px;
+            flex-direction: column;
+            gap: 20px;
+            width: 140px;
             flex-shrink: 0;
         }
 
-        .ad-sidebar { 
+        .ad-box { 
             width: 140px; 
-            height: 600px; 
+            height: 300px; /* Split skyscraper height in half */
             background: #111; 
             border: 1px dashed #333; 
             display: flex; 
@@ -161,9 +163,9 @@
     <div class="subtitle">By Frequency Lab</div>
     
     <div class="page-wrapper">
-        <div class="ad-column">
-            <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD 1</span></aside>
-            <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD 2</span></aside>
+        <div class="ad-sidebar-stack">
+            <aside class="ad-box"><span class="ad-text">AD UNIT 1</span></aside>
+            <aside class="ad-box"><span class="ad-text">AD UNIT 2</span></aside>
         </div>
         
         <main>
@@ -215,6 +217,9 @@
                                 <option value="1200">20 Min</option>
                                 <option value="1800">30 Min</option>
                                 <option value="3600">1 Hr</option>
+                                <option value="7200">2 Hr</option>
+                                <option value="14400">4 Hr</option>
+                                <option value="28800">8 Hr</option>
                             </select>
                             <span id="timerDisplay">--:--</span>
                         </div>
@@ -228,12 +233,11 @@
             </div>
         </main>
 
-        <div class="ad-column">
-            <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD 3</span></aside>
-            <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD 4</span></aside>
+        <div class="ad-sidebar-stack">
+            <aside class="ad-box"><span class="ad-text">AD UNIT 3</span></aside>
+            <aside class="ad-box"><span class="ad-text">AD UNIT 4</span></aside>
         </div>
     </div>
-    
     <div class="footer-credit">Created By Keunho Koh</div>
 
     <div id="infoModal" class="modal-overlay" onclick="closeInfo()">
@@ -433,9 +437,17 @@
         }
 
         function updateTimerDisplay() {
-            const m = Math.floor(timeLeft / 60); const s = timeLeft % 60;
+            const hrs = Math.floor(timeLeft / 3600);
+            const m = Math.floor((timeLeft % 3600) / 60); 
+            const s = timeLeft % 60;
             const display = document.getElementById('timerDisplay');
-            if(display) display.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+            if(display) {
+                if (hrs > 0) {
+                    display.innerText = `${hrs}:${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+                } else {
+                    display.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+                }
+            }
         }
 
         function randomize() {
