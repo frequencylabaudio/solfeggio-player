@@ -102,7 +102,11 @@
             display: flex; flex-direction: column; align-items: center; 
             flex: 0 0 95px; width: 95px; background: var(--chan-bg); 
             padding: 12px 0; border-radius: 12px; border: 1px solid #202020; 
-            transition: border 0.3s, box-shadow 0.3s; box-sizing: border-box;
+            transition: all 0.3s ease; box-sizing: border-box;
+            position: relative;
+            /* Containment prevents the glow from leaking into neighbors */
+            contain: paint;
+            overflow: hidden;
         }
         
         .hz { font-size: 0.8rem; font-weight: 800; margin-bottom: 4px; color: var(--clr); }
@@ -139,7 +143,6 @@
         .g-btn { background: #ffffff; color: #000; }
         .fb-btn { background: #3b5998; color: #fff; }
         .email-btn { background: var(--start-yellow); color: #000; }
-        .link-btn { background: var(--bright-blue); color: #fff; }
         
         .back-btn { margin-top: 25px; color: #666; cursor: pointer; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; transition: 0.2s; }
         #successMsg { display: none; margin-top: 20px; padding: 20px; background: #111; border: 1px solid #20c997; border-radius: 12px; color: #fff; font-size: 13px; line-height: 1.4; }
@@ -172,17 +175,17 @@
                     <div class="mixer" id="mixer-ui">
                         <script>
                             const chData = [
-                                {hz:"69.3Hz", d:"Resonance Deepener", c:"#4a00e0", g:"rgba(74,0,224,0.5)"},
-                                {hz:"174Hz", d:"Relieves Pain and Stress", c:"#ffffff", g:"rgba(255,255,255,0.3)"},
-                                {hz:"285Hz", d:"Accelerates Physical Recovery", c:"#9b2226", g:"rgba(155,34,38,0.5)"},
-                                {hz:"396Hz", d:"Releases Fear and Guilt", c:"#ae2012", g:"rgba(174,32,18,0.5)"},
-                                {hz:"417Hz", d:"Breaks Cycles & Facilitates Change", c:"#ca6702", g:"rgba(202,103,2,0.5)"},
-                                {hz:"432Hz", d:"Physical Relaxation", c:"#ee9b00", g:"rgba(238,155,0,0.5)"},
-                                {hz:"528Hz", d:"Enhances DNA Repair & Transformation", c:"#0a9396", g:"rgba(10,147,150,0.5)"},
-                                {hz:"639Hz", d:"Improves Relationships & Connection", c:"#005f73", g:"rgba(0,95,115,0.5)"},
-                                {hz:"741Hz", d:"Detoxifies the Body and Mind", c:"#3e5c76", g:"rgba(62,92,118,0.5)"},
-                                {hz:"852Hz", d:"Awakens Intuition & Awareness", c:"#5e548e", g:"rgba(94,84,142,0.5)"},
-                                {hz:"963Hz", d:"Connects to Higher Consciousness", c:"#9d4edd", g:"rgba(157,78,221,0.5)"}
+                                {hz:"69.3Hz", d:"Resonance Deepener", c:"#4a00e0", g:"rgba(74,0,224,0.4)"},
+                                {hz:"174Hz", d:"Relieves Pain and Stress", c:"#ffffff", g:"rgba(255,255,255,0.2)"},
+                                {hz:"285Hz", d:"Accelerates Physical Recovery", c:"#9b2226", g:"rgba(155,34,38,0.4)"},
+                                {hz:"396Hz", d:"Releases Fear and Guilt", c:"#ae2012", g:"rgba(174,32,18,0.4)"},
+                                {hz:"417Hz", d:"Breaks Cycles & Facilitates Change", c:"#ca6702", g:"rgba(202,103,2,0.4)"},
+                                {hz:"432Hz", d:"Physical Relaxation", c:"#ee9b00", g:"rgba(238,155,0,0.4)"},
+                                {hz:"528Hz", d:"Enhances DNA Repair & Transformation", c:"#0a9396", g:"rgba(10,147,150,0.4)"},
+                                {hz:"639Hz", d:"Improves Relationships & Connection", c:"#005f73", g:"rgba(0,95,115,0.4)"},
+                                {hz:"741Hz", d:"Detoxifies the Body and Mind", c:"#3e5c76", g:"rgba(62,92,118,0.4)"},
+                                {hz:"852Hz", d:"Awakens Intuition & Awareness", c:"#5e548e", g:"rgba(94,84,142,0.4)"},
+                                {hz:"963Hz", d:"Connects to Higher Consciousness", c:"#9d4edd", g:"rgba(157,78,221,0.4)"}
                             ];
                             chData.forEach((ch, i) => {
                                 document.write(`
@@ -238,20 +241,6 @@
     </div>
     <div class="footer-credit">Created By Keunho Koh</div>
 
-    <div id="infoModal" class="modal-overlay" onclick="closeInfo()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <h2 class="modal-header">How to Use</h2>
-            <div class="modal-subtext">
-                <i>A quick guide to finding your perfect harmony.</i>
-                <strong>🎧 For Best Results</strong>
-                Use <b>headphones</b> to experience the full therapeutic depth of each frequency.
-                <strong>⏳ Pro Tip: Timer</strong>
-                Set a timer to automatically fade out your session.
-            </div>
-            <div class="back-btn" onclick="closeInfo()">Back to Mixer</div>
-        </div>
-    </div>
-
     <div id="saveModal" class="modal-overlay" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <h2 class="modal-header">Save</h2>
@@ -286,8 +275,7 @@
     <script>
         const audioFiles = ["69.3Hz","174Hz","285Hz","396Hz","417Hz","432Hz","528Hz","639Hz","741Hz","852Hz","963Hz"];
         let ctx, master, tracks = [], ready = false, isPaused = false, wasPlayingBeforeSave = false;
-        let timerInterval, timeLeft = 0, soloIdx = -1;
-        let isGlobalMuteActive = false; 
+        let timerInterval, timeLeft = 0, soloIdx = -1, isGlobalMuteActive = false;
 
         for(let i=0; i<11; i++) { tracks[i] = { lastVal: 0, isMuted: false, g: null }; }
 
@@ -381,7 +369,7 @@
             if(platform === 'Link') {
                 navigator.clipboard.writeText(link).then(() => alert("Copied!"));
             } else {
-                alert(`Shared to ${platform}`);
+                alert(`Shared via ${platform}`);
             }
         }
 
@@ -392,8 +380,16 @@
             if(label) label.innerText = Math.round(val * 100) + "%";
             const el = document.getElementById('c' + i);
             if(el) {
-                el.style.boxShadow = val > 0.01 ? `0 0 ${val * 45}px var(--glow)` : "none";
-                el.style.borderColor = val > 0.01 ? `rgba(255,255,255,${val * 0.6})` : "#202020";
+                // Modified Glow Logic: Combines an inner glow with a sharp outer border to prevent bleed.
+                if (val > 0.01) {
+                    const glowColor = el.style.getPropertyValue('--glow');
+                    const borderColor = `rgba(255,255,255,${val * 0.7})`;
+                    el.style.boxShadow = `inset 0 0 ${val * 25}px ${glowColor}, 0 0 ${val * 10}px ${glowColor}`;
+                    el.style.borderColor = borderColor;
+                } else {
+                    el.style.boxShadow = "none";
+                    el.style.borderColor = "#202020";
+                }
             }
         }
 
@@ -463,15 +459,8 @@
 
         function toggleMuteAll() {
             if (!ready) return;
-            
-            // Toggle global tracking state
             isGlobalMuteActive = !isGlobalMuteActive;
-            
-            // Apply state to all tracks based on the button's toggle
-            tracks.forEach((_, i) => {
-                muteTrack(i, isGlobalMuteActive);
-            });
-
+            tracks.forEach((_, i) => muteTrack(i, isGlobalMuteActive));
             const mainMuteBtn = document.getElementById('muteAllBtn');
             mainMuteBtn.innerText = isGlobalMuteActive ? "Unmute All" : "Mute All";
         }
