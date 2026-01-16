@@ -14,23 +14,19 @@
             overflow-x: hidden;
         }
         
+        /* Header */
         .header-container { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 20px; }
         h1 { font-weight: 200; letter-spacing: 5px; margin: 0; font-size: 1.8rem; }
         .info-trigger { cursor: pointer; color: #444; font-size: 1.1rem; border: 1px solid #333; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .subtitle { font-size: 0.7rem; letter-spacing: 3px; color: #666; margin: 5px 0 10px 0; text-transform: uppercase; }
-
-        /* Controls Area */
-        .main-controls { margin: 10px 0 20px 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; width: 95%; max-width: 900px; z-index: 10; }
-        #startBtn, #pauseBtn { background: #ffd60a; color: #000; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; width: 220px; }
-        #pauseBtn { background: #55a630; color: #fff; display: none; }
-        
-        .timer-wrap { display: flex; align-items: center; gap: 10px; background: #111; padding: 8px 18px; border-radius: 50px; border: 1px solid #333; }
-        .btn-utility { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 10px 18px; border-radius: 50px; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: 600; }
-        .btn-save { background: #20c997; color: #000; padding: 10px 18px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
+        .subtitle { font-size: 0.7rem; letter-spacing: 3px; color: #666; margin: 5px 0 20px 0; text-transform: uppercase; }
 
         .page-wrapper { display: flex; align-items: flex-start; gap: 15px; padding: 10px; width: 100%; justify-content: center; box-sizing: border-box; }
         
-        /* Mixer Container */
+        /* Desktop Sidebars */
+        .ad-sidebar { width: 140px; height: 600px; background: #111; border: 1px dashed #333; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .ad-text { color: #444; font-size: 10px; transform: rotate(-90deg); letter-spacing: 2px; }
+
+        /* Mixer Console */
         .mixer { 
             display: flex; flex-wrap: nowrap; justify-content: center; gap: 8px; 
             background: var(--panel-bg); padding: 20px 10px; border-radius: 24px; 
@@ -38,7 +34,7 @@
             box-shadow: 0 15px 40px rgba(0,0,0,0.9);
         }
 
-        /* Desktop Channel */
+        /* Desktop Channel Layout */
         .chan { 
             display: flex; flex-direction: column; align-items: center; 
             flex: 0 0 95px; width: 95px; background: var(--chan-bg); 
@@ -49,25 +45,34 @@
         .desc { font-size: 0.5rem; font-weight: 700; height: 44px; color: #b0b0b0; line-height: 1.2; padding: 0 4px; display: flex; align-items: center; justify-content: center; text-align: center; text-transform: uppercase; }
         input[type=range] { -webkit-appearance: slider-vertical; width: 18px; height: 140px; cursor: pointer; margin-bottom: 12px; }
 
-        /* Mobile Redesign */
+        /* Controls Area (Desktop: Bottom | Mobile: Top) */
+        .main-controls { margin: 25px 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; width: 95%; max-width: 900px; }
+        #startBtn, #pauseBtn { background: #ffd60a; color: #000; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; width: 220px; }
+        #pauseBtn { background: #55a630; color: #fff; display: none; }
+        .timer-wrap { display: flex; align-items: center; gap: 10px; background: #111; padding: 8px 18px; border-radius: 50px; border: 1px solid #333; }
+        .btn-utility { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 10px 18px; border-radius: 50px; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: 600; }
+        .btn-save { background: #20c997; color: #000; padding: 10px 18px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
+
+        /* Mobile Ad Banner (Hidden on Desktop) */
+        .mobile-ad-banner { display: none; width: 320px; height: 50px; background: #111; border: 1px dashed #333; margin: 20px auto; align-items: center; justify-content: center; color: #444; font-size: 10px; letter-spacing: 2px; }
+
+        /* MOBILE REDESIGN LOGIC */
         @media (max-width: 768px) {
-            .page-wrapper { flex-direction: column; align-items: center; }
-            .ad-sidebar { display: none; }
+            .page-wrapper { flex-direction: column; align-items: center; padding-top: 0; }
+            .ad-sidebar { display: none; } /* Kill the vertical ads on mobile */
+            .mobile-ad-banner { display: flex; } /* Show horizontal ad at bottom */
+            
             .mixer { flex-direction: column; width: 95%; gap: 12px; padding: 15px; order: 2; }
-            .main-controls { order: 1; margin-bottom: 20px; } /* Controls on top */
+            .main-controls { order: 1; margin: 10px 0 20px 0; } /* Controls at Top for Mobile */
             
             .chan { 
                 flex-direction: row; width: 100%; height: auto; flex: none;
                 justify-content: space-between; padding: 15px; align-items: center; gap: 15px;
             }
             .chan-info { text-align: left; display: flex; flex-direction: column; gap: 4px; width: 55%; }
-            .hz { font-size: 1rem; } /* Matches description size */
-            .desc { 
-                height: auto; text-align: left; font-size: 0.85rem; /* Larger font */
-                padding: 0; display: block; color: #eee; 
-                text-transform: none; /* Easier to read */
-                justify-content: flex-start;
-            }
+            .hz { font-size: 1rem; }
+            .desc { height: auto; text-align: left; font-size: 0.85rem; padding: 0; display: block; color: #eee; text-transform: none; }
+            
             input[type=range] { -webkit-appearance: none; width: 30%; height: 6px; background: #333; border-radius: 3px; margin: 0; }
             input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; background: #fff; border-radius: 50%; }
         }
@@ -78,10 +83,8 @@
         .m-btn.active-mute { background: #9b2226; color: #fff; border-color: #ff4d4d; }
         .s-btn.active-solo { background: #ffd60a; color: #000; border-color: #fff; }
 
-        /* Modal styling kept same but ensure persistence text is handled */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); z-index: 1000; }
         .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f0f; padding: 35px; border-radius: 24px; text-align: center; width: 90%; max-width: 500px; border: 1px solid #222; box-sizing: border-box; }
-
         .footer-credit { margin: 30px 0; font-size: 0.6rem; color: #333; letter-spacing: 1px; text-transform: uppercase; }
     </style>
 </head>
@@ -92,31 +95,11 @@
         <div class="info-trigger" onclick="openInfo()">ⓘ</div>
     </div>
     <div class="subtitle">By Frequency Lab</div>
-
-    <div class="main-controls">
-        <button id="startBtn" onclick="beginSession()">Start Session</button>
-        <button id="pauseBtn" onclick="toggle()">Pause All</button>
-        <div class="timer-wrap">
-            <select id="timerSelect" onchange="setTimer(this.value)">
-                <option value="0">Timer: Disabled</option>
-                <option value="60">1 Min</option>
-                <option value="300">5 Min</option>
-                <option value="600">10 Min</option>
-                <option value="1800">30 Min</option>
-                <option value="3600">1 Hr</option>
-            </select>
-            <span id="timerDisplay" style="font-family: monospace; color: #55a630; font-size: 0.85rem;">--:--</span>
-        </div>
-        <button class="btn-utility" onclick="toggleMuteAll()">Mute All</button>
-        <button class="btn-utility" onclick="randomize()">Randomize</button>
-        <button class="btn-utility" onclick="resetFaders()">Reset</button>
-        <button class="btn-save" onclick="alert('Link copied to clipboard (Simulated)')">Save Preset</button>
-    </div>
     
     <div class="page-wrapper">
-        <aside class="ad-sidebar" style="width: 140px; height: 600px; background: #111; border: 1px dashed #333; display: flex; align-items: center; justify-content: center;"><span style="color: #444; font-size: 10px; transform: rotate(-90deg); letter-spacing: 2px;">SKYSCRAPER AD</span></aside>
+        <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD</span></aside>
         
-        <main>
+        <main style="display: flex; flex-direction: column; align-items: center;">
             <div class="mixer" id="mixer-ui">
                 <script>
                     const chData = [
@@ -150,19 +133,41 @@
                     });
                 </script>
             </div>
+
+            <div class="main-controls">
+                <button id="startBtn" onclick="beginSession()">Start Session</button>
+                <button id="pauseBtn" onclick="toggle()">Pause All</button>
+                <div class="timer-wrap">
+                    <select id="timerSelect" onchange="setTimer(this.value)">
+                        <option value="0">Timer: Disabled</option>
+                        <option value="60">1 Min</option>
+                        <option value="300">5 Min</option>
+                        <option value="600">10 Min</option>
+                        <option value="1800">30 Min</option>
+                        <option value="3600">1 Hr</option>
+                    </select>
+                    <span id="timerDisplay" style="font-family: monospace; color: #55a630; font-size: 0.85rem;">--:--</span>
+                </div>
+                <button class="btn-utility" onclick="toggleMuteAll()">Mute All</button>
+                <button class="btn-utility" onclick="randomize()">Randomize</button>
+                <button class="btn-utility" onclick="resetFaders()">Reset</button>
+                <button class="btn-save" onclick="savePreset()">Save Preset</button>
+            </div>
+
+            <div class="mobile-ad-banner">MOBILE BANNER AD (320x50)</div>
             <div class="footer-credit">Created By Keunho Koh</div>
         </main>
 
-        <aside class="ad-sidebar" style="width: 140px; height: 600px; background: #111; border: 1px dashed #333; display: flex; align-items: center; justify-content: center;"><span style="color: #444; font-size: 10px; transform: rotate(-90deg); letter-spacing: 2px;">SKYSCRAPER AD</span></aside>
+        <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD</span></aside>
     </div>
 
     <div id="infoModal" class="modal-overlay">
         <div class="modal-content">
-            <h2 style="color:#ffd60a; text-transform:uppercase; font-weight:800;">Information</h2>
+            <h2 style="color:#ffd60a; text-transform:uppercase; font-weight:800; margin-bottom:20px;">Information</h2>
             <div style="text-align:left; font-size:13px; color:#ccc; line-height:1.7;">
-                <p><b>Immersion:</b> Best experienced with headphones.</p>
-                <p><b>Layering:</b> Blend frequencies to suit your mood.</p>
-                <p><b>Persistence:</b> Use the Save Preset button to generate a 'Magic Link' and return to your custom mix instantly on any device.</p>
+                <p><b>Immersion:</b> Best experienced with high-quality headphones.</p>
+                <p><b>Layering:</b> Blend multiple frequencies to find your unique resonance.</p>
+                <p><b>Persistence:</b> Use the Save Preset button to generate a 'Magic Link' and return to your mix on any device.</p>
             </div>
             <div class="btn-utility" style="margin-top:20px;" onclick="closeInfo()">Close</div>
         </div>
@@ -188,7 +193,6 @@
                     g.gain.setValueAtTime(0, ctx.currentTime);
                     g.connect(master);
                     tracks[i].g = g;
-                    
                     const res = await fetch(f + ".mp3");
                     const buf = await ctx.decodeAudioData(await res.arrayBuffer());
                     const src = ctx.createBufferSource();
@@ -200,16 +204,15 @@
                 ready = true;
                 const now = ctx.currentTime;
                 
-                // Initial Fade-In (Fast: 0.8s)
                 tracks.forEach((t, i) => {
                     const initVal = (Math.random() * 0.1 + 0.25).toFixed(2);
                     document.getElementById('v' + i).value = initVal;
                     t.lastVal = parseFloat(initVal);
-                    t.g.gain.linearRampToValueAtTime(t.lastVal * 0.7, now + 0.8);
+                    t.g.gain.setTargetAtTime(t.lastVal * 0.7, now, 0.2); // Smooth start
                     updateUI(i, t.lastVal);
                 });
 
-                master.gain.linearRampToValueAtTime(0.6, now + 0.8);
+                master.gain.setTargetAtTime(0.6, now, 0.2);
                 document.getElementById('startBtn').style.display = "none";
                 document.getElementById('pauseBtn').style.display = "block";
             } catch (err) { console.error(err); }
@@ -220,8 +223,7 @@
             tracks[i].lastVal = val;
             if (ready && tracks[i].g) {
                 const targetGain = (tracks[i].isMuted || (soloIdx !== -1 && soloIdx !== i)) ? 0 : val * 0.7;
-                // FIX: setTargetAtTime is the gold standard for removing buzzing/zipper noise
-                tracks[i].g.gain.setTargetAtTime(targetGain, ctx.currentTime, 0.05);
+                tracks[i].g.gain.setTargetAtTime(targetGain, ctx.currentTime, 0.04); // Instant response, zero buzz
             }
             updateUI(i, val);
         }
@@ -307,6 +309,13 @@
             tracks.forEach((_, i) => {
                 const v = (Math.random() * 0.4 + 0.1).toFixed(2);
                 document.getElementById('v'+i).value = v; slide(i, v);
+            });
+        }
+        
+        function savePreset() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                alert("Magic Link copied to clipboard! Share it or bookmark it to save your mix.");
             });
         }
     </script>
