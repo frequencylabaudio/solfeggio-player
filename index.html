@@ -383,7 +383,6 @@
                 if (val > 0.01) {
                     const glowColor = el.style.getPropertyValue('--glow');
                     const neonBase = el.style.getPropertyValue('--clr');
-                    // Neon Border Logic: Uses frequency color for the border and a tight matching glow
                     el.style.boxShadow = `inset 0 0 ${val * 20}px ${glowColor}, 0 0 ${val * 10}px ${glowColor}`;
                     el.style.borderColor = neonBase;
                 } else {
@@ -443,15 +442,17 @@
         }
 
         function resetFaders() {
-            // Master Restore: Sets volumes to 0 AND unmutes all tracks
+            // Master Purge: Levels to 0, Solos OFF, and Mutes OFF
+            soloIdx = -1; // Reset Solo state
+            document.querySelectorAll('.s-btn').forEach(b => b.classList.remove('active-solo'));
+            
             tracks.forEach((_, i) => { 
                 const input = document.getElementById('v'+i);
                 if(input) { input.value = 0; }
-                muteTrack(i, false); // Force Unmute
-                slide(i, 0); 
+                muteTrack(i, false); // Clear individual mute status
+                slide(i, 0); // Update volume and UI (including neon glow)
             });
-            soloIdx = -1;
-            document.querySelectorAll('.s-btn').forEach(b => b.classList.remove('active-solo'));
+            
             isGlobalMuteActive = false;
             document.getElementById('muteAllBtn').innerText = "Mute All";
         }
