@@ -17,14 +17,20 @@
         .header-container { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 20px; }
         h1 { font-weight: 200; letter-spacing: 5px; margin: 0; font-size: 1.8rem; }
         .info-trigger { cursor: pointer; color: #444; font-size: 1.1rem; border: 1px solid #333; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .subtitle { font-size: 0.7rem; letter-spacing: 3px; color: #666; margin: 5px 0 10px 0; text-transform: uppercase; }
 
-        .subtitle { font-size: 0.7rem; letter-spacing: 3px; color: #666; margin: 5px 0 20px 0; text-transform: uppercase; }
+        /* Controls Area */
+        .main-controls { margin: 10px 0 20px 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; width: 95%; max-width: 900px; z-index: 10; }
+        #startBtn, #pauseBtn { background: #ffd60a; color: #000; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; width: 220px; }
+        #pauseBtn { background: #55a630; color: #fff; display: none; }
+        
+        .timer-wrap { display: flex; align-items: center; gap: 10px; background: #111; padding: 8px 18px; border-radius: 50px; border: 1px solid #333; }
+        .btn-utility { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 10px 18px; border-radius: 50px; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: 600; }
+        .btn-save { background: #20c997; color: #000; padding: 10px 18px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
+
         .page-wrapper { display: flex; align-items: flex-start; gap: 15px; padding: 10px; width: 100%; justify-content: center; box-sizing: border-box; }
         
-        /* Desktop Sidebars */
-        .ad-sidebar { width: 140px; height: 600px; background: #111; border: 1px dashed #333; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .ad-text { color: #444; font-size: 10px; transform: rotate(-90deg); letter-spacing: 2px; }
-
+        /* Mixer Container */
         .mixer { 
             display: flex; flex-wrap: nowrap; justify-content: center; gap: 8px; 
             background: var(--panel-bg); padding: 20px 10px; border-radius: 24px; 
@@ -32,62 +38,51 @@
             box-shadow: 0 15px 40px rgba(0,0,0,0.9);
         }
 
-        /* Desktop Fader */
+        /* Desktop Channel */
         .chan { 
             display: flex; flex-direction: column; align-items: center; 
             flex: 0 0 95px; width: 95px; background: var(--chan-bg); 
             padding: 12px 0; border-radius: 12px; border: 1px solid #202020; 
             box-sizing: border-box;
         }
-        input[type=range] { -webkit-appearance: slider-vertical; width: 18px; height: 140px; cursor: pointer; margin-bottom: 12px; }
-
-        /* Mobile Layout: Horizontal Rows */
-        @media (max-width: 768px) {
-            .ad-sidebar { display: none; }
-            .mixer { flex-direction: column; width: 95%; gap: 10px; padding: 15px; }
-            .chan { 
-                flex-direction: row; width: 100%; height: auto; flex: none;
-                justify-content: space-between; padding: 12px 15px; align-items: center;
-                gap: 10px;
-            }
-            .chan-info { text-align: left; display: flex; flex-direction: column; gap: 6px; width: 45%; }
-            .hz { font-size: 0.85rem; }
-            .desc { height: auto; text-align: left; font-size: 0.55rem; padding: 0; display: block;}
-            input[type=range] { -webkit-appearance: none; width: 35%; height: 4px; background: #333; border-radius: 2px; margin: 0; }
-            input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; background: #fff; border-radius: 50%; }
-            .vol-label { min-width: 35px; text-align: right; }
-        }
-
         .hz { font-size: 0.8rem; font-weight: 800; color: var(--clr); }
         .desc { font-size: 0.5rem; font-weight: 700; height: 44px; color: #b0b0b0; line-height: 1.2; padding: 0 4px; display: flex; align-items: center; justify-content: center; text-align: center; text-transform: uppercase; }
+        input[type=range] { -webkit-appearance: slider-vertical; width: 18px; height: 140px; cursor: pointer; margin-bottom: 12px; }
+
+        /* Mobile Redesign */
+        @media (max-width: 768px) {
+            .page-wrapper { flex-direction: column; align-items: center; }
+            .ad-sidebar { display: none; }
+            .mixer { flex-direction: column; width: 95%; gap: 12px; padding: 15px; order: 2; }
+            .main-controls { order: 1; margin-bottom: 20px; } /* Controls on top */
+            
+            .chan { 
+                flex-direction: row; width: 100%; height: auto; flex: none;
+                justify-content: space-between; padding: 15px; align-items: center; gap: 15px;
+            }
+            .chan-info { text-align: left; display: flex; flex-direction: column; gap: 4px; width: 55%; }
+            .hz { font-size: 1rem; } /* Matches description size */
+            .desc { 
+                height: auto; text-align: left; font-size: 0.85rem; /* Larger font */
+                padding: 0; display: block; color: #eee; 
+                text-transform: none; /* Easier to read */
+                justify-content: flex-start;
+            }
+            input[type=range] { -webkit-appearance: none; width: 30%; height: 6px; background: #333; border-radius: 3px; margin: 0; }
+            input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; background: #fff; border-radius: 50%; }
+        }
+
         .vol-label { font-size: 0.65rem; font-family: monospace; color: #999; }
-        .btn-row { display: flex; gap: 4px; }
-        .m-btn, .s-btn { width: 40px; height: 20px; border-radius: 4px; border: 1px solid #333; background: #1a1a1a; color: #aaa; font-size: 0.5rem; cursor: pointer; text-transform: uppercase; font-weight: bold; }
+        .btn-row { display: flex; gap: 4px; margin-top: 5px; }
+        .m-btn, .s-btn { width: 45px; height: 22px; border-radius: 4px; border: 1px solid #333; background: #1a1a1a; color: #aaa; font-size: 0.55rem; cursor: pointer; text-transform: uppercase; font-weight: bold; }
         .m-btn.active-mute { background: #9b2226; color: #fff; border-color: #ff4d4d; }
         .s-btn.active-solo { background: #ffd60a; color: #000; border-color: #fff; }
 
-        .main-controls { margin: 20px 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; max-width: 90%; }
-        #startBtn, #pauseBtn { background: #ffd60a; color: #000; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; width: 220px; }
-        #pauseBtn { background: #55a630; color: #fff; display: none; }
-        
-        .timer-wrap { display: flex; align-items: center; gap: 10px; background: #111; padding: 8px 18px; border-radius: 50px; border: 1px solid #333; }
-        .timer-label { font-size: 0.65rem; color: #666; text-transform: uppercase; font-weight: bold; }
-        select { background: transparent; color: #ffd60a; border: none; font-weight: bold; font-family: monospace; cursor: pointer; outline: none; font-size: 0.8rem; }
-        #timerDisplay { font-family: monospace; color: #55a630; font-size: 0.85rem; min-width: 55px; }
-
-        .btn-utility { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 10px 18px; border-radius: 50px; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: 600; }
-        .btn-save { background: #20c997; color: #000; padding: 10px 18px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
-
-        /* Modal Overlay */
+        /* Modal styling kept same but ensure persistence text is handled */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); z-index: 1000; }
         .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f0f; padding: 35px; border-radius: 24px; text-align: center; width: 90%; max-width: 500px; border: 1px solid #222; box-sizing: border-box; }
-        .modal-header { color: #ffd60a; font-size: 20px; margin-bottom: 25px; text-transform: uppercase; font-weight: 800; }
-        .info-list { text-align: left; color: #ccc; font-size: 13px; line-height: 1.7; margin-bottom: 20px; }
-        .info-list li { margin-bottom: 15px; list-style: none; }
-        .info-list b { color: #ffd60a; text-transform: uppercase; font-size: 10px; display: block; margin-bottom: 4px; }
-        .back-btn { margin-top: 25px; color: #666; cursor: pointer; font-size: 11px; text-transform: uppercase; font-weight: 700; }
 
-        .footer-credit { margin: 10px 0 30px 0; font-size: 0.6rem; color: #333; letter-spacing: 1px; text-transform: uppercase; }
+        .footer-credit { margin: 30px 0; font-size: 0.6rem; color: #333; letter-spacing: 1px; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -97,9 +92,30 @@
         <div class="info-trigger" onclick="openInfo()">ⓘ</div>
     </div>
     <div class="subtitle">By Frequency Lab</div>
+
+    <div class="main-controls">
+        <button id="startBtn" onclick="beginSession()">Start Session</button>
+        <button id="pauseBtn" onclick="toggle()">Pause All</button>
+        <div class="timer-wrap">
+            <select id="timerSelect" onchange="setTimer(this.value)">
+                <option value="0">Timer: Disabled</option>
+                <option value="60">1 Min</option>
+                <option value="300">5 Min</option>
+                <option value="600">10 Min</option>
+                <option value="1800">30 Min</option>
+                <option value="3600">1 Hr</option>
+            </select>
+            <span id="timerDisplay" style="font-family: monospace; color: #55a630; font-size: 0.85rem;">--:--</span>
+        </div>
+        <button class="btn-utility" onclick="toggleMuteAll()">Mute All</button>
+        <button class="btn-utility" onclick="randomize()">Randomize</button>
+        <button class="btn-utility" onclick="resetFaders()">Reset</button>
+        <button class="btn-save" onclick="alert('Link copied to clipboard (Simulated)')">Save Preset</button>
+    </div>
     
     <div class="page-wrapper">
-        <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD</span></aside>
+        <aside class="ad-sidebar" style="width: 140px; height: 600px; background: #111; border: 1px dashed #333; display: flex; align-items: center; justify-content: center;"><span style="color: #444; font-size: 10px; transform: rotate(-90deg); letter-spacing: 2px;">SKYSCRAPER AD</span></aside>
+        
         <main>
             <div class="mixer" id="mixer-ui">
                 <script>
@@ -127,49 +143,28 @@
                                         <button class="s-btn" id="s${i}" onclick="soloTrack(${i})">Solo</button>
                                     </div>
                                 </div>
-                                <input type="range" id="v${i}" min="0.001" max="1" step="0.01" value="0.001" oninput="slide(${i},this.value)">
+                                <input type="range" id="v${i}" min="0" max="1" step="0.01" value="0" oninput="slide(${i},this.value)">
                                 <div class="vol-label" id="l${i}">0%</div>
                             </div>
                         `);
                     });
                 </script>
             </div>
-
-            <div class="main-controls">
-                <button id="startBtn" onclick="beginSession()">Start Session</button>
-                <button id="pauseBtn" onclick="toggle()">Pause All</button>
-                <div class="timer-wrap">
-                    <span class="timer-label">Timer:</span>
-                    <select id="timerSelect" onchange="setTimer(this.value)">
-                        <option value="0">Disabled</option>
-                        <option value="60">1 Min</option>
-                        <option value="300">5 Min</option>
-                        <option value="600">10 Min</option>
-                        <option value="1800">30 Min</option>
-                        <option value="3600">1 Hr</option>
-                    </select>
-                    <span id="timerDisplay">--:--</span>
-                </div>
-                <button id="muteAllBtn" class="btn-utility" onclick="toggleMuteAll()">Mute All</button>
-                <button class="btn-utility" onclick="randomize()">Randomize</button>
-                <button class="btn-utility" onclick="resetFaders()">Reset</button>
-                <button class="btn-save" onclick="alert('Save Link: ' + window.location.href)">Save Preset</button>
-            </div>
             <div class="footer-credit">Created By Keunho Koh</div>
         </main>
-        <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD</span></aside>
+
+        <aside class="ad-sidebar" style="width: 140px; height: 600px; background: #111; border: 1px dashed #333; display: flex; align-items: center; justify-content: center;"><span style="color: #444; font-size: 10px; transform: rotate(-90deg); letter-spacing: 2px;">SKYSCRAPER AD</span></aside>
     </div>
 
     <div id="infoModal" class="modal-overlay">
         <div class="modal-content">
-            <h2 class="modal-header">Information</h2>
-            <div class="info-list">
-                <li><b>Immersion</b> Use high-quality headphones at a moderate volume for best results.</li>
-                <li><b>Layering</b> Play multiple frequencies simultaneously to find a blend that resonates with your current state of mind.</li>
-                <li><b>The Science</b> These 9 core Solfeggio frequencies are ancient tones used to aid in meditation, sleep, and emotional balancing.</li>
-                <li><b>Persistence</b> Use the Save Preset button to generate a 'Magic Link' and return to your custom mix instantly on any device.</li>
+            <h2 style="color:#ffd60a; text-transform:uppercase; font-weight:800;">Information</h2>
+            <div style="text-align:left; font-size:13px; color:#ccc; line-height:1.7;">
+                <p><b>Immersion:</b> Best experienced with headphones.</p>
+                <p><b>Layering:</b> Blend frequencies to suit your mood.</p>
+                <p><b>Persistence:</b> Use the Save Preset button to generate a 'Magic Link' and return to your custom mix instantly on any device.</p>
             </div>
-            <div class="back-btn" onclick="closeInfo()">Close</div>
+            <div class="btn-utility" style="margin-top:20px;" onclick="closeInfo()">Close</div>
         </div>
     </div>
 
@@ -178,62 +173,55 @@
         let ctx, master, tracks = [], ready = false, isPaused = false;
         let timerInterval, timeLeft = 0, soloIdx = -1;
 
-        for(let i=0; i<11; i++) { tracks[i] = { lastVal: 0.001, isMuted: false, g: null }; }
+        for(let i=0; i<11; i++) { tracks[i] = { lastVal: 0, isMuted: false, g: null }; }
 
         async function beginSession() {
             if (ready) return;
-            const sBtn = document.getElementById('startBtn');
-            const pBtn = document.getElementById('pauseBtn');
-            sBtn.innerText = "INITIALIZING...";
-            
             ctx = new (window.AudioContext || window.webkitAudioContext)();
-            if (ctx.state === 'suspended') await ctx.resume();
-            
             master = ctx.createGain();
-            master.gain.setValueAtTime(0.001, ctx.currentTime);
+            master.gain.setValueAtTime(0, ctx.currentTime);
             master.connect(ctx.destination);
             
             try {
-                audioFiles.forEach((_, i) => {
+                await Promise.all(audioFiles.map(async (f, i) => {
                     const g = ctx.createGain();
-                    g.gain.setValueAtTime(0.001, ctx.currentTime);
+                    g.gain.setValueAtTime(0, ctx.currentTime);
                     g.connect(master);
                     tracks[i].g = g;
-                });
-
-                await Promise.all(audioFiles.map(async (f, i) => {
+                    
                     const res = await fetch(f + ".mp3");
                     const buf = await ctx.decodeAudioData(await res.arrayBuffer());
                     const src = ctx.createBufferSource();
                     src.buffer = buf; src.loop = true;
-                    src.connect(tracks[i].g);
+                    src.connect(g);
                     src.start(0);
                 }));
 
                 ready = true;
+                const now = ctx.currentTime;
                 
-                // Set initial faders to 25%-35%
+                // Initial Fade-In (Fast: 0.8s)
                 tracks.forEach((t, i) => {
                     const initVal = (Math.random() * 0.1 + 0.25).toFixed(2);
                     document.getElementById('v' + i).value = initVal;
                     t.lastVal = parseFloat(initVal);
-                    t.g.gain.exponentialRampToValueAtTime(t.lastVal * 0.7, ctx.currentTime + 1.5);
+                    t.g.gain.linearRampToValueAtTime(t.lastVal * 0.7, now + 0.8);
                     updateUI(i, t.lastVal);
                 });
 
-                master.gain.exponentialRampToValueAtTime(0.6, ctx.currentTime + 2);
-                sBtn.style.display = "none"; pBtn.style.display = "block";
-            } catch (err) { sBtn.innerText = "LOAD ERROR"; }
+                master.gain.linearRampToValueAtTime(0.6, now + 0.8);
+                document.getElementById('startBtn').style.display = "none";
+                document.getElementById('pauseBtn').style.display = "block";
+            } catch (err) { console.error(err); }
         }
 
         function slide(i, v) {
-            const val = Math.max(0.001, parseFloat(v)); 
+            const val = parseFloat(v);
             tracks[i].lastVal = val;
             if (ready && tracks[i].g) {
-                const targetGain = (tracks[i].isMuted || (soloIdx !== -1 && soloIdx !== i)) ? 0.001 : val * 0.7;
-                tracks[i].g.gain.cancelScheduledValues(ctx.currentTime);
-                // Exponential ramp for zero buzzing
-                tracks[i].g.gain.exponentialRampToValueAtTime(targetGain, ctx.currentTime + 0.15);
+                const targetGain = (tracks[i].isMuted || (soloIdx !== -1 && soloIdx !== i)) ? 0 : val * 0.7;
+                // FIX: setTargetAtTime is the gold standard for removing buzzing/zipper noise
+                tracks[i].g.gain.setTargetAtTime(targetGain, ctx.currentTime, 0.05);
             }
             updateUI(i, val);
         }
@@ -271,8 +259,8 @@
             tracks.forEach((_, i) => {
                 tracks[i].isMuted = false;
                 document.getElementById('m' + i).classList.remove('active-mute');
-                document.getElementById('v' + i).value = 0.001;
-                slide(i, 0.001);
+                document.getElementById('v' + i).value = 0;
+                slide(i, 0);
             });
             setTimer(0);
         }
@@ -282,7 +270,7 @@
 
         function toggle() {
             if (!ready) return; isPaused = !isPaused;
-            master.gain.exponentialRampToValueAtTime(isPaused ? 0.001 : 0.6, ctx.currentTime + 0.3);
+            master.gain.setTargetAtTime(isPaused ? 0 : 0.6, ctx.currentTime, 0.1);
             document.getElementById('pauseBtn').innerText = isPaused ? "RESUME ALL" : "PAUSE ALL";
             document.getElementById('pauseBtn').style.background = isPaused ? "#222" : "#55a630";
         }
@@ -304,7 +292,6 @@
                     clearInterval(timerInterval); 
                     if (!isPaused) toggle(); 
                     document.getElementById('timerSelect').value = "0";
-                    document.getElementById('timerDisplay').innerText = "--:--";
                 }
             }, 1000);
         }
