@@ -40,18 +40,17 @@
             gap: 20px;
         }
 
-        /* Sidebar container for stacked ads */
         .ad-sidebar-stack {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 40px; /* Increased gap for better UX balance */
             width: 140px;
             flex-shrink: 0;
         }
 
         .ad-box { 
             width: 140px; 
-            height: 300px; /* Split skyscraper height in half */
+            height: 250px; /* Reduced height to maintain <30% ad-to-content ratio */
             background: #111; 
             border: 1px dashed #333; 
             display: flex; 
@@ -473,7 +472,13 @@
             slide(i, tracks[i].lastVal);
         }
 
-        function toggleMuteAll() { tracks.forEach((_, i) => muteTrack(i, true)); }
+        function toggleMuteAll() {
+            if (!ready) return;
+            const anyActive = tracks.some(t => !t.isMuted);
+            tracks.forEach((_, i) => muteTrack(i, anyActive));
+            const mainMuteBtn = document.getElementById('muteAllBtn');
+            mainMuteBtn.innerText = anyActive ? "Unmute All" : "Mute All";
+        }
 
         function soloTrack(i) {
             if (!ready) return;
