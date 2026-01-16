@@ -133,33 +133,33 @@
         .btn-save { background: #20c997; color: #000; padding: 10px 24px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
         .btn-share { background: var(--bright-blue); color: #fff; padding: 10px 24px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
 
+        /* MODAL STYLES */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); backdrop-filter: blur(10px); z-index: 1000; }
         .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f0f; padding: 40px; border-radius: 32px; text-align: center; width: 420px; max-width: 90vw; border: 1px solid #222; box-shadow: 0 20px 60px rgba(0,0,0,0.8); box-sizing: border-box; }
         .modal-header { color: var(--start-yellow); font-size: 24px; margin-bottom: 20px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
         .modal-subtext { color: #ccc; font-size: 13px; line-height: 1.6; margin-bottom: 25px; text-align: left; }
         
         .auth-buttons { display: flex; flex-direction: column; gap: 12px; }
-        .auth-btn { padding: 16px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
+        .auth-btn { padding: 16px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; transition: 0.2s; }
         .g-btn { background: #ffffff; color: #000; }
         .fb-btn { background: #3b5998; color: #fff; }
         .email-btn { background: var(--start-yellow); color: #000; }
+        .link-btn { background: #e0e0e0; color: #000; }
         
-        .back-btn { margin-top: 25px; color: #666; cursor: pointer; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; transition: 0.2s; }
-        #successMsg { display: none; margin-top: 20px; padding: 20px; background: #111; border: 1px solid #20c997; border-radius: 12px; color: #fff; font-size: 13px; line-height: 1.4; }
-        .magic-link-box { background: #000; padding: 10px; border-radius: 6px; border: 1px solid #333; margin-top: 15px; word-break: break-all; color: #20c997; font-family: monospace; user-select: all; cursor: pointer; }
+        /* Email Input Area */
+        #emailInputArea { display: none; flex-direction: column; gap: 10px; margin-top: 10px; }
+        .modal-input { padding: 14px; border-radius: 10px; border: 1px solid #333; background: #000; color: #fff; outline: none; }
+        .send-btn { background: #20c997; color: #000; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; }
 
-        .footer-credit { 
-            position: fixed; bottom: 15px; right: 15px; 
-            font-size: 0.65rem; color: #333; letter-spacing: 1px; 
-            text-transform: uppercase; z-index: 1;
-        }
+        .back-btn { margin-top: 25px; color: #666; cursor: pointer; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; transition: 0.2s; }
+        .footer-credit { position: fixed; bottom: 15px; right: 15px; font-size: 0.65rem; color: #333; letter-spacing: 1px; text-transform: uppercase; z-index: 1; }
     </style>
 </head>
 <body>
 
     <div class="title-container">
         <h1>SOLFEGGIO PLAYER</h1>
-        <div class="info-icon" onclick="openInfo()">i</div>
+        <div class="info-icon">i</div>
     </div>
     <div class="subtitle">By Frequency Lab</div>
     
@@ -227,8 +227,8 @@
                         <button id="muteAllBtn" class="btn-utility" onclick="toggleMuteAll()">Mute All</button>
                         <button class="btn-utility" onclick="randomize()">Randomize</button>
                         <button class="btn-utility" onclick="resetFaders()">Reset</button>
-                        <button class="btn-save" onclick="openModal()">Save</button>
-                        <button class="btn-share" onclick="openShare()">Share</button>
+                        <button class="btn-save" onclick="openModal('SAVE')">Save</button>
+                        <button class="btn-share" onclick="openModal('SHARE MIX')">Share</button>
                     </div>
                 </div>
             </div>
@@ -243,32 +243,23 @@
 
     <div id="saveModal" class="modal-overlay" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h2 class="modal-header">Save</h2>
-            <div id="authContainer">
-                <p class="modal-subtext" style="text-align: center;">Choose a sharing option below. Audio will resume once closed.</p>
-                <div class="auth-buttons">
-                    <button class="auth-btn g-btn" onclick="saveAndSign('Gmail')">Gmail</button>
-                    <button class="auth-btn fb-btn" onclick="saveAndSign('Facebook')">Facebook</button>
-                    <button class="auth-btn email-btn" onclick="saveAndSign('Email')">Email</button>
-                </div>
+            <h2 class="modal-header" id="modalHeader">SAVE</h2>
+            <p class="modal-subtext" style="text-align: center;">Choose an option below. Audio will resume once closed.</p>
+            
+            <div id="mainAuthButtons" class="auth-buttons">
+                <button class="auth-btn g-btn" onclick="handleSSO('Gmail')">GMAIL</button>
+                <button class="auth-btn fb-btn" onclick="handleSSO('Facebook')">FACEBOOK</button>
+                <button class="auth-btn email-btn" onclick="showEmailInput()">EMAIL</button>
+                <button class="auth-btn link-btn" id="copyBtn" onclick="handleCopy()">COPY LINK</button>
             </div>
-            <div id="successMsg">
-                <div class="magic-link-box" id="linkDisplay"></div>
-            </div>
-            <div class="back-btn" onclick="closeModal()">Close</div>
-        </div>
-    </div>
 
-    <div id="shareModal" class="modal-overlay" onclick="closeShare()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <h2 class="modal-header" style="color: var(--bright-blue);">Share Mix</h2>
-            <div class="auth-buttons">
-                <button class="auth-btn g-btn" onclick="shareMix('Gmail')">Gmail</button>
-                <button class="auth-btn fb-btn" onclick="shareMix('Facebook')">Facebook</button>
-                <button class="auth-btn email-btn" onclick="shareMix('Email')">Email</button>
-                <button class="auth-btn link-btn" onclick="shareMix('Link')">Copy Link</button>
+            <div id="emailInputArea">
+                <input type="email" id="userEmail" class="modal-input" placeholder="Enter your email address">
+                <button class="send-btn" onclick="sendMagicLink()">SEND MAGIC LINK</button>
+                <div class="back-btn" onclick="hideEmailInput()">← Back</div>
             </div>
-            <div class="back-btn" onclick="closeShare()">Close</div>
+
+            <div class="back-btn" onclick="closeModal()">CLOSE</div>
         </div>
     </div>
 
@@ -283,10 +274,10 @@
             const urlParams = new URLSearchParams(window.location.search);
             const presetData = urlParams.get('preset');
             tracks.forEach((t, i) => {
-                let val = 0.3; 
+                let val = 0; 
                 if (presetData) {
                     const levels = presetData.split(',');
-                    val = (levels[i] !== undefined) ? parseFloat(levels[i]) / 100 : 0.3;
+                    val = (levels[i] !== undefined) ? parseFloat(levels[i]) / 100 : 0;
                 }
                 t.lastVal = val;
                 const inputEl = document.getElementById('v' + i);
@@ -340,39 +331,56 @@
             updateUI(i, val);
         }
 
-        function openModal() { 
+        /* MODAL LOGIC */
+        function openModal(title) { 
+            document.getElementById('modalHeader').innerText = title;
+            document.getElementById('modalHeader').style.color = (title === 'SAVE') ? 'var(--start-yellow)' : 'var(--bright-blue)';
             if (ready && !isPaused) { toggle(); wasPlayingBeforeSave = true; }
-            document.getElementById('authContainer').style.display = 'block';
-            document.getElementById('successMsg').style.display = 'none';
             document.getElementById('saveModal').style.display = 'block'; 
         }
+
         function closeModal() { 
             document.getElementById('saveModal').style.display = 'none'; 
+            hideEmailInput();
             if (ready && wasPlayingBeforeSave && isPaused) { toggle(); wasPlayingBeforeSave = false; }
         }
-        function openShare() { document.getElementById('shareModal').style.display = 'block'; }
-        function closeShare() { document.getElementById('shareModal').style.display = 'none'; }
-        function openInfo() { document.getElementById('infoModal').style.display = 'block'; }
-        function closeInfo() { document.getElementById('infoModal').style.display = 'none'; }
 
-        function saveAndSign(provider) {
-            const levels = tracks.map(t => Math.round(t.lastVal * 100)).join(',');
-            const magicLink = `${window.location.origin}${window.location.pathname}?preset=${levels}`;
-            document.getElementById('authContainer').style.display = 'none';
-            document.getElementById('linkDisplay').innerText = magicLink;
-            document.getElementById('successMsg').style.display = 'block';
+        function handleSSO(platform) {
+            alert(`Initializing ${platform} Sign-In...`);
         }
 
-        function shareMix(platform) {
+        function handleCopy() {
             const levels = tracks.map(t => Math.round(t.lastVal * 100)).join(',');
             const link = `${window.location.origin}${window.location.pathname}?preset=${levels}`;
-            if(platform === 'Link') {
-                navigator.clipboard.writeText(link).then(() => alert("Copied!"));
+            navigator.clipboard.writeText(link).then(() => {
+                const btn = document.getElementById('copyBtn');
+                const oldText = btn.innerText;
+                btn.innerText = "COPIED!";
+                setTimeout(() => { btn.innerText = oldText; }, 2000);
+            });
+        }
+
+        function showEmailInput() {
+            document.getElementById('mainAuthButtons').style.display = 'none';
+            document.getElementById('emailInputArea').style.display = 'flex';
+        }
+
+        function hideEmailInput() {
+            document.getElementById('mainAuthButtons').style.display = 'flex';
+            document.getElementById('emailInputArea').style.display = 'none';
+        }
+
+        function sendMagicLink() {
+            const email = document.getElementById('userEmail').value;
+            if(email.includes('@')) {
+                alert(`Magic link sent to ${email}! Check your inbox.`);
+                hideEmailInput();
             } else {
-                alert(`Shared via ${platform}`);
+                alert("Please enter a valid email address.");
             }
         }
 
+        /* MIXER LOGIC */
         window.onload = loadPresetFromUrl;
 
         function updateUI(i, val) {
@@ -442,17 +450,14 @@
         }
 
         function resetFaders() {
-            // Master Purge: Levels to 0, Solos OFF, and Mutes OFF
-            soloIdx = -1; // Reset Solo state
+            soloIdx = -1;
             document.querySelectorAll('.s-btn').forEach(b => b.classList.remove('active-solo'));
-            
             tracks.forEach((_, i) => { 
                 const input = document.getElementById('v'+i);
                 if(input) { input.value = 0; }
-                muteTrack(i, false); // Clear individual mute status
-                slide(i, 0); // Update volume and UI (including neon glow)
+                muteTrack(i, false);
+                slide(i, 0); 
             });
-            
             isGlobalMuteActive = false;
             document.getElementById('muteAllBtn').innerText = "Mute All";
         }
