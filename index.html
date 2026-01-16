@@ -7,9 +7,9 @@
   <title>Solfeggio Player | Frequency Lab</title>
 
   <!-- FAVICON (GitHub Pages friendly + cache-bust) -->
-  <link rel="icon" type="image/png" href="favicon.png?v=1" />
-  <link rel="shortcut icon" type="image/png" href="favicon.png?v=1" />
-  <link rel="apple-touch-icon" href="favicon.png?v=1" />
+  <link rel="icon" type="image/png" href="favicon.png?v=2" />
+  <link rel="shortcut icon" type="image/png" href="favicon.png?v=2" />
+  <link rel="apple-touch-icon" href="favicon.png?v=2" />
 
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -17,6 +17,7 @@
 
   <style>
     :root { --panel-bg: #0a0a0a; --chan-bg: #141414; --bright-blue: #007bff; --start-yellow: #ffd60a; }
+
     body {
       background: #050505; color: #e0e0e0;
       font-family: 'Inter', -apple-system, sans-serif;
@@ -27,19 +28,42 @@
       overflow-x: hidden;
     }
 
-    .title-container { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 20px; }
+    /* Title */
+    .title-container {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      margin-top: 20px;
+      position: relative;
+      width: 100%;
+      max-width: 1100px;
+      padding: 0 12px;
+      box-sizing: border-box;
+    }
     h1 { font-weight: 200; letter-spacing: 5px; margin: 0; font-size: 2.2rem; color: #e0e0e0; }
 
     .info-icon {
-      cursor: pointer; width: 20px; height: 20px; border-radius: 50%;
-      border: 1px solid #444; color: #444; font-size: 13px;
-      display: flex; align-items: center; justify-content: center;
-      font-style: italic; font-family: serif; transition: 0.3s;
+      cursor: pointer;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      border: 1px solid #444;
+      color: #444;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-style: italic;
+      font-family: serif;
+      transition: 0.3s;
+      background: transparent;
+      padding: 0;
+      line-height: 1;
+      user-select: none;
     }
     .info-icon:hover { border-color: var(--start-yellow); color: var(--start-yellow); }
+    .info-icon:focus { outline: 2px solid rgba(255,214,10,0.35); outline-offset: 3px; }
 
     .subtitle { font-size: 0.75rem; letter-spacing: 3px; color: #666; margin-bottom: 25px; text-transform: uppercase; }
 
+    /* Layout */
     .page-wrapper {
       display: grid;
       grid-template-columns: 140px 1fr 140px;
@@ -145,9 +169,9 @@
 
     /* MODAL STYLES */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); backdrop-filter: blur(10px); z-index: 1000; }
-    .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f0f; padding: 40px; border-radius: 32px; text-align: center; width: 420px; max-width: 90vw; border: 1px solid #222; box-shadow: 0 20px 60px rgba(0,0,0,0.8); box-sizing: border-box; }
-    .modal-header { color: var(--start-yellow); font-size: 24px; margin-bottom: 20px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
-    .modal-subtext { color: #ccc; font-size: 13px; line-height: 1.6; margin-bottom: 25px; text-align: center; }
+    .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f0f; padding: 40px; border-radius: 32px; text-align: left; width: 520px; max-width: 92vw; border: 1px solid #222; box-shadow: 0 20px 60px rgba(0,0,0,0.8); box-sizing: border-box; }
+    .modal-header { color: var(--start-yellow); font-size: 24px; margin-bottom: 18px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; text-align: left; }
+    .modal-subtext { color: #ccc; font-size: 13px; line-height: 1.6; margin-bottom: 18px; text-align: left; }
 
     .auth-buttons { display: flex; flex-direction: column; gap: 12px; }
     .auth-btn { padding: 16px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; transition: 0.2s; }
@@ -159,7 +183,14 @@
     .modal-input { padding: 14px; border-radius: 10px; border: 1px solid #333; background: #000; color: #fff; outline: none; }
     .send-btn { background: var(--start-yellow); color: #000; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
 
-    .back-btn { margin-top: 25px; color: #666; cursor: pointer; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; transition: 0.2s; }
+    .back-btn { margin-top: 22px; color: #666; cursor: pointer; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; transition: 0.2s; text-align: center; }
+    .back-btn:hover { color: #aaa; }
+
+    /* HOW TO USE modal content */
+    .howto-list { margin: 0; padding-left: 18px; color: #d9d9d9; }
+    .howto-list li { margin: 10px 0 14px; }
+    .howto-list strong { color: var(--start-yellow); letter-spacing: 1px; text-transform: uppercase; font-size: 0.78rem; display: inline-block; margin-bottom: 4px; }
+
     .footer-credit { position: fixed; bottom: 15px; right: 15px; font-size: 0.65rem; color: #333; letter-spacing: 1px; text-transform: uppercase; z-index: 1; }
 
     /* ==========================================================
@@ -168,6 +199,7 @@
     @media (max-width: 850px) and (orientation: portrait) {
       body { padding-bottom: 20px; }
 
+      /* Sticky title + subtitle */
       .title-container,
       .subtitle {
         position: sticky;
@@ -175,7 +207,23 @@
         background: rgba(5,5,5,0.92);
         backdrop-filter: blur(10px);
       }
-      .title-container { top: 0; margin-top: 0; padding: 16px 12px 8px; }
+
+      /* Center title perfectly; keep info icon pinned right */
+      .title-container {
+        top: 0;
+        margin-top: 0;
+        padding: 16px 12px 8px;
+        max-width: 100%;
+        justify-content: center;
+      }
+      .title-container h1 { margin: 0 auto; }
+      .title-container .info-icon {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
       .subtitle { top: 64px; margin-bottom: 0; padding: 0 12px 14px; }
 
       .page-wrapper {
@@ -186,6 +234,7 @@
         gap: 14px;
       }
 
+      /* Ads scroll (NOT sticky), shown as two wide banners */
       .ad-sidebar-stack {
         width: 100%;
         flex-direction: row;
@@ -209,6 +258,7 @@
       .scroll-container { overflow-x: hidden; padding-bottom: 0; }
       .scroll-container::-webkit-scrollbar { height: 0; }
 
+      /* Sticky controls (everything except ads + faders) */
       .main-controls {
         position: sticky;
         top: 108px;
@@ -228,6 +278,7 @@
       .timer-wrap { flex: 1 1 260px; justify-content: center; }
       #startBtn, #pauseBtn { width: 100%; max-width: 520px; }
 
+      /* Mixer becomes vertical list of cards */
       .mixer {
         width: 100%;
         max-width: 720px;
@@ -270,6 +321,7 @@
 
       .vol-label { margin: 0; justify-self: end; align-self: center; font-size: 0.8rem; }
 
+      /* Horizontal sliders (portrait only) */
       input[type=range] {
         -webkit-appearance: none;
         appearance: none;
@@ -314,6 +366,51 @@
         margin-top: 2px;
       }
       .m-btn, .s-btn { width: 64px; height: 28px; border-radius: 8px; font-size: 0.6rem; }
+
+      /* Modals fit on mobile */
+      .modal-content { padding: 28px; border-radius: 26px; width: 92vw; }
+      .modal-header { font-size: 20px; }
+    }
+
+    /* ==========================================================
+       MOBILE LANDSCAPE (HORIZONTAL) ONLY
+       - Ads thinner, pushed to edges
+       - Horizontal scroll for everything except title/subtitle
+       - Slight scale reduction for mixer+controls visibility
+       ========================================================== */
+    @media (max-width: 850px) and (orientation: landscape) {
+      /* Title stays static above scroll area; tighten spacing */
+      .title-container { margin-top: 10px; }
+      h1 { font-size: 1.6rem; }
+      .subtitle { margin-bottom: 12px; }
+
+      /* Make the main layout area horizontally scrollable */
+      .page-wrapper {
+        padding: 8px 10px;
+        gap: 14px;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+
+        /* Force content wider than viewport so it can scroll */
+        grid-template-columns: 90px 820px 90px;
+        min-width: 100%;
+      }
+
+      /* Ads: thinner than a fader (chan is 95px) */
+      .ad-sidebar-stack { width: 90px; gap: 18px; }
+      .ad-box { width: 90px; height: 210px; border-radius: 16px; }
+      .ad-text { font-size: 9px; opacity: 0.6; }
+
+      /* Slight “zoom out” for visibility */
+      main { transform: scale(0.92); transform-origin: top center; }
+
+      /* Keep the mixer + controls visible as a single wide “board” */
+      .scroll-container { overflow-x: visible; padding-bottom: 8px; }
+      .mixer { margin-bottom: 18px; }
+      .main-controls { gap: 10px; }
+      #startBtn, #pauseBtn { padding: 12px 32px; font-size: 0.75rem; }
+      .btn-utility, .btn-save, .btn-share-main { padding: 9px 16px; font-size: 0.62rem; }
     }
   </style>
 </head>
@@ -321,7 +418,7 @@
 <body>
   <div class="title-container">
     <h1>SOLFEGGIO PLAYER</h1>
-    <div class="info-icon">i</div>
+    <button class="info-icon" type="button" aria-label="How to use" onclick="openHowToModal()">i</button>
   </div>
   <div class="subtitle">By Frequency Lab</div>
 
@@ -404,9 +501,10 @@
 
   <div class="footer-credit">Created By Keunho Koh</div>
 
+  <!-- SAVE MODAL (pauses audio) -->
   <div id="saveModal" class="modal-overlay" onclick="closeSaveModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
-      <h2 class="modal-header">SAVE</h2>
+      <div class="modal-header">SAVE</div>
       <p class="modal-subtext">Share your custom preset via Gmail or Email. Audio will resume once closed.</p>
 
       <div id="mainAuthButtons" class="auth-buttons">
@@ -424,20 +522,47 @@
     </div>
   </div>
 
+  <!-- SHARE MODAL (audio keeps playing) -->
   <div id="shareModal" class="modal-overlay" onclick="closeShareModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
-      <h2 class="modal-header" style="color: #007bff;">SHARE LINK</h2>
+      <div class="modal-header" style="color: #007bff;">SHARE LINK</div>
       <p class="modal-subtext">Quickly copy the URL for your current mixer levels. Audio will continue playing.</p>
       <button class="auth-btn copy-btn" onclick="copyPresetLink()">COPY LINK</button>
       <div class="back-btn" onclick="closeShareModal()">CLOSE</div>
     </div>
   </div>
 
+  <!-- HOW TO USE MODAL (audio keeps playing) -->
+  <div id="howToModal" class="modal-overlay" onclick="closeHowToModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-header">HOW TO USE</div>
+
+      <ul class="howto-list">
+        <li>
+          <strong>IMMERSION</strong><br />
+          For best results, use high-quality headphones at a comfortable, moderate volume.
+        </li>
+        <li>
+          <strong>LAYERING</strong><br />
+          Play multiple frequencies simultaneously. Use the faders to find a blend that matches your current state.
+        </li>
+        <li>
+          <strong>INTENTION</strong><br />
+          Start with one tone, then gradually add others. Small changes often feel more powerful than extremes.
+        </li>
+        <li>
+          <strong>PERSISTENCE</strong><br />
+          Use <b>Save</b> to generate a link so you can return to your custom mix on any device.
+        </li>
+      </ul>
+
+      <div class="back-btn" onclick="closeHowToModal()">CLOSE</div>
+    </div>
+  </div>
+
   <script>
     // ------------------------------------------------------------
     // REMOVE STRAY MARKDOWN ARTIFACTS (```html, ```, ..., …)
-    // If those characters exist in your served HTML, this strips them
-    // without changing layout/logic.
     // ------------------------------------------------------------
     (function removeMarkdownArtifacts() {
       const needles = new Set(["```html", "```", "...", "…"]);
@@ -448,15 +573,20 @@
           const t = walker.currentNode;
           const trimmed = (t.nodeValue || "").trim();
           if (!trimmed) continue;
-
-          if (needles.has(trimmed) || trimmed.startsWith("```")) {
-            toRemove.push(t);
-          }
+          if (needles.has(trimmed) || trimmed.startsWith("```")) toRemove.push(t);
         }
         toRemove.forEach(t => { if (t.parentNode) t.parentNode.removeChild(t); });
       }
       document.addEventListener("DOMContentLoaded", () => scrub(document.body));
     })();
+
+    // --- HOW TO USE MODAL (audio keeps playing) ---
+    function openHowToModal() {
+      document.getElementById("howToModal").style.display = "block";
+    }
+    function closeHowToModal() {
+      document.getElementById("howToModal").style.display = "none";
+    }
 
     // --- 1. FIREBASE INITIALIZATION ---
     const firebaseConfig = {
@@ -484,9 +614,7 @@
     // One-time mobile audio unlock (extra-safe for iOS/Safari)
     function mobileAudioUnlockOnce() {
       if (!ctx) return;
-      if (ctx.state === "suspended") {
-        ctx.resume().catch(() => {});
-      }
+      if (ctx.state === "suspended") ctx.resume().catch(() => {});
       window.removeEventListener("touchend", mobileAudioUnlockOnce, true);
       window.removeEventListener("click", mobileAudioUnlockOnce, true);
     }
