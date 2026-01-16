@@ -232,7 +232,6 @@
                         <button class="btn-utility" onclick="randomize()">Randomize</button>
                         <button class="btn-utility" onclick="resetFaders()">Reset</button>
                         <button class="btn-save" onclick="openModal('SAVE')">Save</button>
-                        <button class="btn-share" onclick="openModal('SHARE MIX')">Share</button>
                     </div>
                 </div>
             </div>
@@ -351,9 +350,8 @@
         function openModal(title) { 
             const modalHeader = document.getElementById('modalHeader');
             modalHeader.innerText = title;
-            modalHeader.style.color = (title === 'SAVE') ? 'var(--start-yellow)' : 'var(--bright-blue)';
             
-            // Instruction: Pause audio when active
+            // PAUSE AUDIO WHEN ACTIVE
             if (ready && !isPaused) { 
                 toggle(); 
                 wasPlayingBeforeSave = true; 
@@ -364,7 +362,8 @@
         function closeModal() { 
             document.getElementById('universalModal').style.display = 'none'; 
             hideEmailInput();
-            // Instruction: Resume audio when closed
+            
+            // RESUME AUDIO WHEN CLOSED
             if (ready && wasPlayingBeforeSave && isPaused) { 
                 toggle(); 
                 wasPlayingBeforeSave = false; 
@@ -381,41 +380,42 @@
             }
         }
 
-        // --- INTEGRATED SAVE WITH EMAIL TRIGGER ---
         async function savePresetToFirebase(uid) {
             const levels = tracks.map(t => Math.round(t.lastVal * 100));
             const userEmail = auth.currentUser.email;
 
             try {
-                // 1. Save Faders to Presets Collection
+                // 1. Save to Presets
                 await db.collection("presets").doc(uid).set({
                     levels: levels,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                // 2. Trigger the Welcome Email via the "mail" collection
+                // 2. Trigger automated Gmail via Firestore Extension
                 await db.collection("mail").add({
                     to: userEmail,
                     message: {
                         subject: 'Your Solfeggio Mix is Saved!',
                         html: `
-                            <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-                                <h2 style="color: #007bff;">Frequency Lab</h2>
+                            <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 12px; max-width: 500px;">
+                                <h2 style="color: #ffd60a; background: #000; padding: 10px; text-align: center; border-radius: 8px;">FREQUENCY LAB</h2>
                                 <p>Hello,</p>
-                                <p>Your custom Solfeggio mix has been saved successfully.</p>
-                                <p><b>Saved Levels:</b> ${levels.join(', ')}</p>
-                                <p>Next time you log in, your mixer will automatically return to these settings.</p>
-                                <br>
-                                <p><i>Enjoy your session!</i></p>
+                                <p>Your custom Solfeggio frequency mix has been successfully saved to your profile.</p>
+                                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; font-family: monospace;">
+                                    <strong>Mix Configuration:</strong><br>
+                                    ${chData.map((ch, i) => `${ch.hz}: ${levels[i]}%`).join('<br>')}
+                                </div>
+                                <p>You can return to the mixer anytime to load your saved settings.</p>
+                                <hr style="border: none; border-top: 1px solid #eee;">
+                                <p style="font-size: 12px; color: #888;">Created by Frequency Lab</p>
                             </div>
                         `
                     }
                 });
 
-                alert("Mix saved! A Welcome Note was sent to " + userEmail);
+                alert("Mix saved successfully! Check " + userEmail + " for your confirmation.");
                 closeModal();
             } catch (e) { 
-                console.error(e);
                 alert("Save failed: " + e.message); 
             }
         }
