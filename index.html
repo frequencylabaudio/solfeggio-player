@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solfeggio Player | Frequency Lab</title>
     <link rel="icon" type="image/png" href="favicon.png">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
     <style>
         :root { --panel-bg: #0a0a0a; --chan-bg: #141414; --bright-blue: #007bff; --start-yellow: #ffd60a; }
         body { 
@@ -137,12 +142,11 @@
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); backdrop-filter: blur(10px); z-index: 1000; }
         .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f0f; padding: 40px; border-radius: 32px; text-align: center; width: 420px; max-width: 90vw; border: 1px solid #222; box-shadow: 0 20px 60px rgba(0,0,0,0.8); box-sizing: border-box; }
         .modal-header { color: var(--start-yellow); font-size: 24px; margin-bottom: 20px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
-        .modal-subtext { color: #ccc; font-size: 13px; line-height: 1.6; margin-bottom: 25px; text-align: left; }
+        .modal-subtext { color: #ccc; font-size: 13px; line-height: 1.6; margin-bottom: 25px; text-align: center; }
         
         .auth-buttons { display: flex; flex-direction: column; gap: 12px; }
         .auth-btn { padding: 16px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; transition: 0.2s; }
         .g-btn { background: #ffffff; color: #000; }
-        .fb-btn { background: #3b5998; color: #fff; }
         .email-btn { background: var(--start-yellow); color: #000; }
         .link-btn { background: #e0e0e0; color: #000; }
         
@@ -244,11 +248,10 @@
     <div id="universalModal" class="modal-overlay" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <h2 class="modal-header" id="modalHeader">SAVE</h2>
-            <p class="modal-subtext" style="text-align: center;">Choose an option below. Audio will resume once closed.</p>
+            <p class="modal-subtext">Choose an option below. Audio will resume once closed.</p>
             
             <div id="mainAuthButtons" class="auth-buttons">
-                <button class="auth-btn g-btn" onclick="handleSSO('Gmail')">GMAIL</button>
-                <button class="auth-btn fb-btn" onclick="handleSSO('Facebook')">FACEBOOK</button>
+                <button class="auth-btn g-btn" onclick="handleAuth('Gmail')">GMAIL</button>
                 <button class="auth-btn email-btn" onclick="showEmailInput()">EMAIL</button>
                 <button class="auth-btn link-btn" id="modalCopyBtn" onclick="handleCopy()">COPY LINK</button>
             </div>
@@ -264,21 +267,34 @@
     </div>
 
     <script>
+        // --- 1. FIREBASE INITIALIZATION ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUPKqtwRLaai0obSA9u5IRvK5adqKQG20",
+            authDomain: "solfeggio-mixer.firebaseapp.com",
+            projectId: "solfeggio-mixer",
+            storageBucket: "solfeggio-mixer.firebasestorage.app",
+            messagingSenderId: "772669014309",
+            appId: "1:772669014309:web:d08985ab961339a88f1acc"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // --- 2. MIXER ENGINE VARIABLES ---
         const audioFiles = ["69.3Hz","174Hz","285Hz","396Hz","417Hz","432Hz","528Hz","639Hz","741Hz","852Hz","963Hz"];
         let ctx, master, tracks = [], ready = false, isPaused = false, wasPlayingBeforeSave = false;
         let timerInterval, timeLeft = 0, soloIdx = -1, isGlobalMuteActive = false;
 
         for(let i=0; i<11; i++) { tracks[i] = { lastVal: 0, isMuted: false, g: null }; }
 
+        // --- 3. CORE MIXER FUNCTIONS ---
         function loadPresetFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
             const presetData = urlParams.get('preset');
+            if (!presetData) return;
+            const levels = presetData.split(',');
             tracks.forEach((t, i) => {
-                let val = 0; 
-                if (presetData) {
-                    const levels = presetData.split(',');
-                    val = (levels[i] !== undefined) ? parseFloat(levels[i]) / 100 : 0;
-                }
+                let val = (levels[i] !== undefined) ? parseFloat(levels[i]) / 100 : 0;
                 t.lastVal = val;
                 const inputEl = document.getElementById('v' + i);
                 if(inputEl) inputEl.value = val;
@@ -331,12 +347,13 @@
             updateUI(i, val);
         }
 
-        /* UNIFIED MODAL LOGIC FOR SAVE & SHARE */
+        // --- 4. MODAL & AUTH LOGIC ---
         function openModal(title) { 
             const modalHeader = document.getElementById('modalHeader');
             modalHeader.innerText = title;
             modalHeader.style.color = (title === 'SAVE') ? 'var(--start-yellow)' : 'var(--bright-blue)';
             
+            // Instruction: Pause audio when active
             if (ready && !isPaused) { 
                 toggle(); 
                 wasPlayingBeforeSave = true; 
@@ -347,19 +364,45 @@
         function closeModal() { 
             document.getElementById('universalModal').style.display = 'none'; 
             hideEmailInput();
+            // Instruction: Resume audio when closed
             if (ready && wasPlayingBeforeSave && isPaused) { 
                 toggle(); 
                 wasPlayingBeforeSave = false; 
             }
         }
 
-        function handleSSO(platform) {
-            // Using window.open for a standard auth pop-up instead of alert boxes
-            const width = 500;
-            const height = 600;
-            const left = (screen.width / 2) - (width / 2);
-            const top = (screen.height / 2) - (height / 2);
-            window.open('about:blank', `${platform}Login`, `width=${width},height=${height},top=${top},left=${left}`);
+        async function handleAuth(platform) {
+            if(platform === 'Gmail') {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                try {
+                    const result = await auth.signInWithPopup(provider);
+                    savePresetToFirebase(result.user.uid);
+                } catch (error) { alert(error.message); }
+            }
+        }
+
+        async function savePresetToFirebase(uid) {
+            const levels = tracks.map(t => Math.round(t.lastVal * 100));
+            try {
+                await db.collection("presets").doc(uid).set({
+                    levels: levels,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert("Mix Saved Successfully!");
+                closeModal();
+            } catch (e) { alert("Save failed: " + e.message); }
+        }
+
+        function sendMagicLink() {
+            const email = document.getElementById('userEmail').value;
+            const actionCodeSettings = { url: window.location.href, handleCodeInApp: true };
+            auth.sendSignInLinkToEmail(email, actionCodeSettings)
+                .then(() => {
+                    window.localStorage.setItem('emailForSignIn', email);
+                    alert('Magic link sent to ' + email);
+                    closeModal();
+                })
+                .catch(err => alert(err.message));
         }
 
         function handleCopy() {
@@ -367,9 +410,8 @@
             const link = `${window.location.origin}${window.location.pathname}?preset=${levels}`;
             navigator.clipboard.writeText(link).then(() => {
                 const btn = document.getElementById('modalCopyBtn');
-                const oldText = btn.innerText;
                 btn.innerText = "COPIED!";
-                setTimeout(() => { btn.innerText = oldText; }, 2000);
+                setTimeout(() => { btn.innerText = "COPY LINK"; }, 2000);
             });
         }
 
@@ -383,22 +425,7 @@
             document.getElementById('emailInputArea').style.display = 'none';
         }
 
-        function sendMagicLink() {
-            const email = document.getElementById('userEmail').value;
-            if(email.includes('@')) {
-                const btn = document.querySelector('.send-btn');
-                btn.innerText = "SENDING...";
-                setTimeout(() => {
-                    alert(`Success! Check your inbox at ${email}.`);
-                    btn.innerText = "SEND MAGIC LINK";
-                    hideEmailInput();
-                }, 1500);
-            } else {
-                alert("Please enter a valid email address.");
-            }
-        }
-
-        /* MIXER ENGINE LOGIC */
+        // --- 5. UTILITY LOGIC ---
         window.onload = loadPresetFromUrl;
 
         function updateUI(i, val) {
