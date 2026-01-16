@@ -90,6 +90,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      border-radius: 18px;
+      box-sizing: border-box;
     }
     .ad-text { color: #444; font-size: 10px; transform: rotate(-90deg); letter-spacing: 2px; white-space: nowrap; }
 
@@ -216,7 +218,14 @@
         max-width: 100%;
         justify-content: center;
       }
-      .title-container h1 { margin: 0 auto; }
+
+      /* Reserve space so icon never crowds the last letter */
+      .title-container h1 {
+        margin: 0 auto;
+        padding-right: 44px; /* icon width + safe gap */
+        box-sizing: border-box;
+      }
+
       .title-container .info-icon {
         position: absolute;
         right: 14px;
@@ -374,42 +383,107 @@
 
     /* ==========================================================
        MOBILE LANDSCAPE (HORIZONTAL) ONLY
-       - Ads thinner, pushed to edges
-       - Horizontal scroll for everything except title/subtitle
-       - Slight scale reduction for mixer+controls visibility
+       FIXES:
+       - Perfect left/right symmetry
+       - Zero vertical scrolling
+       - Ad stacks fit viewport height (top + bottom)
+       - Controls never cut off
+       - Cleaner ad placeholder styling
        ========================================================== */
     @media (max-width: 850px) and (orientation: landscape) {
-      /* Title stays static above scroll area; tighten spacing */
-      .title-container { margin-top: 10px; }
-      h1 { font-size: 1.6rem; }
-      .subtitle { margin-bottom: 12px; }
+      html, body {
+        height: 100%;
+        overflow: hidden; /* NO vertical scrolling in landscape */
+      }
 
-      /* Make the main layout area horizontally scrollable */
+      /* Tighten header spacing */
+      .title-container { margin-top: 10px; max-width: 100%; }
+      h1 { font-size: 1.6rem; }
+      .subtitle { margin-bottom: 10px; }
+
+      /* Make the whole "work area" exactly fit remaining viewport height */
       .page-wrapper {
         padding: 8px 10px;
         gap: 14px;
-        width: 100%;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
 
-        /* Force content wider than viewport so it can scroll */
-        grid-template-columns: 90px 820px 90px;
-        min-width: 100%;
+        /* fixed symmetric columns */
+        grid-template-columns: 90px minmax(720px, 1fr) 90px;
+
+        /* lock height so no vertical scroll */
+        height: calc(100vh - 86px); /* approx: title+subtitle+spacing */
+        align-items: stretch;
+
+        /* allow horizontal scroll only if needed */
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
       }
 
-      /* Ads: thinner than a fader (chan is 95px) */
-      .ad-sidebar-stack { width: 90px; gap: 18px; }
-      .ad-box { width: 90px; height: 210px; border-radius: 16px; }
-      .ad-text { font-size: 9px; opacity: 0.6; }
+      /* Both ad stacks match perfectly and fill height */
+      .ad-sidebar-stack {
+        width: 90px;
+        height: 100%;
+        gap: 12px;
+        justify-content: space-between;
+        align-items: stretch;
+      }
 
-      /* Slight “zoom out” for visibility */
-      main { transform: scale(0.92); transform-origin: top center; }
+      /* Cleaner ad placeholder look */
+      .ad-box {
+        width: 90px;
+        height: calc((100% - 12px) / 2); /* top + bottom fit exactly */
+        border-radius: 18px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: radial-gradient(120% 120% at 50% 20%, rgba(255,255,255,0.05), rgba(0,0,0,0) 55%),
+                    linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0));
+        box-shadow: inset 0 0 0 1px rgba(0,0,0,0.35);
+      }
+      .ad-text { font-size: 9px; opacity: 0.55; }
 
-      /* Keep the mixer + controls visible as a single wide “board” */
-      .scroll-container { overflow-x: visible; padding-bottom: 8px; }
-      .mixer { margin-bottom: 18px; }
-      .main-controls { gap: 10px; }
-      #startBtn, #pauseBtn { padding: 12px 32px; font-size: 0.75rem; }
+      /* Center column: keep mixer + controls fully visible */
+      main {
+        height: 100%;
+        align-items: center;
+        justify-content: flex-start;
+      }
+
+      .scroll-container {
+        height: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 0;
+      }
+
+      .mixer-unit {
+        height: 100%;
+        min-width: 720px; /* ensures horizontal scroll if needed */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; /* mixer top, controls bottom */
+        align-items: center;
+      }
+
+      /* Reduce mixer footprint so controls never cut off */
+      .mixer {
+        margin-bottom: 10px;
+        padding: 14px 10px;
+        border-radius: 22px;
+        flex: 1 1 auto;
+        align-items: flex-start;
+      }
+
+      /* Slightly slimmer channels so everything fits */
+      .chan { flex: 0 0 85px; width: 85px; padding: 10px 0; }
+      input[type=range] { height: 118px; margin-bottom: 10px; }
+
+      .desc { height: 38px; }
+      .main-controls {
+        flex: 0 0 auto;
+        gap: 10px;
+        padding-bottom: 4px;
+      }
+
+      #startBtn, #pauseBtn { padding: 12px 30px; font-size: 0.75rem; }
       .btn-utility, .btn-save, .btn-share-main { padding: 9px 16px; font-size: 0.62rem; }
     }
   </style>
