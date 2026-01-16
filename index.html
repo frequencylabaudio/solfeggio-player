@@ -7,53 +7,74 @@
     <style>
         :root { 
             --panel-bg: #0d0d0d; --chan-bg: #151515; --accent: #4caf50; 
-            --save-btn: #20c997; --text-main: #ffffff; --text-dim: #666; --border: #222;
+            --save-btn: #20c997; --share-btn: #0077b6; --text-main: #ffffff; 
+            --text-dim: #666; --border: #222;
         }
-        body { background: #000; color: var(--text-main); font-family: 'Inter', sans-serif; margin: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
-        
-        .header-container { text-align: center; margin: 20px 0; width: 100%; max-width: 1200px; }
-        h1 { font-weight: 200; letter-spacing: 8px; margin: 0; font-size: 1.8rem; text-transform: uppercase; }
-        .subtitle { font-size: 0.6rem; letter-spacing: 5px; color: var(--text-dim); margin-top: 5px; text-transform: uppercase; }
-
-        /* Layout */
-        .page-wrapper { display: flex; align-items: flex-start; justify-content: center; width: 100%; padding: 10px; box-sizing: border-box; gap: 20px; }
-        .ad-sidebar { width: 160px; height: 600px; background: #080808; border: 1px solid #1a1a1a; display: flex; align-items: center; justify-content: center; border-radius: 12px; flex-shrink: 0; }
-        .ad-text { color: #222; font-size: 11px; transform: rotate(-90deg); letter-spacing: 4px; font-weight: bold; }
-
-        /* Mixer Board */
-        .mixer { display: flex; gap: 10px; background: var(--panel-bg); padding: 25px 15px; border-radius: 24px; border: 1px solid #1a1a1a; width: fit-content; max-width: 100%; overflow-x: auto; }
-        .chan { display: flex; flex-direction: column; align-items: center; width: 95px; background: var(--chan-bg); padding: 15px 0; border-radius: 16px; border: 1px solid var(--border); flex-shrink: 0; }
-        .hz { font-size: 0.8rem; font-weight: 900; color: var(--clr); margin-bottom: 4px; }
-        .desc { font-size: 0.5rem; font-weight: 700; height: 35px; color: #777; line-height: 1.1; padding: 0 8px; text-align: center; text-transform: uppercase; }
-        
-        /* Faders */
-        input[type=range] { -webkit-appearance: slider-vertical; width: 20px; height: 180px; cursor: pointer; margin: 15px 0; background: transparent; }
-
-        /* Controls */
-        .main-controls { margin: 25px 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px; }
-        #startBtn, #pauseBtn { background: #4caf50; color: #fff; padding: 18px 60px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; font-size: 1rem; box-shadow: 0 10px 20px rgba(76, 175, 80, 0.2); }
-        #pauseBtn { display: none; background: #ffd60a; color: #000; }
-        
-        .timer-wrap { display: flex; align-items: center; background: #111; padding: 6px 15px; border-radius: 50px; border: 1px solid #222; }
-        .timer-select { background: transparent; color: #fff; border: none; font-weight: bold; font-size: 0.8rem; cursor: pointer; outline: none; }
-        #timerDisplay { color: #ffd60a; font-family: monospace; font-size: 0.9rem; margin-left: 10px; border-left: 1px solid #333; padding-left: 10px; min-width: 45px; }
-
-        .ctrl-btn { background: #1a1a1a; color: #aaa; border: 1px solid #333; padding: 12px 24px; border-radius: 50px; cursor: pointer; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
-        .save-btn { background: var(--save-btn); color: #000; border: none; padding: 12px 28px; border-radius: 50px; font-weight: 900; cursor: pointer; text-transform: uppercase; font-size: 0.7rem; }
-
-        /* Mobile Responsive (Landscape & Portrait) */
-        @media (max-height: 500px) and (orientation: landscape) {
-            .ad-sidebar { display: none; }
-            input[type=range] { height: 100px; }
-            .chan { width: 85px; padding: 8px 0; }
-            h1 { font-size: 1.2rem; }
+        body { 
+            background: #000; color: var(--text-main); font-family: 'Inter', sans-serif; 
+            margin: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; 
         }
-        @media (max-width: 768px) and (orientation: portrait) {
+        
+        /* --- HEADER --- */
+        .header-container { text-align: center; margin: 30px 0; width: 100%; }
+        h1 { font-weight: 200; letter-spacing: 10px; margin: 0; font-size: 2.2rem; text-transform: uppercase; }
+        .subtitle { font-size: 0.7rem; letter-spacing: 5px; color: var(--text-dim); margin-top: 8px; text-transform: uppercase; }
+
+        /* --- LAYOUT: Fixed spacing for Desktop --- */
+        .page-wrapper { 
+            display: flex; align-items: center; justify-content: center; 
+            width: 100%; max-width: 1600px; padding: 20px; box-sizing: border-box; 
+            gap: 60px; /* Increased gap to prevent crowding ads */
+        }
+        
+        .ad-sidebar { 
+            width: 160px; height: 600px; background: #080808; border: 1px solid #1a1a1a; 
+            display: flex; align-items: center; justify-content: center; border-radius: 12px; flex-shrink: 0; 
+        }
+        .ad-text { color: #222; font-size: 11px; transform: rotate(-90deg); letter-spacing: 4px; font-weight: bold; text-transform: uppercase; }
+
+        /* --- MIXER --- */
+        .mixer-container { display: flex; flex-direction: column; align-items: center; flex-grow: 1; }
+        .mixer { 
+            display: flex; gap: 12px; background: var(--panel-bg); padding: 35px 25px; 
+            border-radius: 32px; border: 1px solid #1a1a1a; box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+            width: fit-content; max-width: 100%; overflow-x: auto;
+        }
+
+        .chan { 
+            display: flex; flex-direction: column; align-items: center; width: 105px; 
+            background: var(--chan-bg); padding: 25px 0; border-radius: 20px; border: 1px solid var(--border); 
+        }
+        .hz { font-size: 0.9rem; font-weight: 900; color: var(--clr); margin-bottom: 5px; }
+        .desc { font-size: 0.55rem; font-weight: 700; height: 40px; color: #777; line-height: 1.2; padding: 0 10px; text-align: center; text-transform: uppercase; }
+        
+        input[type=range] { -webkit-appearance: slider-vertical; width: 20px; height: 220px; cursor: pointer; margin: 20px 0; }
+
+        .btn-row { display: flex; gap: 6px; margin-bottom: 15px; }
+        .m-btn, .s-btn { width: 40px; height: 26px; border-radius: 6px; border: 1px solid #333; background: #000; color: #555; font-size: 0.65rem; cursor: pointer; font-weight: 800; }
+        .m-btn.active-mute { background: #d00000; color: #fff; }
+        .s-btn.active-solo { background: #0077b6; color: #fff; }
+
+        /* --- CONTROLS --- */
+        .main-controls { margin: 45px 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 15px; }
+        #startBtn, #pauseBtn { background: var(--accent); color: #fff; padding: 18px 60px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; font-size: 1.1rem; }
+        #pauseBtn { display: none; }
+        
+        .timer-wrap { display: flex; align-items: center; background: #111; padding: 8px 20px; border-radius: 50px; border: 1px solid #222; }
+        .timer-select { background: transparent; color: #fff; border: none; font-weight: bold; font-size: 0.85rem; cursor: pointer; outline: none; }
+        #timerDisplay { color: #ffd60a; font-family: monospace; font-size: 1rem; margin-left: 12px; border-left: 1px solid #333; padding-left: 12px; min-width: 55px; }
+
+        .ctrl-btn { background: #1a1a1a; color: #aaa; border: 1px solid #333; padding: 14px 28px; border-radius: 50px; cursor: pointer; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
+        .save-btn { background: var(--save-btn); color: #000; border: none; padding: 14px 35px; border-radius: 50px; font-weight: 900; cursor: pointer; text-transform: uppercase; }
+        .share-btn { background: var(--share-btn); color: #fff; border: none; padding: 14px 35px; border-radius: 50px; font-weight: 900; cursor: pointer; text-transform: uppercase; }
+
+        /* --- MOBILE --- */
+        @media (max-width: 1024px) { .page-wrapper { gap: 20px; } }
+        @media (max-width: 768px) {
             .ad-sidebar { display: none; }
-            .mixer { flex-direction: column; width: 100%; padding: 10px; }
-            .chan { flex-direction: row; width: 100%; height: 75px; padding: 0 20px; justify-content: space-between; }
-            input[type=range] { -webkit-appearance: none; height: 6px; width: 45%; background: #222; margin: 0; border-radius: 10px; }
-            input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 24px; background: #fff; border-radius: 50%; border: 3px solid var(--clr); }
+            .mixer { flex-direction: column; width: 100%; }
+            .chan { flex-direction: row; width: 100%; padding: 10px 20px; height: 80px; justify-content: space-between; }
+            input[type=range] { -webkit-appearance: none; height: 8px; width: 40%; background: #222; margin: 0; }
         }
     </style>
 </head>
@@ -65,26 +86,30 @@
     </div>
     
     <div class="page-wrapper">
-        <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD</span></aside>
+        <aside class="ad-sidebar"><span class="ad-text">Skyscraper Ad</span></aside>
         
-        <div style="display:flex; flex-direction:column; align-items:center; width:100%;">
+        <div class="mixer-container">
             <div class="mixer" id="mixer-ui">
                 <script>
                     const chData = [
-                        {hz:"69.3Hz", d:"Resonance Deepener", c:"#4a00e0"}, {hz:"174Hz", d:"Relieves Pain and Stress", c:"#ffffff"},
-                        {hz:"285Hz", d:"Accelerates Physical Recovery", c:"#9b2226"}, {hz:"396Hz", d:"Releases Fear and Guilt", c:"#ae2012"},
-                        {hz:"417Hz", d:"Breaks Cycles & Facilitates Change", c:"#ca6702"}, {hz:"432Hz", d:"Physical Relaxation", c:"#ee9b00"},
-                        {hz:"528Hz", d:"Enhances DNA Repair & Transformation", c:"#0a9396"}, {hz:"639Hz", d:"Improves Relationships & Connection", c:"#005f73"},
-                        {hz:"741Hz", d:"Detoxifies the Body and Mind", c:"#3e5c76"}, {hz:"852Hz", d:"Awakens Intuition & Awareness", c:"#5e548e"},
-                        {hz:"963Hz", d:"Connects to Higher Consciousness", c:"#9d4edd"}
+                        {hz:"69.3Hz", d:"Resonance Deepener", c:"#4a00e0"}, {hz:"174Hz", d:"Relieve Pain", c:"#ffffff"},
+                        {hz:"285Hz", d:"Body Recovery", c:"#9b2226"}, {hz:"396Hz", d:"Release Fear", c:"#ae2012"},
+                        {hz:"417Hz", d:"Change Cycles", c:"#ca6702"}, {hz:"432Hz", d:"Relaxation", c:"#ee9b00"},
+                        {hz:"528Hz", d:"DNA Repair", c:"#0a9396"}, {hz:"639Hz", d:"Relationships", c:"#005f73"},
+                        {hz:"741Hz", d:"Detox Mind", c:"#3e5c76"}, {hz:"852Hz", d:"Intuition", c:"#5e548e"},
+                        {hz:"963Hz", d:"Higher Consciousness", c:"#9d4edd"}
                     ];
                     chData.forEach((ch, i) => {
                         document.write(`
                             <div class="chan" style="--clr:${ch.c}">
-                                <div class="hz" style="color:${ch.c}">${ch.hz}</div>
+                                <div class="hz">${ch.hz}</div>
                                 <div class="desc">${ch.d}</div>
+                                <div class="btn-row">
+                                    <button class="m-btn" id="m${i}" onclick="muteTrack(${i})">M</button>
+                                    <button class="s-btn" id="s${i}" onclick="soloTrack(${i})">S</button>
+                                </div>
                                 <input type="range" id="v${i}" min="0" max="1" step="0.01" value="0" oninput="slide(${i},this.value)">
-                                <div id="l${i}" style="font-size:0.65rem; color:#444; font-family:monospace;">0%</div>
+                                <div id="l${i}" style="font-size:0.75rem; color:#444;">0%</div>
                             </div>
                         `);
                     });
@@ -97,31 +122,30 @@
                 
                 <div class="timer-wrap">
                     <select class="timer-select" id="timerDrop" onchange="handleTimer(this.value)">
-                        <option value="0">Timer: Off</option>
-                        <option value="300">5m</option><option value="900">15m</option>
-                        <option value="1800">30m</option><option value="3600">1h</option>
-                        <option value="28800">8h</option>
+                        <option value="0">Timer: Disabled</option>
+                        <option value="300">5 Min</option>
+                        <option value="3600">1 Hour</option>
+                        <option value="28800">8 Hour</option>
                     </select>
                     <span id="timerDisplay">--:--</span>
                 </div>
 
-                <button class="ctrl-btn" onclick="randomize()">Random</button>
-                <button class="ctrl-btn" onclick="resetFaders()">Reset</button>
-                <button class="save-btn" onclick="savePreset()">Save Link</button>
+                <button class="ctrl-btn" onclick="randomize()">Random Mix</button>
+                <button class="ctrl-btn" onclick="resetAll()">Reset All</button>
+                <button class="save-btn" onclick="alert('Preset Saved!')">Save Preset</button>
+                <button class="share-btn">Share</button>
             </div>
         </div>
 
-        <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD</span></aside>
+        <aside class="ad-sidebar"><span class="ad-text">Skyscraper Ad</span></aside>
     </div>
 
     <script>
-        let ctx, master, tracks = [], ready = false, isPaused = false;
+        let ctx, master, tracks = [], ready = false, isPaused = false, soloIdx = -1, timerInt, timeLeft = 0;
         const fileNames = ["69.3Hz","174Hz","285Hz","396Hz","417Hz","432Hz","528Hz","639Hz","741Hz","852Hz","963Hz"];
 
         async function beginSession() {
             if (ready) return;
-            
-            // 1. Initialize Audio Context
             ctx = new (window.AudioContext || window.webkitAudioContext)();
             if (ctx.state === 'suspended') await ctx.resume();
             
@@ -129,113 +153,84 @@
             master.gain.setValueAtTime(0.7, ctx.currentTime);
             master.connect(ctx.destination);
             
-            const btn = document.getElementById('startBtn');
-            btn.innerText = "INITIALIZING AUDIO...";
+            document.getElementById('startBtn').innerText = "LOADING...";
 
-            // 2. Fetch and Decode each file from the root directory
             for(let i=0; i < fileNames.length; i++) {
                 try {
-                    // We use .mp3 as the primary source as per your naming
-                    const url = `./${fileNames[i]}.mp3`; 
-                    const response = await fetch(url);
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                    
-                    const arrayBuffer = await response.arrayBuffer();
-                    const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
-                    
-                    const source = ctx.createBufferSource();
-                    source.buffer = audioBuffer;
-                    source.loop = true;
-                    
-                    const gainNode = ctx.createGain();
-                    gainNode.gain.setValueAtTime(0, ctx.currentTime);
-                    
-                    source.connect(gainNode);
-                    gainNode.connect(master);
-                    source.start(0);
-                    
-                    tracks[i] = { g: gainNode, lastVal: 0 };
-                } catch (err) {
-                    btn.style.background = "#d00000";
-                    btn.innerText = `ERR: ${fileNames[i]}.mp3 NOT FOUND`;
-                    console.error("Audio Load Error:", err);
-                    return; // Stop loading if a file is missing
-                }
+                    const res = await fetch(`./${fileNames[i]}.mp3`);
+                    const buf = await res.arrayBuffer();
+                    const audioBuf = await ctx.decodeAudioData(buf);
+                    const src = ctx.createBufferSource();
+                    src.buffer = audioBuf; src.loop = true;
+                    const gn = ctx.createGain(); gn.gain.setValueAtTime(0, ctx.currentTime);
+                    src.connect(gn); gn.connect(master); src.start(0);
+                    tracks[i] = { g: gn, lastVal: 0, isMuted: false };
+                } catch (e) { console.error("Missing:", fileNames[i]); }
             }
-
             ready = true;
-            btn.style.display = "none";
+            document.getElementById('startBtn').style.display = "none";
             document.getElementById('pauseBtn').style.display = "block";
-
-            // 3. Balanced Initial Mix (Restore Feature)
-            tracks.forEach((t, i) => {
-                if(t && t.g) {
-                    const initVal = (Math.random() * 0.1 + 0.25).toFixed(2);
-                    document.getElementById('v'+i).value = initVal;
-                    slide(i, initVal);
-                }
-            });
+            
+            // Random start mix as requested previously
+            tracks.forEach((t, i) => { if(t) randomizeTrack(i); });
         }
 
         function slide(i, v) {
             const val = parseFloat(v);
             if(!tracks[i]) return;
             tracks[i].lastVal = val;
-            if (ready && tracks[i].g) {
-                // Smooth volume changes to prevent clicking
-                tracks[i].g.gain.setTargetAtTime(isPaused ? 0 : val, ctx.currentTime, 0.1);
-            }
+            const target = (tracks[i].isMuted || (soloIdx !== -1 && soloIdx !== i)) ? 0 : val;
+            tracks[i].g.gain.setTargetAtTime(target, ctx.currentTime, 0.1);
             document.getElementById('l' + i).innerText = Math.round(val * 100) + "%";
         }
+
+        function muteTrack(i) {
+            tracks[i].isMuted = !tracks[i].isMuted;
+            document.getElementById('m'+i).classList.toggle('active-mute', tracks[i].isMuted);
+            slide(i, tracks[i].lastVal);
+        }
+
+        function soloTrack(i) {
+            soloIdx = (soloIdx === i) ? -1 : i;
+            document.querySelectorAll('.s-btn').forEach((b, idx) => b.classList.toggle('active-solo', idx === soloIdx));
+            tracks.forEach((_, idx) => slide(idx, tracks[idx].lastVal));
+        }
+
+        function randomizeTrack(i) {
+            const v = (Math.random() * 0.15 + 0.20).toFixed(2);
+            document.getElementById('v'+i).value = v;
+            slide(i, v);
+        }
+
+        function randomize() { tracks.forEach((_, i) => randomizeTrack(i)); }
+        function resetAll() { tracks.forEach((_, i) => { document.getElementById('v'+i).value = 0; slide(i, 0); }); }
 
         function togglePlay() {
             isPaused = !isPaused;
             master.gain.setTargetAtTime(isPaused ? 0 : 0.7, ctx.currentTime, 0.2);
-            const btn = document.getElementById('pauseBtn');
-            btn.innerText = isPaused ? "RESUME ALL" : "PAUSE ALL";
-            btn.style.background = isPaused ? "#4caf50" : "#ffd60a";
-            btn.style.color = isPaused ? "#fff" : "#000";
-        }
-
-        function randomize() {
-            if(!ready) return;
-            tracks.forEach((_, i) => {
-                const v = (Math.random() * 0.5 + 0.1).toFixed(2);
-                document.getElementById('v'+i).value = v;
-                slide(i, v);
-            });
-        }
-
-        function resetFaders() {
-            if(!ready) return;
-            tracks.forEach((_, i) => {
-                document.getElementById('v'+i).value = 0;
-                slide(i, 0);
-            });
-        }
-
-        function savePreset() {
-            const params = new URLSearchParams();
-            tracks.forEach((t, i) => { if(t && t.lastVal > 0) params.set(`v${i}`, t.lastVal); });
-            const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
-            navigator.clipboard.writeText(url);
-            alert("Link copied to clipboard!");
+            document.getElementById('pauseBtn').innerText = isPaused ? "RESUME ALL" : "PAUSE ALL";
         }
 
         function handleTimer(sec) {
-            let timeLeft = parseInt(sec);
-            if(timeLeft <= 0) return;
-            const timerInt = setInterval(() => {
-                if(!isPaused) {
-                    timeLeft--;
-                    let m = Math.floor(timeLeft/60), s = timeLeft%60;
-                    document.getElementById('timerDisplay').innerText = m + ":" + (s<10?'0':'')+s;
-                    if(timeLeft <= 0) { 
-                        if(!isPaused) togglePlay(); 
-                        clearInterval(timerInt); 
+            clearInterval(timerInt);
+            timeLeft = parseInt(sec);
+            if(timeLeft > 0) {
+                timerInt = setInterval(() => {
+                    if(!isPaused) {
+                        timeLeft--;
+                        updateTimerUI();
+                        if(timeLeft <= 0) { if(!isPaused) togglePlay(); clearInterval(timerInt); }
                     }
-                }
-            }, 1000);
+                }, 1000);
+            }
+            updateTimerUI();
+        }
+
+        function updateTimerUI() {
+            const display = document.getElementById('timerDisplay');
+            if(timeLeft <= 0) { display.innerText = "--:--"; return; }
+            let h = Math.floor(timeLeft/3600), m = Math.floor((timeLeft%3600)/60), s = timeLeft%60;
+            display.innerText = (h > 0 ? h + ":" : "") + (m < 10 ? '0' : '') + m + ":" + (s < 10 ? '0' : '') + s;
         }
     </script>
 </body>
