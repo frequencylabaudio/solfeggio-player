@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Frequency Lab | Solfeggio Mixer</title>
+    <link rel="icon" type="image/png" href="favicon.png">
     <style>
         :root { --panel-bg: #0a0a0a; --chan-bg: #141414; }
         body { 
@@ -15,12 +16,15 @@
         
         .header-container { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 20px; }
         h1 { font-weight: 200; letter-spacing: 5px; margin: 0; font-size: 1.8rem; }
-        .subtitle { font-size: 0.7rem; letter-spacing: 3px; color: #666; margin: 5px 0 20px 0; text-transform: uppercase; }
+        .subtitle { font-size: 0.7rem; letter-spacing: 3px; color: #666; margin: 5px 0 10px 0; text-transform: uppercase; }
 
         .main-controls { margin: 10px 0 20px 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; width: 95%; max-width: 900px; }
         #startBtn { background: #ffd60a; color: #000; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; width: 220px; }
         #pauseBtn { display: none; background: #55a630; color: #fff; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; width: 220px; }
         
+        .timer-wrap { display: flex; align-items: center; gap: 10px; background: #111; padding: 8px 18px; border-radius: 50px; border: 1px solid #333; }
+        .btn-utility { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 10px 18px; border-radius: 50px; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: 600; }
+
         .mixer { 
             display: flex; flex-wrap: nowrap; justify-content: center; gap: 8px; 
             background: var(--panel-bg); padding: 20px 10px; border-radius: 24px; 
@@ -37,12 +41,19 @@
         .hz { font-size: 0.8rem; font-weight: 800; color: var(--clr); }
         .desc { font-size: 0.5rem; font-weight: 700; height: 44px; color: #b0b0b0; line-height: 1.2; padding: 0 4px; display: flex; align-items: center; justify-content: center; text-align: center; text-transform: uppercase; }
         input[type=range] { -webkit-appearance: slider-vertical; width: 18px; height: 140px; cursor: pointer; margin-bottom: 12px; }
-        .vol-label { font-size: 0.65rem; font-family: monospace; color: #999; }
+        
+        .vol-label { font-size: 0.65rem; font-family: monospace; color: #999; margin-bottom: 8px; }
+        .ms-row { display: flex; gap: 4px; }
+        .ms-btn { width: 38px; height: 22px; border-radius: 4px; border: 1px solid #333; background: #1a1a1a; color: #666; font-size: 0.55rem; cursor: pointer; font-weight: 900; }
+        .ms-btn.active-m { background: #ae2012; color: #fff; border-color: #ff4d4d; }
+        .ms-btn.active-s { background: #ffd60a; color: #000; border-color: #fff; }
+
+        .footer-credit { margin: 40px 0; font-size: 0.65rem; color: #444; letter-spacing: 2px; text-transform: uppercase; font-weight: bold; }
 
         @media (max-width: 768px) {
             .mixer { flex-direction: column; width: 95%; gap: 12px; padding: 15px; }
-            .chan { flex-direction: row; width: 100%; padding: 15px; }
-            input[type=range] { -webkit-appearance: none; width: 30%; height: 6px; background: #333; }
+            .chan { flex-direction: row; width: 100%; padding: 15px; justify-content: space-between; }
+            input[type=range] { -webkit-appearance: none; width: 30%; height: 6px; background: #333; margin: 0; }
         }
     </style>
 </head>
@@ -55,7 +66,18 @@
 
     <div class="main-controls">
         <button id="startBtn" onclick="beginSession()">Start Session</button>
-        <button id="pauseBtn" onclick="toggle()">Pause All</button>
+        <button id="pauseBtn" onclick="toggle()">Mute All</button>
+        <div class="timer-wrap">
+            <select id="timerSelect" onchange="setTimer(this.value)">
+                <option value="0">Timer: Off</option>
+                <option value="60">1 Min</option>
+                <option value="1800">30 Min</option>
+                <option value="3600">1 Hr</option>
+                <option value="28800">8 Hr</option>
+            </select>
+            <span id="timerDisplay" style="font-family: monospace; color: #55a630; font-size: 0.85rem;">--:--</span>
+        </div>
+        <button class="btn-utility" onclick="resetFaders()">Reset</button>
     </div>
     
     <div class="mixer" id="mixer-ui">
@@ -80,14 +102,21 @@
                         <div class="desc">${ch.d}</div>
                         <input type="range" id="v${i}" min="0" max="1" step="0.01" value="0" oninput="slide(${i},this.value)">
                         <div class="vol-label" id="l${i}">0%</div>
+                        <div class="ms-row">
+                            <button class="ms-btn" id="m${i}" onclick="mute(${i})">M</button>
+                            <button class="ms-btn" id="s${i}" onclick="solo(${i})">S</button>
+                        </div>
                     </div>
                 `);
             });
         </script>
     </div>
 
+    <div class="footer-credit">Created by Keunho Koh</div>
+
     <script>
         let ctx, master, tracks = [], ready = false, isPaused = false;
+        let timerInterval, timeLeft = 0;
 
         async function beginSession() {
             if (ready) return;
@@ -96,7 +125,7 @@
             master.connect(ctx.destination);
             await Promise.all(chData.map(async (ch, i) => {
                 const g = ctx.createGain(); g.gain.setValueAtTime(0, ctx.currentTime); g.connect(master);
-                tracks[i] = { g: g };
+                tracks[i] = { g: g, vol: 0, muted: false, soloed: false };
                 const res = await fetch(ch.hz + ".mp3");
                 const buf = await ctx.decodeAudioData(await res.arrayBuffer());
                 const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;
@@ -110,17 +139,66 @@
 
         function slide(i, v) {
             const val = parseFloat(v);
-            if (ready) tracks[i].g.gain.setTargetAtTime(val * 0.7, ctx.currentTime, 0.05);
+            tracks[i].vol = val;
+            updateNode(i);
             document.getElementById('l' + i).innerText = Math.round(val * 100) + "%";
             const el = document.getElementById('c' + i);
             el.style.boxShadow = val > 0.05 ? `0 0 ${val * 30}px var(--glow)` : "none";
             el.style.borderColor = val > 0.05 ? `rgba(255,255,255,${val * 0.4})` : "#202020";
         }
 
+        function updateNode(i) {
+            if (!ready) return;
+            let targetVol = tracks[i].vol;
+            if (tracks[i].muted) targetVol = 0;
+            // Solo logic
+            const anySolo = tracks.some(t => t.soloed);
+            if (anySolo && !tracks[i].soloed) targetVol = 0;
+            
+            tracks[i].g.gain.setTargetAtTime(targetVol * 0.7, ctx.currentTime, 0.05);
+        }
+
+        function mute(i) {
+            tracks[i].muted = !tracks[i].muted;
+            document.getElementById('m'+i).classList.toggle('active-m');
+            updateNode(i);
+        }
+
+        function solo(i) {
+            tracks[i].soloed = !tracks[i].soloed;
+            document.getElementById('s'+i).classList.toggle('active-s');
+            tracks.forEach((_, idx) => updateNode(idx));
+        }
+
         function toggle() {
             if (!ready) return; isPaused = !isPaused;
             master.gain.setTargetAtTime(isPaused ? 0 : 0.7, ctx.currentTime, 0.1);
-            document.getElementById('pauseBtn').innerText = isPaused ? "RESUME ALL" : "PAUSE ALL";
+            document.getElementById('pauseBtn').innerText = isPaused ? "Resume All" : "Mute All";
+        }
+
+        function resetFaders() {
+            tracks.forEach((t, i) => {
+                document.getElementById('v'+i).value = 0;
+                t.muted = false; t.soloed = false;
+                document.getElementById('m'+i).classList.remove('active-m');
+                document.getElementById('s'+i).classList.remove('active-s');
+                slide(i, 0);
+            });
+        }
+
+        function setTimer(seconds) {
+            clearInterval(timerInterval);
+            timeLeft = parseInt(seconds);
+            if (timeLeft > 0) {
+                timerInterval = setInterval(() => {
+                    if (!isPaused && timeLeft > 0) {
+                        timeLeft--;
+                        const m = Math.floor(timeLeft / 60); const s = timeLeft % 60;
+                        document.getElementById('timerDisplay').innerText = m + ":" + (s < 10 ? '0' : '') + s;
+                    }
+                    if (timeLeft <= 0) { clearInterval(timerInterval); if (!isPaused) toggle(); }
+                }, 1000);
+            }
         }
     </script>
 </body>
