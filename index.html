@@ -257,6 +257,12 @@
             tracks.forEach((_, idx) => slide(idx, tracks[idx].lastVal));
         }
 
+        function toggleMuteAll() {
+            if (!ready) return;
+            const anyActive = tracks.some(t => !t.isMuted);
+            tracks.forEach((_, i) => muteTrack(i, anyActive));
+        }
+
         function resetFaders() {
             soloIdx = -1;
             document.querySelectorAll('.s-btn').forEach(b => b.classList.remove('active-solo'));
@@ -266,6 +272,8 @@
                 document.getElementById('v' + i).value = 0;
                 slide(i, 0);
             });
+            timeLeft = 0;
+            updateTimerDisplay();
         }
 
         function openModal() { 
@@ -312,24 +320,37 @@
         }
 
         function setTimer(seconds) {
-            clearInterval(timerInterval); timeLeft = parseInt(seconds);
+            clearInterval(timerInterval); 
+            timeLeft = parseInt(seconds);
             if (!ready && timeLeft > 0) { beginSession(); return; }
             if (ready) {
                 master.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.5);
-                isPaused = false; document.getElementById('pauseBtn').innerText = "PAUSE ALL";
+                isPaused = false; 
+                document.getElementById('pauseBtn').innerText = "PAUSE ALL";
                 if (timeLeft > 0) startCountdown();
+                else updateTimerDisplay();
             }
         }
 
         function startCountdown() {
             updateTimerDisplay();
             timerInterval = setInterval(() => {
-                if (isPaused) return; timeLeft--; updateTimerDisplay();
-                if (timeLeft <= 0) { clearInterval(timerInterval); toggle(); }
+                if (isPaused) return; 
+                timeLeft--; 
+                updateTimerDisplay();
+                if (timeLeft <= 0) { 
+                    clearInterval(timerInterval); 
+                    if (!isPaused) toggle(); 
+                }
             }, 1000);
         }
 
         function updateTimerDisplay() {
+            if (timeLeft <= 0) {
+                document.getElementById('timerDisplay').innerText = "--:--";
+                document.getElementById('timerSelect').value = "0";
+                return;
+            }
             const m = Math.floor(timeLeft / 60); const s = timeLeft % 60;
             document.getElementById('timerDisplay').innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
         }
@@ -339,10 +360,6 @@
                 const v = (Math.random() * 0.4 + 0.1).toFixed(2);
                 document.getElementById('v'+i).value = v; slide(i, v);
             });
-        }
-
-        function toggleMuteAll() {
-            tracks.forEach((_, i) => muteTrack(i, true));
         }
     </script>
 </body>
