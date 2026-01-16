@@ -12,7 +12,6 @@
             font-family: 'Inter', -apple-system, sans-serif; 
             text-align: center; margin: 0; min-height: 100vh; 
             display: flex; flex-direction: column; align-items: center; 
-            overflow-x: hidden;
         }
         
         .header-container { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 20px; }
@@ -20,7 +19,7 @@
         .info-trigger { cursor: pointer; color: #444; font-size: 1.1rem; border: 1px solid #333; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .subtitle { font-size: 0.7rem; letter-spacing: 3px; color: #666; margin: 5px 0 10px 0; text-transform: uppercase; }
 
-        .main-controls { margin: 10px 0 20px 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; width: 95%; max-width: 900px; z-index: 10; }
+        .main-controls { margin: 10px 0 20px 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; width: 95%; max-width: 900px; }
         #startBtn, #pauseBtn { background: #55a630; color: #fff; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; width: 220px; }
         #startBtn { background: #ffd60a; color: #000; }
         #pauseBtn { display: none; }
@@ -29,7 +28,6 @@
         .btn-utility { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 10px 18px; border-radius: 50px; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: 600; }
         .btn-save { background: #20c997; color: #000; padding: 10px 18px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
 
-        .page-wrapper { display: flex; align-items: flex-start; gap: 15px; padding: 10px; width: 100%; justify-content: center; box-sizing: border-box; }
         .mixer { 
             display: flex; flex-wrap: nowrap; justify-content: center; gap: 8px; 
             background: var(--panel-bg); padding: 20px 10px; border-radius: 24px; 
@@ -41,25 +39,21 @@
             display: flex; flex-direction: column; align-items: center; 
             flex: 0 0 95px; width: 95px; background: var(--chan-bg); 
             padding: 12px 0; border-radius: 12px; border: 1px solid #202020; 
-            box-sizing: border-box; transition: box-shadow 0.3s ease, border-color 0.3s ease;
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
         }
         .hz { font-size: 0.8rem; font-weight: 800; color: var(--clr); }
         .desc { font-size: 0.5rem; font-weight: 700; height: 44px; color: #b0b0b0; line-height: 1.2; padding: 0 4px; display: flex; align-items: center; justify-content: center; text-align: center; text-transform: uppercase; }
         input[type=range] { -webkit-appearance: slider-vertical; width: 18px; height: 140px; cursor: pointer; margin-bottom: 12px; }
-
         .vol-label { font-size: 0.65rem; font-family: monospace; color: #999; }
-        .btn-row { display: flex; gap: 4px; margin-top: 5px; }
-        .m-btn, .s-btn { width: 45px; height: 22px; border-radius: 4px; border: 1px solid #333; background: #1a1a1a; color: #aaa; font-size: 0.55rem; cursor: pointer; text-transform: uppercase; font-weight: bold; }
 
-        /* Modal styling */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); z-index: 1000; }
-        .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f0f; padding: 35px; border-radius: 24px; text-align: center; width: 90%; max-width: 500px; border: 1px solid #222; box-sizing: border-box; }
+        .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f0f; padding: 35px; border-radius: 24px; text-align: center; width: 90%; max-width: 500px; border: 1px solid #222; }
         .social-btn { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #333; background: #1a1a1a; color: #fff; cursor: pointer; font-weight: bold; }
 
         @media (max-width: 768px) {
             .mixer { flex-direction: column; width: 95%; gap: 12px; padding: 15px; }
-            .chan { flex-direction: row; width: 100%; height: auto; flex: none; justify-content: space-between; padding: 15px; }
-            input[type=range] { -webkit-appearance: none; width: 30%; height: 6px; background: #333; border-radius: 3px; margin: 0; }
+            .chan { flex-direction: row; width: 100%; padding: 15px; }
+            input[type=range] { -webkit-appearance: none; width: 30%; height: 6px; background: #333; }
         }
     </style>
 </head>
@@ -67,7 +61,7 @@
 
     <div class="header-container">
         <h1>SOLFEGGIO PLAYER</h1>
-        <div class="info-trigger" onclick="openInfo()">ⓘ</div>
+        <div class="info-trigger">ⓘ</div>
     </div>
     <div class="subtitle">By Frequency Lab</div>
 
@@ -92,38 +86,32 @@
         <button class="btn-save" onclick="openSave()">Save</button>
     </div>
     
-    <div class="page-wrapper">
-        <div class="mixer" id="mixer-ui">
-            <script>
-                const chData = [
-                    {hz:"69.3Hz", d:"Resonance Deepener", c:"#4a00e0", g:"rgba(74,0,224,0.5)"},
-                    {hz:"174Hz", d:"Relieves Pain", c:"#ffffff", g:"rgba(255,255,255,0.3)"},
-                    {hz:"285Hz", d:"Physical Recovery", c:"#9b2226", g:"rgba(155,34,38,0.5)"},
-                    {hz:"396Hz", d:"Release Fear", c:"#ae2012", g:"rgba(174,32,18,0.5)"},
-                    {hz:"417Hz", d:"Change Cycles", c:"#ca6702", g:"rgba(202,103,2,0.5)"},
-                    {hz:"432Hz", d:"Relaxation", c:"#ee9b00", g:"rgba(238,155,0,0.5)"},
-                    {hz:"528Hz", d:"DNA Repair", c:"#0a9396", g:"rgba(10,147,150,0.5)"},
-                    {hz:"639Hz", d:"Relationships", c:"#005f73", g:"rgba(0,95,115,0.5)"},
-                    {hz:"741Hz", d:"Detox Mind", c:"#3e5c76", g:"rgba(62,92,118,0.5)"},
-                    {hz:"852Hz", d:"Intuition", c:"#5e548e", g:"rgba(94,84,142,0.5)"},
-                    {hz:"963Hz", d:"Consciousness", c:"#9d4edd", g:"rgba(157,78,221,0.5)"}
-                ];
-                chData.forEach((ch, i) => {
-                    document.write(`
-                        <div class="chan" id="c${i}" style="--clr:${ch.c}; --glow:${ch.g}">
-                            <div class="hz">${ch.hz}</div>
-                            <div class="desc">${ch.d}</div>
-                            <input type="range" id="v${i}" min="0" max="1" step="0.01" value="0" oninput="slide(${i},this.value)">
-                            <div class="vol-label" id="l${i}">0%</div>
-                            <div class="btn-row">
-                                <button class="m-btn">M</button>
-                                <button class="s-btn">S</button>
-                            </div>
-                        </div>
-                    `);
-                });
-            </script>
-        </div>
+    <div class="mixer" id="mixer-ui">
+        <script>
+            const chData = [
+                {hz:"69.3Hz", d:"Resonance Deepener", c:"#4a00e0", g:"rgba(74,0,224,0.5)"},
+                {hz:"174Hz", d:"Relieves Pain", c:"#ffffff", g:"rgba(255,255,255,0.3)"},
+                {hz:"285Hz", d:"Physical Recovery", c:"#9b2226", g:"rgba(155,34,38,0.5)"},
+                {hz:"396Hz", d:"Release Fear", c:"#ae2012", g:"rgba(174,32,18,0.5)"},
+                {hz:"417Hz", d:"Change Cycles", c:"#ca6702", g:"rgba(202,103,2,0.5)"},
+                {hz:"432Hz", d:"Relaxation", c:"#ee9b00", g:"rgba(238,155,0,0.5)"},
+                {hz:"528Hz", d:"DNA Repair", c:"#0a9396", g:"rgba(10,147,150,0.5)"},
+                {hz:"639Hz", d:"Relationships", c:"#005f73", g:"rgba(0,95,115,0.5)"},
+                {hz:"741Hz", d:"Detox Mind", c:"#3e5c76", g:"rgba(62,92,118,0.5)"},
+                {hz:"852Hz", d:"Intuition", c:"#5e548e", g:"rgba(94,84,142,0.5)"},
+                {hz:"963Hz", d:"Consciousness", c:"#9d4edd", g:"rgba(157,78,221,0.5)"}
+            ];
+            chData.forEach((ch, i) => {
+                document.write(`
+                    <div class="chan" id="c${i}" style="--clr:${ch.c}; --glow:${ch.g}">
+                        <div class="hz">${ch.hz}</div>
+                        <div class="desc">${ch.d}</div>
+                        <input type="range" id="v${i}" min="0" max="1" step="0.01" value="0" oninput="slide(${i},this.value)">
+                        <div class="vol-label" id="l${i}">0%</div>
+                    </div>
+                `);
+            });
+        </script>
     </div>
 
     <div id="saveModal" class="modal-overlay">
@@ -143,23 +131,16 @@
         async function beginSession() {
             if (ready) return;
             ctx = new (window.AudioContext || window.webkitAudioContext)();
-            master = ctx.createGain();
-            master.gain.setValueAtTime(0, ctx.currentTime);
+            master = ctx.createGain(); master.gain.setValueAtTime(0, ctx.currentTime);
             master.connect(ctx.destination);
-            
             await Promise.all(chData.map(async (ch, i) => {
-                const g = ctx.createGain();
-                g.gain.setValueAtTime(0, ctx.currentTime);
-                g.connect(master);
-                tracks[i] = { g: g, lastVal: 0 };
+                const g = ctx.createGain(); g.gain.setValueAtTime(0, ctx.currentTime); g.connect(master);
+                tracks[i] = { g: g };
                 const res = await fetch(ch.hz + ".mp3");
                 const buf = await ctx.decodeAudioData(await res.arrayBuffer());
-                const src = ctx.createBufferSource();
-                src.buffer = buf; src.loop = true;
-                src.connect(g);
-                src.start(0);
+                const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;
+                src.connect(g); src.start(0);
             }));
-
             ready = true;
             master.gain.setTargetAtTime(0.7, ctx.currentTime, 0.2);
             document.getElementById('startBtn').style.display = "none";
@@ -168,10 +149,7 @@
 
         function slide(i, v) {
             const val = parseFloat(v);
-            tracks[i].lastVal = val;
-            if (ready && tracks[i].g) {
-                tracks[i].g.gain.setTargetAtTime(val * 0.7, ctx.currentTime, 0.05);
-            }
+            if (ready) tracks[i].g.gain.setTargetAtTime(val * 0.7, ctx.currentTime, 0.05);
             document.getElementById('l' + i).innerText = Math.round(val * 100) + "%";
             const el = document.getElementById('c' + i);
             el.style.boxShadow = val > 0.05 ? `0 0 ${val * 30}px var(--glow)` : "none";
@@ -182,7 +160,6 @@
             if (!ready) return; isPaused = !isPaused;
             master.gain.setTargetAtTime(isPaused ? 0 : 0.7, ctx.currentTime, 0.1);
             document.getElementById('pauseBtn').innerText = isPaused ? "RESUME ALL" : "PAUSE ALL";
-            document.getElementById('pauseBtn').style.background = isPaused ? "#222" : "#55a630";
         }
 
         function openSave() {
@@ -198,47 +175,22 @@
         function setTimer(seconds) {
             clearInterval(timerInterval);
             timeLeft = parseInt(seconds);
-            if (timeLeft > 0) {
-                updateTimerDisplay();
-                startCountdown();
-            } else {
-                document.getElementById('timerDisplay').innerText = "--:--";
-            }
+            if (timeLeft > 0) startCountdown();
         }
 
         function startCountdown() {
             timerInterval = setInterval(() => {
                 if (!isPaused && timeLeft > 0) {
                     timeLeft--;
-                    updateTimerDisplay();
+                    const m = Math.floor(timeLeft / 60); const s = timeLeft % 60;
+                    document.getElementById('timerDisplay').innerText = m + ":" + (s < 10 ? '0' : '') + s;
                 }
                 if (timeLeft <= 0) { clearInterval(timerInterval); if (!isPaused) toggle(); }
             }, 1000);
         }
 
-        function updateTimerDisplay() {
-            const h = Math.floor(timeLeft / 3600);
-            const m = Math.floor((timeLeft % 3600) / 60);
-            const s = timeLeft % 60;
-            let display = "";
-            if (h > 0) display += h + ":";
-            display += (m < 10 && h > 0 ? "0" + m : m) + ":" + (s < 10 ? '0' : '') + s;
-            document.getElementById('timerDisplay').innerText = display;
-        }
-
-        function randomize() {
-            chData.forEach((_, i) => {
-                const v = (Math.random() * 0.4).toFixed(2);
-                document.getElementById('v'+i).value = v; slide(i, v);
-            });
-        }
-
-        function resetFaders() {
-            chData.forEach((_, i) => {
-                document.getElementById('v' + i).value = 0; slide(i, 0);
-            });
-        }
-        function openInfo() { alert("Frequency Lab Solfeggio Mixer Guide"); }
+        function randomize() { chData.forEach((_, i) => { const v = (Math.random() * 0.4).toFixed(2); document.getElementById('v'+i).value = v; slide(i, v); }); }
+        function resetFaders() { chData.forEach((_, i) => { document.getElementById('v' + i).value = 0; slide(i, 0); }); }
     </script>
 </body>
 </html>
