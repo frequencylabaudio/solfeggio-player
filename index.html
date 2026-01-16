@@ -136,7 +136,6 @@
 
         .btn-utility { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: 600; }
         .btn-save { background: #20c997; color: #000; padding: 10px 24px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
-        .btn-share { background: var(--bright-blue); color: #fff; padding: 10px 24px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
 
         /* MODAL STYLES */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); backdrop-filter: blur(10px); z-index: 1000; }
@@ -148,9 +147,8 @@
         .auth-btn { padding: 16px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; transition: 0.2s; }
         .g-btn { background: #ffffff; color: #000; }
         .email-btn { background: var(--start-yellow); color: #000; }
-        .link-btn { background: #e0e0e0; color: #000; }
+        .fb-btn { background: #1877f2; color: #fff; }
         
-        /* Email Input Area */
         #emailInputArea { display: none; flex-direction: column; gap: 10px; margin-top: 10px; }
         .modal-input { padding: 14px; border-radius: 10px; border: 1px solid #333; background: #000; color: #fff; outline: none; }
         .send-btn { background: var(--start-yellow); color: #000; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
@@ -231,7 +229,7 @@
                         <button id="muteAllBtn" class="btn-utility" onclick="toggleMuteAll()">Mute All</button>
                         <button class="btn-utility" onclick="randomize()">Randomize</button>
                         <button class="btn-utility" onclick="resetFaders()">Reset</button>
-                        <button class="btn-save" onclick="openModal('SAVE')">Save</button>
+                        <button class="btn-save" onclick="openModal('Save')">Save</button>
                     </div>
                 </div>
             </div>
@@ -247,12 +245,12 @@
     <div id="universalModal" class="modal-overlay" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <h2 class="modal-header" id="modalHeader">SAVE</h2>
-            <p class="modal-subtext">Choose an option below. Audio will resume once closed.</p>
+            <p class="modal-subtext">Share your custom preset. Audio will resume once closed.</p>
             
             <div id="mainAuthButtons" class="auth-buttons">
                 <button class="auth-btn g-btn" onclick="handleAuth('Gmail')">GMAIL</button>
+                <button class="auth-btn fb-btn" onclick="handleAuth('Facebook')">FACEBOOK</button>
                 <button class="auth-btn email-btn" onclick="showEmailInput()">EMAIL</button>
-                <button class="auth-btn link-btn" id="modalCopyBtn" onclick="handleCopy()">COPY LINK</button>
             </div>
 
             <div id="emailInputArea">
@@ -306,11 +304,21 @@
             const sBtn = document.getElementById('startBtn');
             const pBtn = document.getElementById('pauseBtn');
             sBtn.innerText = "INITIALIZING...";
+            
+            // Set all faders to 25% when starting
+            tracks.forEach((t, i) => {
+                t.lastVal = 0.25;
+                const inputEl = document.getElementById('v' + i);
+                if(inputEl) inputEl.value = 0.25;
+                updateUI(i, 0.25);
+            });
+
             ctx = new (window.AudioContext || window.webkitAudioContext)();
             master = ctx.createGain();
             master.gain.setValueAtTime(0, ctx.currentTime);
             master.connect(ctx.destination);
             await ctx.resume();
+            
             try {
                 await Promise.all(audioFiles.map(async (f, i) => {
                     const g = ctx.createGain();
@@ -350,8 +358,6 @@
         function openModal(title) { 
             const modalHeader = document.getElementById('modalHeader');
             modalHeader.innerText = title;
-            
-            // PAUSE AUDIO WHEN ACTIVE
             if (ready && !isPaused) { 
                 toggle(); 
                 wasPlayingBeforeSave = true; 
@@ -362,8 +368,6 @@
         function closeModal() { 
             document.getElementById('universalModal').style.display = 'none'; 
             hideEmailInput();
-            
-            // RESUME AUDIO WHEN CLOSED
             if (ready && wasPlayingBeforeSave && isPaused) { 
                 toggle(); 
                 wasPlayingBeforeSave = false; 
@@ -371,8 +375,11 @@
         }
 
         async function handleAuth(platform) {
-            if(platform === 'Gmail') {
-                const provider = new firebase.auth.GoogleAuthProvider();
+            let provider;
+            if(platform === 'Gmail') provider = new firebase.auth.GoogleAuthProvider();
+            if(platform === 'Facebook') provider = new firebase.auth.FacebookAuthProvider();
+            
+            if(provider) {
                 try {
                     const result = await auth.signInWithPopup(provider);
                     savePresetToFirebase(result.user.uid);
@@ -383,29 +390,25 @@
         async function savePresetToFirebase(uid) {
             const levels = tracks.map(t => Math.round(t.lastVal * 100));
             const userEmail = auth.currentUser.email;
+            const presetLink = `${window.location.origin}${window.location.pathname}?preset=${levels.join(',')}`;
 
             try {
-                // 1. Save to Presets
                 await db.collection("presets").doc(uid).set({
                     levels: levels,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                // 2. Trigger automated Gmail via Firestore Extension
                 await db.collection("mail").add({
                     to: userEmail,
                     message: {
-                        subject: 'Your Solfeggio Mix is Saved!',
+                        subject: 'Your Magic Link is Here!',
                         html: `
                             <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 12px; max-width: 500px;">
                                 <h2 style="color: #ffd60a; background: #000; padding: 10px; text-align: center; border-radius: 8px;">FREQUENCY LAB</h2>
-                                <p>Hello,</p>
-                                <p>Your custom Solfeggio frequency mix has been successfully saved to your profile.</p>
-                                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; font-family: monospace;">
-                                    <strong>Mix Configuration:</strong><br>
-                                    ${chData.map((ch, i) => `${ch.hz}: ${levels[i]}%`).join('<br>')}
-                                </div>
-                                <p>You can return to the mixer anytime to load your saved settings.</p>
+                                <p>Welcome to the Frequency Lab family.</p>
+                                <p>We’ve captured the exact frequencies from your last session. Whenever you need to return to this specific state of mind, simply click your personal magic link below:</p>
+                                <p style="text-align:center;"><a href="${presetLink}" style="background:#ffd60a; color:#000; padding:12px 24px; text-decoration:none; font-weight:bold; border-radius:5px;">Open Your Preset</a></p>
+                                <p>Your unique preset is saved and ready for your next journey.</p>
                                 <hr style="border: none; border-top: 1px solid #eee;">
                                 <p style="font-size: 12px; color: #888;">Created by Frequency Lab</p>
                             </div>
@@ -413,11 +416,9 @@
                     }
                 });
 
-                alert("Mix saved successfully! Check " + userEmail + " for your confirmation.");
+                alert("Mix saved successfully! Check " + userEmail + " for your magic link.");
                 closeModal();
-            } catch (e) { 
-                alert("Save failed: " + e.message); 
-            }
+            } catch (e) { alert("Save failed: " + e.message); }
         }
 
         function sendMagicLink() {
@@ -430,16 +431,6 @@
                     closeModal();
                 })
                 .catch(err => alert(err.message));
-        }
-
-        function handleCopy() {
-            const levels = tracks.map(t => Math.round(t.lastVal * 100)).join(',');
-            const link = `${window.location.origin}${window.location.pathname}?preset=${levels}`;
-            navigator.clipboard.writeText(link).then(() => {
-                const btn = document.getElementById('modalCopyBtn');
-                btn.innerText = "COPIED!";
-                setTimeout(() => { btn.innerText = "COPY LINK"; }, 2000);
-            });
         }
 
         function showEmailInput() {
