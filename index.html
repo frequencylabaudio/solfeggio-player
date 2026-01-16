@@ -13,6 +13,7 @@
             text-align: center; margin: 0; min-height: 100vh; 
             display: flex; flex-direction: column; align-items: center; 
             justify-content: flex-start;
+            position: relative; /* Added to support absolute positioning of footer */
         }
         
         .title-container { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 20px; }
@@ -28,19 +29,17 @@
 
         .subtitle { font-size: 0.75rem; letter-spacing: 3px; color: #666; margin-bottom: 25px; text-transform: uppercase; }
         
-        /* Sidebar positioning remains unchanged */
         .page-wrapper { display: flex; align-items: flex-start; gap: 15px; padding: 10px; max-width: 100vw; box-sizing: border-box; }
         .ad-sidebar { width: 140px; height: 600px; background: #111; border: 1px dashed #333; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .ad-text { color: #444; font-size: 10px; transform: rotate(-90deg); letter-spacing: 2px; }
 
-        /* Updated Mixer for full horizontal scroll access */
         .mixer { 
             display: flex; flex-wrap: nowrap; 
-            justify-content: flex-start; /* Fixes left-side scroll access */
+            justify-content: flex-start; 
             gap: 8px; 
             background: var(--panel-bg); padding: 25px 15px; border-radius: 24px; 
             border: 1px solid #222; width: auto; 
-            margin: 0 auto; /* Keeps it centered when not overflowing */
+            margin: 0 auto;
             max-width: calc(100vw - 350px); 
             overflow-x: auto;
             box-shadow: 0 15px 40px rgba(0,0,0,0.9);
@@ -95,7 +94,17 @@
         #successMsg { display: none; margin-top: 20px; padding: 20px; background: #111; border: 1px solid #20c997; border-radius: 12px; color: #fff; font-size: 13px; line-height: 1.4; }
         .magic-link-box { background: #000; padding: 10px; border-radius: 6px; border: 1px solid #333; margin-top: 15px; word-break: break-all; color: #20c997; font-family: monospace; user-select: all; cursor: pointer; }
 
-        .footer-credit { margin-top: 20px; font-size: 0.65rem; color: #333; letter-spacing: 1px; text-transform: uppercase; }
+        /* Updated footer positioning to lower right */
+        .footer-credit { 
+            position: fixed; 
+            bottom: 15px; 
+            right: 15px; 
+            font-size: 0.65rem; 
+            color: #333; 
+            letter-spacing: 1px; 
+            text-transform: uppercase; 
+            z-index: 1; /* Lowest priority */
+        }
     </style>
 </head>
 <body>
@@ -164,10 +173,10 @@
                 <button class="btn-save" onclick="openModal()">Save</button>
                 <button class="btn-share" onclick="openShare()">Share</button>
             </div>
-            <div class="footer-credit">Created By Keunho Koh</div>
         </main>
         <aside class="ad-sidebar"><span class="ad-text">SKYSCRAPER AD</span></aside>
     </div>
+    <div class="footer-credit">Created By Keunho Koh</div>
 
     <div id="infoModal" class="modal-overlay">
         <div class="modal-content">
@@ -298,14 +307,15 @@
             document.getElementById('saveModal').style.display = 'none'; 
             if (ready && wasPlayingBeforeSave && isPaused) { toggle(); wasPlayingBeforeSave = false; }
         }
+
+        // Updated for Share pop up: Audio does NOT stop
         function openShare() { 
-            if (ready && !isPaused) { toggle(); wasPlayingBeforeSave = true; }
             document.getElementById('shareModal').style.display = 'block'; 
         }
         function closeShare() { 
             document.getElementById('shareModal').style.display = 'none'; 
-            if (ready && wasPlayingBeforeSave && isPaused) { toggle(); wasPlayingBeforeSave = false; }
         }
+
         function openInfo() { document.getElementById('infoModal').style.display = 'block'; }
         function closeInfo() { document.getElementById('infoModal').style.display = 'none'; }
 
