@@ -13,7 +13,7 @@
             text-align: center; margin: 0; min-height: 100vh; 
             display: flex; flex-direction: column; align-items: center; 
             justify-content: flex-start;
-            position: relative; /* Added to support absolute positioning of footer */
+            position: relative;
         }
         
         .title-container { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 20px; }
@@ -94,16 +94,10 @@
         #successMsg { display: none; margin-top: 20px; padding: 20px; background: #111; border: 1px solid #20c997; border-radius: 12px; color: #fff; font-size: 13px; line-height: 1.4; }
         .magic-link-box { background: #000; padding: 10px; border-radius: 6px; border: 1px solid #333; margin-top: 15px; word-break: break-all; color: #20c997; font-family: monospace; user-select: all; cursor: pointer; }
 
-        /* Updated footer positioning to lower right */
         .footer-credit { 
-            position: fixed; 
-            bottom: 15px; 
-            right: 15px; 
-            font-size: 0.65rem; 
-            color: #333; 
-            letter-spacing: 1px; 
-            text-transform: uppercase; 
-            z-index: 1; /* Lowest priority */
+            position: fixed; bottom: 15px; right: 15px; 
+            font-size: 0.65rem; color: #333; letter-spacing: 1px; 
+            text-transform: uppercase; z-index: 1;
         }
     </style>
 </head>
@@ -178,8 +172,8 @@
     </div>
     <div class="footer-credit">Created By Keunho Koh</div>
 
-    <div id="infoModal" class="modal-overlay">
-        <div class="modal-content">
+    <div id="infoModal" class="modal-overlay" onclick="closeInfo()">
+        <div class="modal-content" onclick="event.stopPropagation()">
             <h2 class="modal-header">How to Use</h2>
             <div class="modal-subtext">
                 <i>A quick guide to finding your perfect harmony.</i>
@@ -195,8 +189,8 @@
         </div>
     </div>
 
-    <div id="saveModal" class="modal-overlay">
-        <div class="modal-content">
+    <div id="saveModal" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
             <h2 class="modal-header">Save Preset</h2>
             <div id="authContainer">
                 <p class="modal-subtext" style="text-align: center;">Sign in to receive a secure 'Magic Link' via email. Use it to instantly restore your custom preset anytime, on any device.</p>
@@ -216,8 +210,8 @@
         </div>
     </div>
 
-    <div id="shareModal" class="modal-overlay">
-        <div class="modal-content">
+    <div id="shareModal" class="modal-overlay" onclick="closeShare()">
+        <div class="modal-content" onclick="event.stopPropagation()">
             <h2 class="modal-header" style="color: var(--bright-blue);">Share Mix</h2>
             <p class="modal-subtext" style="text-align: center;">Spread the harmony with your friends.</p>
             <div class="auth-buttons">
@@ -307,15 +301,12 @@
             document.getElementById('saveModal').style.display = 'none'; 
             if (ready && wasPlayingBeforeSave && isPaused) { toggle(); wasPlayingBeforeSave = false; }
         }
-
-        // Updated for Share pop up: Audio does NOT stop
         function openShare() { 
             document.getElementById('shareModal').style.display = 'block'; 
         }
         function closeShare() { 
             document.getElementById('shareModal').style.display = 'none'; 
         }
-
         function openInfo() { document.getElementById('infoModal').style.display = 'block'; }
         function closeInfo() { document.getElementById('infoModal').style.display = 'none'; }
 
