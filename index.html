@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Frequency Lab | Solfeggio Mixer</title>
+    <link rel="icon" type="image/png" href="favicon.png">
     <style>
         :root { --panel-bg: #0a0a0a; --chan-bg: #141414; }
         body { 
@@ -40,7 +41,7 @@
             display: flex; flex-direction: column; align-items: center; 
             flex: 0 0 95px; width: 95px; background: var(--chan-bg); 
             padding: 12px 0; border-radius: 12px; border: 1px solid #202020; 
-            box-sizing: border-box; transition: box-shadow 0.3s ease;
+            box-sizing: border-box; transition: box-shadow 0.3s ease, border-color 0.3s ease;
         }
         .hz { font-size: 0.8rem; font-weight: 800; color: var(--clr); }
         .desc { font-size: 0.5rem; font-weight: 700; height: 44px; color: #b0b0b0; line-height: 1.2; padding: 0 4px; display: flex; align-items: center; justify-content: center; text-align: center; text-transform: uppercase; }
@@ -55,7 +56,11 @@
         .modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f0f; padding: 35px; border-radius: 24px; text-align: center; width: 90%; max-width: 500px; border: 1px solid #222; box-sizing: border-box; }
         .social-btn { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #333; background: #1a1a1a; color: #fff; cursor: pointer; font-weight: bold; }
 
-        .footer-credit { margin: 30px 0; font-size: 0.6rem; color: #333; letter-spacing: 1px; text-transform: uppercase; }
+        @media (max-width: 768px) {
+            .mixer { flex-direction: column; width: 95%; gap: 12px; padding: 15px; }
+            .chan { flex-direction: row; width: 100%; height: auto; flex: none; justify-content: space-between; padding: 15px; }
+            input[type=range] { -webkit-appearance: none; width: 30%; height: 6px; background: #333; border-radius: 3px; margin: 0; }
+        }
     </style>
 </head>
 <body>
@@ -170,12 +175,14 @@
             document.getElementById('l' + i).innerText = Math.round(val * 100) + "%";
             const el = document.getElementById('c' + i);
             el.style.boxShadow = val > 0.05 ? `0 0 ${val * 30}px var(--glow)` : "none";
+            el.style.borderColor = val > 0.05 ? `rgba(255,255,255,${val * 0.4})` : "#202020";
         }
 
         function toggle() {
             if (!ready) return; isPaused = !isPaused;
             master.gain.setTargetAtTime(isPaused ? 0 : 0.7, ctx.currentTime, 0.1);
             document.getElementById('pauseBtn').innerText = isPaused ? "RESUME ALL" : "PAUSE ALL";
+            document.getElementById('pauseBtn').style.background = isPaused ? "#222" : "#55a630";
         }
 
         function openSave() {
@@ -191,19 +198,32 @@
         function setTimer(seconds) {
             clearInterval(timerInterval);
             timeLeft = parseInt(seconds);
-            if (timeLeft > 0) startCountdown();
+            if (timeLeft > 0) {
+                updateTimerDisplay();
+                startCountdown();
+            } else {
+                document.getElementById('timerDisplay').innerText = "--:--";
+            }
         }
 
         function startCountdown() {
             timerInterval = setInterval(() => {
                 if (!isPaused && timeLeft > 0) {
                     timeLeft--;
-                    const m = Math.floor(timeLeft / 60);
-                    const s = timeLeft % 60;
-                    document.getElementById('timerDisplay').innerText = m + ":" + (s < 10 ? '0' : '') + s;
+                    updateTimerDisplay();
                 }
                 if (timeLeft <= 0) { clearInterval(timerInterval); if (!isPaused) toggle(); }
             }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const h = Math.floor(timeLeft / 3600);
+            const m = Math.floor((timeLeft % 3600) / 60);
+            const s = timeLeft % 60;
+            let display = "";
+            if (h > 0) display += h + ":";
+            display += (m < 10 && h > 0 ? "0" + m : m) + ":" + (s < 10 ? '0' : '') + s;
+            document.getElementById('timerDisplay').innerText = display;
         }
 
         function randomize() {
@@ -218,6 +238,7 @@
                 document.getElementById('v' + i).value = 0; slide(i, 0);
             });
         }
+        function openInfo() { alert("Frequency Lab Solfeggio Mixer Guide"); }
     </script>
 </body>
 </html>
