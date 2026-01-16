@@ -305,7 +305,7 @@
             const pBtn = document.getElementById('pauseBtn');
             sBtn.innerText = "INITIALIZING...";
             
-            // Set all faders to 25% when starting
+            // User requested: Start session starting all faders at 25%
             tracks.forEach((t, i) => {
                 t.lastVal = 0.25;
                 const inputEl = document.getElementById('v' + i);
@@ -358,6 +358,7 @@
         function openModal(title) { 
             const modalHeader = document.getElementById('modalHeader');
             modalHeader.innerText = title;
+            // Per instructions: Audio should pause when this pop-up is active
             if (ready && !isPaused) { 
                 toggle(); 
                 wasPlayingBeforeSave = true; 
@@ -368,6 +369,7 @@
         function closeModal() { 
             document.getElementById('universalModal').style.display = 'none'; 
             hideEmailInput();
+            // Per instructions: Audio should resume playing when the pop-up is closed
             if (ready && wasPlayingBeforeSave && isPaused) { 
                 toggle(); 
                 wasPlayingBeforeSave = false; 
