@@ -60,7 +60,6 @@
             min-width: 0; 
         }
 
-        /* Container that handles the horizontal scroll for both Mixer and Controls */
         .scroll-container {
             width: 100%;
             max-width: 100%;
@@ -69,7 +68,6 @@
             padding-bottom: 20px;
         }
 
-        /* Custom Scrollbar */
         .scroll-container::-webkit-scrollbar { height: 8px; }
         .scroll-container::-webkit-scrollbar-track { background: #0a0a0a; border-radius: 10px; }
         .scroll-container::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
@@ -327,9 +325,11 @@
                 const now = ctx.currentTime;
                 tracks.forEach((t, i) => {
                     let target = (t.isMuted || (soloIdx !== -1 && soloIdx !== i)) ? 0 : t.lastVal * 0.7;
-                    t.g.gain.linearRampToValueAtTime(target, now + 1.5); 
+                    // ADJUSTED RAMP: Slightly faster startup fade-in (0.5s instead of 1.5s)
+                    t.g.gain.linearRampToValueAtTime(target, now + 0.5); 
                 });
-                master.gain.linearRampToValueAtTime(0.6, now + 2.0);
+                // ADJUSTED RAMP: Master gain reaches target faster (0.8s instead of 2.0s)
+                master.gain.linearRampToValueAtTime(0.6, now + 0.8);
                 sBtn.style.display = "none"; pBtn.style.display = "block";
                 if (timeLeft > 0) startCountdown();
             } catch (err) { sBtn.innerText = "LOAD ERROR"; }
