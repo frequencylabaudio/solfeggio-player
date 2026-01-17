@@ -483,20 +483,24 @@
 
   /* Ads are NOT sticky (just normal columns that scroll with the page-wrapper) */
   .ad-sidebar-stack {
-    flex: 0 0 90px;
-    width: 90px;
+   flex: 0 0 90px;
+   width: 90px;
 
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+   display: flex;
+   flex-direction: column;
 
-    position: static;     /* ensure not sticky */
-    height: auto;
-  }
+   position: static;
+   height: auto;
+
+   /* NEW: tighten spacing */
+   justify-content: flex-start;   /* was space-between */
+   gap: 10px;                     /* controls distance between ad 1/2 and 3/4 */
+   padding-top: 6px;              /* slight alignment with mixer top */
+}
 
   .ad-box {
     width: 90px;
-    height: 140px;        /* adjust as desired */
+    height: 120px;        /* adjust as desired */
     border-radius: 18px;
     border: 1px solid rgba(255,255,255,0.08);
     background: radial-gradient(120% 120% at 50% 20%, rgba(255,255,255,0.05), rgba(0,0,0,0) 55%),
