@@ -207,43 +207,53 @@
     .footer-credit { position: fixed; bottom: 15px; right: 15px; font-size: 0.65rem; color: #333; letter-spacing: 1px; text-transform: uppercase; z-index: 1; }
 
     /* ==========================================================
-       VERTICAL MOBILE (PORTRAIT) ONLY
-       ========================================================== */
-    @media (max-width: 850px) and (orientation: portrait) {
-      body { padding-bottom: 20px; }
+   VERTICAL MOBILE (PORTRAIT) ONLY
+   ========================================================== */
+@media (max-width: 850px) and (orientation: portrait) {
+  body { padding-bottom: 20px; }
 
   /* Sticky title */
-      .title-container {
-        min-height: 64px;
-        position: sticky;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 60;
-        background: rgba(5,5,5,0.92);
-        backdrop-filter: blur(10px);
+  .title-container {
+    min-height: 64px;
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
 
-        margin-top: 0;
-        padding: 16px 12px 8px;
-        max-width: 100%;
-        width: 100%;
-        box-sizing: border-box;
+    /* raise above everything (ads, mixer, etc.) */
+    z-index: 999;
 
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    background: rgba(5,5,5,0.92);
+    backdrop-filter: blur(10px);
+
+    margin-top: 0;
+    padding: 16px 12px 10px; /* a touch more bottom room */
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   /* True centered title even with icon on right:
      - pad BOTH sides so center stays mathematically centered */
   .title-container h1 {
-    white-space: nowrap;
-    margin: 0 auto;
-    text-align: center;
-    padding-left: 44px;   /* reserve “ghost space” left */
-    padding-right: 44px;  /* reserve icon space right */
-    box-sizing: border-box;
     width: 100%;
+    margin: 0;
+    text-align: center;
+
+    /* reserve space BOTH sides (prevents "looks off-center") */
+    padding-left: 56px;   /* ghost space left */
+    padding-right: 56px;  /* icon space right */
+
+    box-sizing: border-box;
+
+    /* prevent iPhone from pushing/clipping the header */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   /* Icon pinned right, never affects title center */
@@ -252,17 +262,30 @@
     right: 14px;
     top: 50%;
     transform: translateY(-50%);
+
+    /* ensure it stays visible and clickable */
+    z-index: 1001;
+    border-color: rgba(255,255,255,0.55);
+    color: rgba(255,255,255,0.85);
+    background: rgba(0,0,0,0.25);
   }
 
   /* Sticky subtitle (sits below title) */
   .subtitle {
     position: sticky;
-    top: 72px;            /* adjust if your title bar height changes */
-    z-index: 55;
+
+    /* keep this aligned to the true title bar height */
+    top: 64px;
+
+    z-index: 998;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+
     background: rgba(5,5,5,0.92);
     backdrop-filter: blur(10px);
 
-    margin-bottom: 0;
+    margin: 0;
     padding: 0 12px 14px;
   }
 
@@ -272,6 +295,9 @@
     width: 100%;
     padding: 0 12px 18px;
     gap: 14px;
+
+    /* IMPORTANT: prevents subtitle from visually overlapping ads */
+    padding-top: 18px;
   }
 
   /* Ads scroll (NOT sticky), shown as two wide banners */
@@ -281,6 +307,9 @@
     gap: 12px;
     justify-content: space-between;
     align-items: stretch;
+
+    /* breathing room under sticky header stack */
+    margin-top: 6px;
   }
   .ad-box {
     width: calc(50% - 6px);
@@ -301,8 +330,9 @@
   /* Sticky controls (everything except ads + faders) */
   .main-controls {
     position: sticky;
-    top: 124px;           /* sits below title+subtitle */
-    z-index: 70;
+    top: 124px; /* sits below title+subtitle */
+    z-index: 997;
+
     background: rgba(5,5,5,0.92);
     backdrop-filter: blur(10px);
     padding: 10px 8px 12px;
@@ -411,7 +441,6 @@
   .modal-content { padding: 28px; border-radius: 26px; width: 92vw; }
   .modal-header { font-size: 20px; }
 }
-
 /* ==========================================================
    MOBILE LANDSCAPE (HORIZONTAL) ONLY
    SINGLE HORIZONTAL SCROLL (no nested scroll)
