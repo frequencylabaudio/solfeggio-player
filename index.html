@@ -244,16 +244,25 @@
     margin: 0;
     text-align: center;
 
-    /* reserve space BOTH sides (prevents "looks off-center") */
-    padding-left: 56px;   /* ghost space left */
-    padding-right: 56px;  /* icon space right */
-
+    /* reserve space BOTH sides (keeps true centering with icon) */
+    padding-left: 56px;
+    padding-right: 56px;
     box-sizing: border-box;
 
-    /* prevent iPhone from pushing/clipping the header */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    /* smaller title so it fits nicely */
+    font-size: 1.55rem;     /* <- tweak: 1.45–1.65 is a good range */
+    letter-spacing: 4px;    /* slightly tighter helps fit */
+    line-height: 1.08;
+
+    /* IMPORTANT: stop the ugly cutoff */
+    white-space: normal;    /* was nowrap */
+    overflow: visible;      /* was hidden */
+    text-overflow: unset;   /* was ellipsis */
+
+    /* optional: keep it looking intentional (max 2 lines) */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
   }
 
   /* Icon pinned right, never affects title center */
