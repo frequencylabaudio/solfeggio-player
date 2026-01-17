@@ -412,108 +412,98 @@
   .modal-header { font-size: 20px; }
 }
 
-    /* ==========================================================
-       MOBILE LANDSCAPE (HORIZONTAL) ONLY
-       FIXES:
-       - Perfect left/right symmetry
-       - Zero vertical scrolling
-       - Ad stacks fit viewport height (top + bottom)
-       - Controls never cut off
-       - Cleaner ad placeholder styling
-       ========================================================== */
-    @media (max-width: 850px) and (orientation: landscape) {
-      html, body {
-        height: 100%;
-        overflow-y: auto;
-        overflow-x: hidden; 
-      }
+/* ==========================================================
+   MOBILE LANDSCAPE (HORIZONTAL) ONLY
+   SINGLE HORIZONTAL SCROLL (no nested scroll)
+   ========================================================== */
+@media (max-width: 850px) and (orientation: landscape) {
+  html, body {
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
 
-      /* Tighten header spacing */
-      .title-container { margin-top: 10px; max-width: 100%; }
-      h1 { font-size: 1.6rem; }
-      .subtitle { margin-bottom: 10px; }
+  /* Tighten header spacing */
+  .title-container { margin-top: 10px; max-width: 100%; }
+  h1 { font-size: 1.6rem; }
+  .subtitle { margin-bottom: 10px; }
 
-      /* Make the whole "work area" exactly fit remaining viewport height */
-      .page-wrapper {
-          grid-template-columns: 90px minmax(720px, 1fr) 90px;
-          height: auto;
-          align-items: stretch;
-          overflow-x: auto;
-          overflow-y: hidden;
-          -webkit-overflow-scrolling: touch;
-        }
+  /* ONE scroller: the outer wrapper */
+  .page-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 12px;
 
-        .ad-sidebar-stack {
-          width: 90px;
-          height: 100%;
-          justify-content: space-between;
-        }
+    padding: 0 10px;
+    width: 100%;
 
-        .ad-box {
-          height: calc((100% - 12px) / 2);
-        }
+    overflow-x: auto;     /* <-- only horizontal scroll */
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
 
-      /* Cleaner ad placeholder look */
-      .ad-box {
-        width: 90px;
-        height: calc((100% - 12px) / 2); /* top + bottom fit exactly */
-        border-radius: 18px;
-        border: 1px solid rgba(255,255,255,0.08);
-        background: radial-gradient(120% 120% at 50% 20%, rgba(255,255,255,0.05), rgba(0,0,0,0) 55%),
-                    linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0));
-        box-shadow: inset 0 0 0 1px rgba(0,0,0,0.35);
-      }
-      .ad-text { font-size: 9px; opacity: 0.55; }
+  /* Ads are NOT sticky (just normal columns that scroll with the page-wrapper) */
+  .ad-sidebar-stack {
+    flex: 0 0 90px;
+    width: 90px;
 
-      /* Center column: keep mixer + controls fully visible */
-      main {
-        height: 100%;
-        align-items: center;
-        justify-content: flex-start;
-      }
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 
-      .scroll-container {
-        height: 100%;
-        overflow-x: auto;
-        overflow-y: hidden;
-        padding-bottom: 0;
-      }
+    position: static;     /* ensure not sticky */
+    height: auto;
+  }
 
-      .mixer-unit {
-        height: 100%;
-        min-width: 720px; /* ensures horizontal scroll if needed */
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between; /* mixer top, controls bottom */
-        align-items: center;
-      }
+  .ad-box {
+    width: 90px;
+    height: 140px;        /* adjust as desired */
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: radial-gradient(120% 120% at 50% 20%, rgba(255,255,255,0.05), rgba(0,0,0,0) 55%),
+                linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0));
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.35);
+  }
+  .ad-text { font-size: 9px; opacity: 0.55; transform: rotate(-90deg); }
 
-      /* Reduce mixer footprint so controls never cut off */
-      .mixer {
-        margin-bottom: 10px;
-        padding: 14px 10px;
-        border-radius: 22px;
-        flex: 1 1 auto;
-        align-items: flex-start;
-      }
-      .modal-content {
-        max-height: 85vh;
-        overflow-y: auto;
-      }
-      /* Slightly slimmer channels so everything fits */
-      .chan { flex: 0 0 85px; width: 85px; padding: 10px 0; }
-      input[type=range] { height: 118px; margin-bottom: 10px; }
+  /* Turn OFF inner horizontal scrolling */
+  main { flex: 0 0 auto; width: auto; }
+  .scroll-container {
+    overflow: visible;    /* <-- no horizontal scroll here */
+    padding-bottom: 0;
+  }
 
-      .desc { height: 38px; }
-      .main-controls {
-        flex: 0 0 auto;
-        gap: 10px;
-        padding-bottom: 4px;
-      }
+  /* Keep your content wide so the page-wrapper can scroll */
+  .mixer-unit {
+    min-width: 720px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-      #startBtn, #pauseBtn { padding: 12px 30px; font-size: 0.75rem; }
-      .btn-utility, .btn-save, .btn-share-main { padding: 9px 16px; font-size: 0.62rem; }
-    }
+  /* Reduce mixer footprint so controls don’t get clipped */
+  .mixer {
+    margin-bottom: 10px;
+    padding: 14px 10px;
+    border-radius: 22px;
+    align-items: flex-start;
+  }
+
+  .chan { flex: 0 0 85px; width: 85px; padding: 10px 0; }
+  input[type=range] { height: 118px; margin-bottom: 10px; }
+  .desc { height: 38px; }
+
+  .main-controls {
+    gap: 10px;
+    padding-bottom: 4px;
+  }
+
+  #startBtn, #pauseBtn { padding: 12px 30px; font-size: 0.75rem; }
+  .btn-utility, .btn-save, .btn-share-main { padding: 9px 16px; font-size: 0.62rem; }
+
+  .modal-content { max-height: 85vh; overflow-y: auto; }
+}
   </style>
 </head>
 
