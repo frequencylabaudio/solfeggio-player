@@ -6,9 +6,11 @@
   <title>Solfeggio Player | Frequency Lab</title>
 
   <!-- FAVICON (GitHub Pages friendly + cache-bust) -->
-  <link rel="icon" type="image/png" href="favicon.png?v=2" />
-  <link rel="shortcut icon" type="image/png" href="favicon.png?v=2" />
-  <link rel="apple-touch-icon" href="favicon.png?v=2" />
+  <link rel="icon" type="image/png" href="./favicon.png?v=3">
+  <link rel="shortcut icon" type="image/png" href="./favicon.png?v=3">
+  <link rel="apple-touch-icon" href="./favicon.png?v=3">
+  <link rel="apple-touch-icon-precomposed" href="./favicon.png?v=3">
+  <meta name="msapplication-TileImage" content="./favicon.png?v=3">
 
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -28,6 +30,16 @@
     }
 
     /* Title */
+        @media (min-width: 851px) {
+      input[type=range] {
+        height: 210px;
+      }
+
+      .chan {
+        padding-top: 16px;
+        padding-bottom: 16px;
+      }
+    }
     .title-container {
       display: flex; align-items: center; justify-content: center; gap: 12px;
       margin-top: 20px;
@@ -147,7 +159,7 @@
     .hz { font-size: 0.8rem; font-weight: 800; margin-bottom: 4px; color: var(--clr); }
     .desc { font-size: 0.5rem; font-weight: 700; height: 44px; color: #b0b0b0; line-height: 1.2; padding: 0 4px; display: flex; align-items: center; justify-content: center; text-align: center; text-transform: uppercase; }
     .vol-label { font-size: 0.65rem; font-family: monospace; color: #999; margin-bottom: 6px; }
-    input[type=range] { -webkit-appearance: slider-vertical; width: 18px; height: 150px; cursor: pointer; margin-bottom: 12px; }
+    input[type=range] { -webkit-appearance: slider-vertical; width: 18px; height: 210px; cursor: pointer; margin-bottom: 12px; }
 
     .btn-row { display: flex; gap: 4px; }
     .m-btn, .s-btn { width: 40px; height: 20px; border-radius: 4px; border: 1px solid #333; background: #1a1a1a; color: #aaa; font-size: 0.5rem; cursor: pointer; text-transform: uppercase; font-weight: bold; }
@@ -200,185 +212,205 @@
     @media (max-width: 850px) and (orientation: portrait) {
       body { padding-bottom: 20px; }
 
-      /* Sticky title + subtitle */
-      .title-container,
-      .subtitle {
-        position: sticky;
-        z-index: 50;
-        background: rgba(5,5,5,0.92);
-        backdrop-filter: blur(10px);
-      }
-
-      /* Center title perfectly; keep info icon pinned right */
+  /* Sticky title */
       .title-container {
-        top: 0;
-        margin-top: 0;
-        padding: 16px 12px 8px;
-        max-width: 100%;
-        justify-content: center;
-      }
-
-      /* Reserve space so icon never crowds the last letter */
-      .title-container h1 {
-        margin: 0 auto;
-        padding-right: 44px; /* icon width + safe gap */
-        box-sizing: border-box;
-      }
-
-      .title-container .info-icon {
-        position: absolute;
-        right: 14px;
-        top: 50%;
-        transform: translateY(-50%);
-      }
-
-      .subtitle { top: 64px; margin-bottom: 0; padding: 0 12px 14px; }
-
-      .page-wrapper {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        padding: 0 12px 18px;
-        gap: 14px;
-      }
-
-      /* Ads scroll (NOT sticky), shown as two wide banners */
-      .ad-sidebar-stack {
-        width: 100%;
-        flex-direction: row;
-        gap: 12px;
-        justify-content: space-between;
-        align-items: stretch;
-      }
-      .ad-box {
-        width: calc(50% - 6px);
-        height: 60px;
-        border-radius: 14px;
-        border-style: dashed;
-      }
-      .ad-text {
-        transform: none;
-        font-size: 11px;
-        letter-spacing: 2px;
-        opacity: 0.6;
-      }
-
-      .scroll-container { overflow-x: hidden; padding-bottom: 0; }
-      .scroll-container::-webkit-scrollbar { height: 0; }
-
-      /* Sticky controls (everything except ads + faders) */
-      .main-controls {
+        min-height: 64px;
         position: sticky;
-        top: 108px;
+        top: 0;
+        left: 0;
+        right: 0;
         z-index: 60;
         background: rgba(5,5,5,0.92);
         backdrop-filter: blur(10px);
-        padding: 10px 8px 12px;
-        border-radius: 18px;
-        border: 1px solid #111;
-        box-shadow: 0 10px 28px rgba(0,0,0,0.6);
 
-        white-space: normal;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-
-      .timer-wrap { flex: 1 1 260px; justify-content: center; }
-      #startBtn, #pauseBtn { width: 100%; max-width: 520px; }
-
-      /* Mixer becomes vertical list of cards */
-      .mixer {
+        margin-top: 0;
+        padding: 16px 12px 8px;
+        max-width: 100%;
         width: 100%;
-        max-width: 720px;
-        background: transparent;
-        border: none;
-        box-shadow: none;
-        padding: 0;
-        margin-bottom: 0;
+        box-sizing: border-box;
 
-        flex-direction: column;
-        gap: 12px;
-        justify-content: flex-start;
+        display: flex;
+        justify-content: center;
         align-items: center;
-      }
+  }
 
-      .chan {
-        width: 100%;
-        max-width: 720px;
-        border-radius: 22px;
-        padding: 16px 16px 14px;
-        flex: 0 0 auto;
+  /* True centered title even with icon on right:
+     - pad BOTH sides so center stays mathematically centered */
+  .title-container h1 {
+    white-space: nowrap;
+    margin: 0 auto;
+    text-align: center;
+    padding-left: 44px;   /* reserve “ghost space” left */
+    padding-right: 44px;  /* reserve icon space right */
+    box-sizing: border-box;
+    width: 100%;
+  }
 
-        display: grid;
-        grid-template-columns: 1fr 160px;
-        grid-template-rows: auto auto auto;
-        column-gap: 14px;
-        row-gap: 8px;
-        align-items: center;
-      }
+  /* Icon pinned right, never affects title center */
+  .title-container .info-icon {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
 
-      .hz { margin: 0; font-size: 1.1rem; text-align: left; }
-      .desc {
-        margin: 0;
-        height: auto;
-        font-size: 0.75rem;
-        text-align: left;
-        justify-content: flex-start;
-        padding: 0;
-      }
+  /* Sticky subtitle (sits below title) */
+  .subtitle {
+    position: sticky;
+    top: 72px;            /* adjust if your title bar height changes */
+    z-index: 55;
+    background: rgba(5,5,5,0.92);
+    backdrop-filter: blur(10px);
 
-      .vol-label { margin: 0; justify-self: end; align-self: center; font-size: 0.8rem; }
+    margin-bottom: 0;
+    padding: 0 12px 14px;
+  }
 
-      /* Horizontal sliders (portrait only) */
-      input[type=range] {
-        -webkit-appearance: none;
-        appearance: none;
-        width: 100%;
-        height: 24px;
-        margin: 0;
-        cursor: pointer;
-        grid-column: 1 / 3;
-      }
-      input[type=range]::-webkit-slider-runnable-track {
-        height: 8px;
-        background: #2a2a2a;
-        border-radius: 999px;
-      }
-      input[type=range]::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        appearance: none;
-        width: 26px;
-        height: 26px;
-        border-radius: 50%;
-        background: #ffffff;
-        border: 2px solid rgba(255,255,255,0.25);
-        margin-top: -9px;
-      }
-      input[type=range]::-moz-range-track {
-        height: 8px;
-        background: #2a2a2a;
-        border-radius: 999px;
-      }
-      input[type=range]::-moz-range-thumb {
-        width: 26px;
-        height: 26px;
-        border-radius: 50%;
-        background: #ffffff;
-        border: 2px solid rgba(255,255,255,0.25);
-      }
+  .page-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0 12px 18px;
+    gap: 14px;
+  }
 
-      .btn-row {
-        grid-column: 1 / 3;
-        justify-content: flex-start;
-        gap: 8px;
-        margin-top: 2px;
-      }
-      .m-btn, .s-btn { width: 64px; height: 28px; border-radius: 8px; font-size: 0.6rem; }
+  /* Ads scroll (NOT sticky), shown as two wide banners */
+  .ad-sidebar-stack {
+    width: 100%;
+    flex-direction: row;
+    gap: 12px;
+    justify-content: space-between;
+    align-items: stretch;
+  }
+  .ad-box {
+    width: calc(50% - 6px);
+    height: 60px;
+    border-radius: 14px;
+    border-style: dashed;
+  }
+  .ad-text {
+    transform: none;
+    font-size: 11px;
+    letter-spacing: 2px;
+    opacity: 0.6;
+  }
 
-      /* Modals fit on mobile */
-      .modal-content { padding: 28px; border-radius: 26px; width: 92vw; }
-      .modal-header { font-size: 20px; }
-    }
+  .scroll-container { overflow-x: hidden; padding-bottom: 0; }
+  .scroll-container::-webkit-scrollbar { height: 0; }
+
+  /* Sticky controls (everything except ads + faders) */
+  .main-controls {
+    position: sticky;
+    top: 124px;           /* sits below title+subtitle */
+    z-index: 70;
+    background: rgba(5,5,5,0.92);
+    backdrop-filter: blur(10px);
+    padding: 10px 8px 12px;
+    border-radius: 18px;
+    border: 1px solid #111;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.6);
+
+    white-space: normal;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .timer-wrap { flex: 1 1 260px; justify-content: center; }
+  #startBtn, #pauseBtn { width: 100%; max-width: 520px; }
+
+  /* Mixer becomes vertical list of cards */
+  .mixer {
+    width: 100%;
+    max-width: 720px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin-bottom: 0;
+
+    flex-direction: column;
+    gap: 12px;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .chan {
+    width: 100%;
+    max-width: 720px;
+    border-radius: 22px;
+    padding: 16px 16px 14px;
+    flex: 0 0 auto;
+
+    display: grid;
+    grid-template-columns: 1fr 160px;
+    grid-template-rows: auto auto auto;
+    column-gap: 14px;
+    row-gap: 8px;
+    align-items: center;
+  }
+
+  .hz { margin: 0; font-size: 1.1rem; text-align: left; }
+  .desc {
+    margin: 0;
+    height: auto;
+    font-size: 0.75rem;
+    text-align: left;
+    justify-content: flex-start;
+    padding: 0;
+  }
+
+  .vol-label { margin: 0; justify-self: end; align-self: center; font-size: 0.8rem; }
+
+  /* Horizontal sliders (portrait only) */
+  input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 24px;
+    margin: 0;
+    cursor: pointer;
+    grid-column: 1 / 3;
+  }
+  input[type=range]::-webkit-slider-runnable-track {
+    height: 8px;
+    background: #2a2a2a;
+    border-radius: 999px;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid rgba(255,255,255,0.25);
+    margin-top: -9px;
+  }
+  input[type=range]::-moz-range-track {
+    height: 8px;
+    background: #2a2a2a;
+    border-radius: 999px;
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid rgba(255,255,255,0.25);
+  }
+
+  .btn-row {
+    grid-column: 1 / 3;
+    justify-content: flex-start;
+    gap: 8px;
+    margin-top: 2px;
+  }
+  .m-btn, .s-btn { width: 64px; height: 28px; border-radius: 8px; font-size: 0.6rem; }
+
+  /* Modals fit on mobile */
+  .modal-content { padding: 28px; border-radius: 26px; width: 92vw; }
+  .modal-header { font-size: 20px; }
+}
 
     /* ==========================================================
        MOBILE LANDSCAPE (HORIZONTAL) ONLY
@@ -392,7 +424,8 @@
     @media (max-width: 850px) and (orientation: landscape) {
       html, body {
         height: 100%;
-        overflow: hidden; /* NO vertical scrolling in landscape */
+        overflow-y: auto;
+        overflow-x: hidden; 
       }
 
       /* Tighten header spacing */
@@ -402,30 +435,23 @@
 
       /* Make the whole "work area" exactly fit remaining viewport height */
       .page-wrapper {
-        padding: 8px 10px;
-        gap: 14px;
+          grid-template-columns: 90px minmax(720px, 1fr) 90px;
+          height: auto;
+          align-items: stretch;
+          overflow-x: auto;
+          overflow-y: hidden;
+          -webkit-overflow-scrolling: touch;
+        }
 
-        /* fixed symmetric columns */
-        grid-template-columns: 90px minmax(720px, 1fr) 90px;
+        .ad-sidebar-stack {
+          width: 90px;
+          height: 100%;
+          justify-content: space-between;
+        }
 
-        /* lock height so no vertical scroll */
-        height: calc(100vh - 86px); /* approx: title+subtitle+spacing */
-        align-items: stretch;
-
-        /* allow horizontal scroll only if needed */
-        overflow-x: auto;
-        overflow-y: hidden;
-        -webkit-overflow-scrolling: touch;
-      }
-
-      /* Both ad stacks match perfectly and fill height */
-      .ad-sidebar-stack {
-        width: 90px;
-        height: 100%;
-        gap: 12px;
-        justify-content: space-between;
-        align-items: stretch;
-      }
+        .ad-box {
+          height: calc((100% - 12px) / 2);
+        }
 
       /* Cleaner ad placeholder look */
       .ad-box {
@@ -470,7 +496,10 @@
         flex: 1 1 auto;
         align-items: flex-start;
       }
-
+      .modal-content {
+        max-height: 85vh;
+        overflow-y: auto;
+      }
       /* Slightly slimmer channels so everything fits */
       .chan { flex: 0 0 85px; width: 85px; padding: 10px 0; }
       input[type=range] { height: 118px; margin-bottom: 10px; }
@@ -680,9 +709,13 @@
     let timerInterval, timeLeft = 0, soloIdx = -1, isGlobalMuteActive = false;
 
     // Mobile-only smoothing (prevents zipper noise on touch)
-    const isMobilePortrait = window.matchMedia && window.matchMedia("(max-width: 850px) and (orientation: portrait)").matches;
+    const isMobilePortrait =
+     window.matchMedia &&
+     window.matchMedia("(max-width: 850px) and (orientation: portrait)").matches;
+
     const MOBILE_GAIN_TC = 0.12;
     const DESKTOP_GAIN_TC = 0.05;
+    const MASTER_MAX = 0.6;
 
     // One-time mobile audio unlock (extra-safe for iOS/Safari)
     function mobileAudioUnlockOnce() {
@@ -789,13 +822,19 @@
       tracks[i].lastVal = val;
 
       if (ready && tracks[i].g) {
-        let target = (tracks[i].isMuted || (soloIdx !== -1 && soloIdx !== i)) ? 0 : val * 0.7;
+        let target =
+          (tracks[i].isMuted || (soloIdx !== -1 && soloIdx !== i))
+            ? 0
+            : val * 0.7;
+
         const tc = isMobilePortrait ? MOBILE_GAIN_TC : DESKTOP_GAIN_TC;
+
+        tracks[i].g.gain.cancelScheduledValues(ctx.currentTime);
         tracks[i].g.gain.setTargetAtTime(target, ctx.currentTime, tc);
       }
+
       updateUI(i, val);
     }
-
     // --- 4. MODAL & SHARE LOGIC ---
     function openSaveModal() {
       if (ready && !isPaused) {
@@ -930,7 +969,7 @@
     function toggle() {
       if (!ready) return;
       isPaused = !isPaused;
-      master.gain.setTargetAtTime(isPaused ? 0 : 0.6, ctx.currentTime, 0.2);
+      master.gain.setTargetAtTime(isPaused ? 0 : MASTER_MAX, ctx.currentTime, 0.2);
       document.getElementById("pauseBtn").innerText = isPaused ? "RESUME ALL" : "PAUSE ALL";
       document.getElementById("pauseBtn").style.background = isPaused ? "#222" : "#55a630";
     }
