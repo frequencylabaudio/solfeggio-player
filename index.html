@@ -944,7 +944,7 @@ overflow: hidden;
   startPromise = (async () => {
   try {
     // ✅ make sure audio context is running before starting sources
-    try { await ctx.resume(); } catch (e) {}
+    try { await ctx.resume(); } catch (e) { /* ok — will resume on next gesture */ }
 
     // 1) Create ALL gain nodes immediately...
     tracks.forEach((t, i) => {
