@@ -813,6 +813,7 @@ overflow: hidden;
     let timerInterval, timeLeft = 0, soloIdx = -1, isGlobalMuteActive = false;
     let startPromise = null;
     let autoStartTriggered = false;
+    let firstTouchIdx = null; // remembers which fader was touched first (mobile)
 
     // Mobile-only smoothing (prevents zipper noise on touch)
     const isMobilePortrait =
@@ -1190,9 +1191,13 @@ function slide(i, v) {
   if (!ready) {
   // only kick off session if user actually raised the fader
   if (!starting && val > 0.01) {
-    unlockAudio();
-    beginSession(false, i);
-  }
+  unlockAudio();
+
+  const pri = (firstTouchIdx !== null) ? firstTouchIdx : i;
+  firstTouchIdx = null; // clear after we use it once
+
+  beginSession(false, pri);
+}
   return;
 }
 
@@ -1343,12 +1348,11 @@ window.addEventListener("DOMContentLoaded", () => {
     const slider = document.getElementById("v" + i);
     if (!slider) continue;
 
-    const startFromFaderTouch = (i) => {
+    const startFromFaderTouch = (idx) => {
   if (ready || starting) return;
 
-  unlockAudio();
-
-  beginSession(false, i);
+  firstTouchIdx = idx; // remember which fader was touched first
+  unlockAudio();       // unlock during the real gesture
 };
      slider.addEventListener("pointerdown", () => startFromFaderTouch(i), { passive: true });
 slider.addEventListener("touchstart", () => startFromFaderTouch(i), { passive: true });
