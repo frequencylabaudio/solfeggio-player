@@ -1210,7 +1210,7 @@ function slide(i, v) {
   // Only auto-start when user actually raises a fader above 0
   if (!ready) {
   // only start once, only when user raises above 0
-  if (!starting && val > 0.01) {
+  if (!starting && val >= 0.01) {
     unlockAudio();
     const pri = (firstTouchIdx !== null) ? firstTouchIdx : i;
     firstTouchIdx = null; // use it once
@@ -1374,6 +1374,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     slider.addEventListener("pointerdown", noteFirstTouch, { passive: true });
     slider.addEventListener("touchstart", noteFirstTouch, { passive: true });
+    slider.addEventListener("change", () => slide(i, slider.value));
   }
 });
 
