@@ -266,7 +266,6 @@
     /* base background (JS will overwrite with gradient when moved) */
     background: #2a2a2a;
     border-radius: 999px;
-    touch-action: pan-y;
   }
 
   input[type=range]::-webkit-slider-runnable-track{
@@ -606,7 +605,7 @@ overflow: hidden;
   }
 
   .chan { flex: 0 0 85px; width: 85px; padding: 10px 0; }
-  input[type=range] { height: 118px; margin-bottom: 10px; touch-action: pan-x; }
+  input[type=range] { height: 118px; margin-bottom: 10px;}
   .desc { height: 38px; }
 
   .main-controls {
@@ -1193,6 +1192,15 @@ function slide(i, v) {
   // If session not started yet:
   // Only auto-start when user actually raises a fader above 0
   if (!ready) {
+  // only start once, only when user raises above 0
+  if (!starting && val > 0.01) {
+    unlockAudio();
+
+    const pri = (firstTouchIdx !== null) ? firstTouchIdx : i;
+    firstTouchIdx = null; // use it once
+
+    beginSession(false, pri);
+  }
   return;
 }
 
@@ -1345,25 +1353,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
     const startFromFaderTouch = (idx) => {
   if (ready || starting) return;
-
   firstTouchIdx = idx; // remember which fader was touched first
       unlockAudio();       // unlock during the real gesture
-      beginSession(false, i);   // ✅ START ENGINE HERE (gesture-valid on iPhone)
 };
      slider.addEventListener("pointerdown", () => startFromFaderTouch(i), { passive: true });
-    slider.addEventListener("touchstart", (e) => { e.preventDefault(); startFromFaderTouch(i); }, { passive: false });
-    slider.addEventListener("input", () => {
-  if (ready || starting) return;
-
-  const val = parseFloat(slider.value) || 0;
-  if (val > 0.01) {
-    unlockAudio();
-    const pri = (firstTouchIdx !== null) ? firstTouchIdx : i;
-    firstTouchIdx = null;
-    beginSession(false, pri);
-  }
-}, { passive: true });
-  }
+    slider.addEventListener("touchstart", () => startFromFaderTouch(i), { passive: true });
 });
 
 
