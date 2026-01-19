@@ -1189,15 +1189,6 @@ function slide(i, v) {
   // If session not started yet:
   // Only auto-start when user actually raises a fader above 0
   if (!ready) {
-  // only kick off session if user actually raised the fader
-  if (!starting && val > 0.01) {
-  unlockAudio();
-
-  const pri = (firstTouchIdx !== null) ? firstTouchIdx : i;
-  firstTouchIdx = null; // clear after we use it once
-
-  beginSession(false, pri);
-}
   return;
 }
 
@@ -1352,7 +1343,8 @@ window.addEventListener("DOMContentLoaded", () => {
   if (ready || starting) return;
 
   firstTouchIdx = idx; // remember which fader was touched first
-  unlockAudio();       // unlock during the real gesture
+      unlockAudio();       // unlock during the real gesture
+      beginSession(false, i);   // ✅ START ENGINE HERE (gesture-valid on iPhone)
 };
      slider.addEventListener("pointerdown", () => startFromFaderTouch(i), { passive: true });
     slider.addEventListener("touchstart", () => startFromFaderTouch(i), { passive: true });
