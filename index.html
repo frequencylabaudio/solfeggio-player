@@ -266,6 +266,7 @@
     /* base background (JS will overwrite with gradient when moved) */
     background: #2a2a2a;
     border-radius: 999px;
+    touch-action: none;
   }
 
   input[type=range]::-webkit-slider-runnable-track{
@@ -548,6 +549,9 @@ overflow: hidden;
     overflow-x: auto;     /* <-- only horizontal scroll */
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
+
+    touch-action: pan-x;
+    overscroll-behavior: contain;
   }
 
   /* Ads are NOT sticky (just normal columns that scroll with the page-wrapper) */
@@ -602,7 +606,7 @@ overflow: hidden;
   }
 
   .chan { flex: 0 0 85px; width: 85px; padding: 10px 0; }
-  input[type=range] { height: 118px; margin-bottom: 10px; }
+  input[type=range] { height: 118px; margin-bottom: 10px; touch-action: none; }
   .desc { height: 38px; }
 
   .main-controls {
@@ -1347,7 +1351,7 @@ window.addEventListener("DOMContentLoaded", () => {
       beginSession(false, i);   // ✅ START ENGINE HERE (gesture-valid on iPhone)
 };
      slider.addEventListener("pointerdown", () => startFromFaderTouch(i), { passive: true });
-    slider.addEventListener("touchstart", () => startFromFaderTouch(i), { passive: true });
+    slider.addEventListener("touchstart", (e) => { e.preventDefault(); startFromFaderTouch(i); }, { passive: false });
     slider.addEventListener("input", () => {
   if (ready || starting) return;
 
