@@ -1355,7 +1355,18 @@ window.addEventListener("DOMContentLoaded", () => {
   unlockAudio();       // unlock during the real gesture
 };
      slider.addEventListener("pointerdown", () => startFromFaderTouch(i), { passive: true });
-slider.addEventListener("touchstart", () => startFromFaderTouch(i), { passive: true });
+    slider.addEventListener("touchstart", () => startFromFaderTouch(i), { passive: true });
+    slider.addEventListener("input", () => {
+  if (ready || starting) return;
+
+  const val = parseFloat(slider.value) || 0;
+  if (val > 0.01) {
+    unlockAudio();
+    const pri = (firstTouchIdx !== null) ? firstTouchIdx : i;
+    firstTouchIdx = null;
+    beginSession(false, pri);
+  }
+}, { passive: true });
   }
 });
 
