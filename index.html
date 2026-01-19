@@ -812,6 +812,7 @@ overflow: hidden;
     let ctx, master, tracks = [], ready = false, starting = false, isPaused = false, wasPlayingBeforeSave = false;
     let timerInterval, timeLeft = 0, soloIdx = -1, isGlobalMuteActive = false;
     let startPromise = null;
+    let autoStartTriggered = false;
 
     // Mobile-only smoothing (prevents zipper noise on touch)
     const isMobilePortrait =
@@ -1187,29 +1188,13 @@ function slide(i, v) {
   // If session not started yet:
   // Only auto-start when user actually raises a fader above 0
   if (!ready) {
-    if (val > 0.01 && !starting) {
-      // If no preset link, zero all other channels (your desired behavior)
-      const hasPreset = new URLSearchParams(window.location.search).get("preset");
-      if (!hasPreset) {
-        tracks.forEach((t, idx) => {
-          if (idx !== i) {
-            t.lastVal = 0;
-            const other = document.getElementById("v" + idx);
-            if (other) other.value = 0;
-            updateUI(idx, 0);
-          }
-        });
-      }
-
-      // Helpful button text while loading
-      const topBtn = document.getElementById("startBtnTop");
-      if (topBtn && topBtn.style.display !== "none") {
-        topBtn.innerText = `LOADING ${audioFiles[i]}...`;
-        topBtn.disabled = true;
-      }
-    }
-    return;
+  // only kick off session if user actually raised the fader
+  if (!starting && val > 0.01) {
+    unlockAudio();
+    beginSession(false, i);
   }
+  return;
+}
 
   // If ready, apply gain immediately
   if (!ctx || !tracks[i].g) return;
@@ -1363,18 +1348,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
   unlockAudio();
 
-  // ✅ ensure the touched channel has a real audible value before loading
-  if (tracks[i].lastVal <= 0.01) {
-    tracks[i].lastVal = 0.25;
-    const el = document.getElementById("v" + i);
-    if (el) el.value = 0.25;
-    updateUI(i, 0.25);
-  }
-
   beginSession(false, i);
 };
-
-slider.addEventListener("pointerdown", () => startFromFaderTouch(i), { passive: true });
+     slider.addEventListener("pointerdown", () => startFromFaderTouch(i), { passive: true });
 slider.addEventListener("touchstart", () => startFromFaderTouch(i), { passive: true });
   }
 });
