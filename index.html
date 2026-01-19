@@ -268,11 +268,22 @@
     border-radius: 999px;
   }
 
-  input[type=range]::-webkit-slider-runnable-track{
-    height: 8px;
-    background: transparent;
-    border-radius: 999px;
-  }
+  input[type=range]{
+  --pct: 0%;
+  --fill: #ffffff;
+}
+
+input[type=range]::-webkit-slider-runnable-track{
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--fill) 0%,
+    var(--fill) var(--pct),
+    #2a2a2a var(--pct),
+    #2a2a2a 100%
+  );
+}
 
   input[type=range]::-webkit-slider-thumb{
     -webkit-appearance: none;
@@ -286,10 +297,16 @@
   }
 
   input[type=range]::-moz-range-track{
-    height: 8px;
-    background: transparent;
-    border-radius: 999px;
-  }
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--fill) 0%,
+    var(--fill) var(--pct),
+    #2a2a2a var(--pct),
+    #2a2a2a 100%
+  );
+}
 
   input[type=range]::-moz-range-thumb{
     width: 26px;
@@ -1195,10 +1212,8 @@ function slide(i, v) {
   // only start once, only when user raises above 0
   if (!starting && val > 0.01) {
     unlockAudio();
-
     const pri = (firstTouchIdx !== null) ? firstTouchIdx : i;
     firstTouchIdx = null; // use it once
-
     beginSession(false, pri);
   }
   return;
@@ -1242,8 +1257,8 @@ function slide(i, v) {
     ? getComputedStyle(chan).getPropertyValue("--clr").trim() || "#ffffff"
     : "#ffffff";
 
-    slider.style.background =
-      `linear-gradient(to right, ${fill} 0%, ${fill} ${pct}%, #2a2a2a ${pct}%, #2a2a2a 100%)`;
+    slider.style.setProperty("--pct", pct + "%");
+    slider.style.setProperty("--fill", fill);
   }
 }
     
@@ -1346,18 +1361,20 @@ window.addEventListener("DOMContentLoaded", () => {
     if (btn) btn.addEventListener("click", unlockAudio, { passive: true });
   });
 
-  // Unlock on first fader interaction (primary)
+  // Unlock on first fader interaction (gesture-valid on iOS)
   for (let i = 0; i < audioFiles.length; i++) {
     const slider = document.getElementById("v" + i);
     if (!slider) continue;
 
-    const startFromFaderTouch = (idx) => {
-  if (ready || starting) return;
-  firstTouchIdx = idx; // remember which fader was touched first
-      unlockAudio();       // unlock during the real gesture
-};
-     slider.addEventListener("pointerdown", () => startFromFaderTouch(i), { passive: true });
-    slider.addEventListener("touchstart", () => startFromFaderTouch(i), { passive: true });
+    const noteFirstTouch = () => {
+      if (ready || starting) return;
+      firstTouchIdx = i;
+      unlockAudio();
+    };
+
+    slider.addEventListener("pointerdown", noteFirstTouch, { passive: true });
+    slider.addEventListener("touchstart", noteFirstTouch, { passive: true });
+  }
 });
 
 
