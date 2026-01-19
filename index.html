@@ -1207,9 +1207,6 @@ function slide(i, v) {
         topBtn.innerText = `LOADING ${audioFiles[i]}...`;
         topBtn.disabled = true;
       }
-
-      // Start session prioritizing this channel
-      beginSession(false, i);
     }
     return;
   }
@@ -1361,8 +1358,24 @@ window.addEventListener("DOMContentLoaded", () => {
     const slider = document.getElementById("v" + i);
     if (!slider) continue;
 
-    slider.addEventListener("pointerdown", unlockAudio, { passive: true });
-    slider.addEventListener("touchstart", unlockAudio, { passive: true });
+    const startFromFaderTouch = (i) => {
+  if (ready || starting) return;
+
+  unlockAudio();
+
+  // ✅ ensure the touched channel has a real audible value before loading
+  if (tracks[i].lastVal <= 0.01) {
+    tracks[i].lastVal = 0.25;
+    const el = document.getElementById("v" + i);
+    if (el) el.value = 0.25;
+    updateUI(i, 0.25);
+  }
+
+  beginSession(false, i);
+};
+
+slider.addEventListener("pointerdown", () => startFromFaderTouch(i), { passive: true });
+slider.addEventListener("touchstart", () => startFromFaderTouch(i), { passive: true });
   }
 });
 
