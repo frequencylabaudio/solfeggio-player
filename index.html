@@ -944,8 +944,19 @@ overflow: hidden;
   startPromise = (async () => {
   try {
     // ✅ make sure audio context is running before starting sources
-    try { await ctx.resume(); } catch (e) { /* ok — will resume on next gesture */ }
+    // Don’t hang forever on resume (some slider gestures never resolve it)
+let resumePromise = null;
+if (ctx.state === "suspended") {
+  resumePromise = ctx.resume().catch(() => {});
+}
 
+// Give resume a moment, but don’t block the whole session if it’s weird
+if (resumePromise) {
+  await Promise.race([
+    resumePromise,
+    new Promise(r => setTimeout(r, 250))
+  ]);
+}
     // 1) Create ALL gain nodes immediately...
     tracks.forEach((t, i) => {
       if (tracks[i].g) return;
