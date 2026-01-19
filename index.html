@@ -304,8 +304,8 @@
 
   .start-top-wrap{
   position: sticky;
-  top: 122px;          /* sits below title + subtitle */
-  z-index: 998;
+  top: 148px;          /* sits below title + subtitle */
+  z-index: 996;
   background: rgba(5,5,5,0.92);
   backdrop-filter: blur(10px);
   padding: 10px 8px;
@@ -325,6 +325,7 @@
   /* Sticky title */
  .title-container{
   position: sticky;
+   padding-bottom: 12px;
   top: 0;
   left: 0;
   right: 0;
@@ -402,6 +403,7 @@ overflow: hidden;
   backdrop-filter: blur(10px);
 
   margin: 0;
+    padding-top: 6px;
   padding: 0 12px 14px;
 }
 
@@ -810,7 +812,7 @@ overflow: hidden;
 
     // --- 2. MIXER ENGINE VARIABLES ---
     const audioFiles = ["69.3Hz","174Hz","285Hz","396Hz","417Hz","432Hz","528Hz","639Hz","741Hz","852Hz","963Hz"];
-    let ctx, master, tracks = [], ready = false, isPaused = false, wasPlayingBeforeSave = false;
+    let ctx, master, tracks = [], ready = false, starting = false, isPaused = false, wasPlayingBeforeSave = false;
     let timerInterval, timeLeft = 0, soloIdx = -1, isGlobalMuteActive = false;
 
     // Mobile-only smoothing (prevents zipper noise on touch)
@@ -863,7 +865,8 @@ overflow: hidden;
     }
 
     async function beginSession(useDefaults = true, priorityIdx = null) {
-  if (ready) return;
+  if (ready || starting) return;
+  starting = true;
 
   const startBtns = [
     document.getElementById("startBtn"),
@@ -908,6 +911,7 @@ overflow: hidden;
   // helper to load+start ONE channel
   async function loadAndStartOne(i) {
     const res = await fetch(audioFiles[i] + ".wav");
+    if (!res.ok) throw new Error("Missing file: " + audioFiles[i] + ".wav");
     const buf = await ctx.decodeAudioData(await res.arrayBuffer());
 
     const src = ctx.createBufferSource();
@@ -952,7 +956,10 @@ if (priorityIdx === null) {
 
   if (timeLeft > 0) startCountdown();
 } catch (err) {
+  console.error(err);
   startBtns.forEach(b => (b.innerText = "LOAD ERROR"));
+} finally {
+  starting = false;
 }
 }
 
