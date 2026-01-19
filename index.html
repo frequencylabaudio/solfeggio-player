@@ -881,8 +881,20 @@ overflow: hidden;
       console.warn("unlockAudio() failed:", e);
     }
   }
+    async function ensureAudioRunning(maxWaitMs = 1500) {
+  if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
 
-    
+  // Keep poking resume until Safari actually flips to "running"
+  const t0 = performance.now();
+
+  while (ctx.state !== "running" && (performance.now() - t0) < maxWaitMs) {
+    try { await ctx.resume(); } catch (e) {}
+    // small delay so Safari has time to flip state
+    await new Promise(r => setTimeout(r, 50));
+  }
+
+  return ctx.state === "running";
+}
 
     for (let i = 0; i < 11; i++) tracks[i] = { lastVal: 0, isMuted: false, g: null };
 
@@ -966,18 +978,9 @@ overflow: hidden;
   try {
     // ✅ make sure audio context is running before starting sources
     // Don’t hang forever on resume (some slider gestures never resolve it)
-let resumePromise = null;
-if (ctx.state === "suspended") {
-  resumePromise = ctx.resume().catch(() => {});
-}
-
-// Give resume a moment, but don’t block the whole session if it’s weird
-if (resumePromise) {
-  await Promise.race([
-    resumePromise,
-    new Promise(r => setTimeout(r, 250))
-  ]);
-}
+// ✅ HARD REQUIRE: do not proceed unless audio is truly running (fixes mobile silent start)
+const ok = await ensureAudioRunning(1500);
+if (!ok) throw new Error("AudioContext still suspended (mobile gesture not accepted)");
     // 1) Create ALL gain nodes immediately...
     tracks.forEach((t, i) => {
       if (tracks[i].g) return;
