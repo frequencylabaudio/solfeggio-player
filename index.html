@@ -266,7 +266,7 @@
     /* base background (JS will overwrite with gradient when moved) */
     background: #2a2a2a;
     border-radius: 999px;
-    touch-action: none;
+    touch-action: pan-y;
   }
 
   input[type=range]::-webkit-slider-runnable-track{
@@ -606,7 +606,7 @@ overflow: hidden;
   }
 
   .chan { flex: 0 0 85px; width: 85px; padding: 10px 0; }
-  input[type=range] { height: 118px; margin-bottom: 10px; touch-action: none; }
+  input[type=range] { height: 118px; margin-bottom: 10px; touch-action: pan-x; }
   .desc { height: 38px; }
 
   .main-controls {
