@@ -1008,7 +1008,27 @@ const topWrap = document.querySelector(".start-top-wrap");
 if (topWrap) topWrap.style.display = "none";
 
       const now = ctx.currentTime;
-      master.gain.linearRampToValueAtTime(MASTER_MAX, now + 0.2);
+
+// MOBILE FIX: force master to wake immediately (prevents "silent until resume")
+const isMobile = window.matchMedia("(max-width: 850px)").matches;
+
+if (isMobile) {
+  // ensure we're not stuck in a "paused" UI/state on mobile
+  isPaused = false;
+  const pBtnEl = document.getElementById("pauseBtn");
+  if (pBtnEl) {
+    pBtnEl.innerText = "PAUSE ALL";
+    pBtnEl.style.background = "#55a630";
+  }
+
+  // hard reset gain automation then set a real starting point
+  master.gain.cancelScheduledValues(now);
+  master.gain.setValueAtTime(0.0001, now);
+  master.gain.setTargetAtTime(MASTER_MAX, now + 0.02, 0.08);
+} else {
+  // keep desktop behavior unchanged
+  master.gain.linearRampToValueAtTime(MASTER_MAX, now + 0.2);
+}
 
       // hide start buttons / show pause
       startBtns.forEach(b => (b.style.display = "none"));
