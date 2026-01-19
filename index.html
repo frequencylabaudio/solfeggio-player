@@ -161,11 +161,10 @@
       }
     }
   input[type=range]{
-    -webkit-appearance: slider-vertical;
-    width: 18px;
-    cursor: pointer;
-    margin-bottom: 12px;
-  }
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
  input[type=range]::-webkit-slider-runnable-track{
     height: 8px;
     background: transparent;
@@ -541,6 +540,11 @@ overflow: hidden;
    SINGLE HORIZONTAL SCROLL (no nested scroll)
    ========================================================== */
 @media (max-width: 850px) and (orientation: landscape) {
+   input[type=range]{
+    -webkit-appearance: slider-vertical;
+    width: 18px;
+    margin-bottom: 12px;
+  }
   html, body {
     height: 100%;
     overflow-x: hidden;
@@ -1377,7 +1381,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     slider.addEventListener("pointerdown", noteFirstTouch, { passive: true });
     slider.addEventListener("touchstart", noteFirstTouch, { passive: true });
-    slider.addEventListener("change", () => slide(i, slider.value));
+    slider.addEventListener("input", () => slide(i, slider.value), { passive: true });
   }
 });
 
