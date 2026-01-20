@@ -1040,6 +1040,7 @@ if (isMobile) {
       starting = false;
       // ✅ Step 3: allow retries if something failed
 startPromise = null;
+    autoStartTriggered = false;
 
 // ✅ put buttons back to normal so user can try again
 startBtns.forEach(b => {
@@ -1341,17 +1342,19 @@ window.addEventListener("DOMContentLoaded", () => {
 
     slider.addEventListener("pointerdown", noteFirstTouch, { passive: true });
     slider.addEventListener("touchstart", noteFirstTouch, { passive: true });
-   slider.addEventListener("input", () => {
-  // 1) update state/UI FIRST (this sets tracks[i].lastVal)
+  slider.addEventListener("input", () => {
+  // 1) ALWAYS update state first (this sets tracks[i].lastVal immediately)
   slide(i, slider.value);
 
+  // 2) Now decide whether to start
   const val = parseFloat(slider.value || "0");
-
-  // 2) then start once user has actually raised it above 1%
   if (!ready && !starting && !autoStartTriggered && val > 0.01) {
     autoStartTriggered = true;
+
     const pri = (firstTouchIdx !== null) ? firstTouchIdx : i;
     firstTouchIdx = null;
+
+    // start from fader = NO defaults
     beginSession(false, pri);
   }
 }, { passive: true });
