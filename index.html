@@ -1328,24 +1328,26 @@ window.addEventListener("DOMContentLoaded", () => {
     const slider = document.getElementById("v" + i);
     if (!slider) continue;
 
-    const noteFirstTouch = () => {
+   const noteFirstTouch = () => {
   if (ready || starting) return;
-
   firstTouchIdx = i;
-
-  // 1) unlock during the REAL gesture (critical for iPhone Safari)
   unlockAudio();
-
-  // 2) start the audio engine ON the gesture (only once)
-  if (!autoStartTriggered) {
-    autoStartTriggered = true;
-    beginSession(false, i);   // start without defaults, prioritize this channel
-  }
 };
 
     slider.addEventListener("pointerdown", noteFirstTouch, { passive: true });
     slider.addEventListener("touchstart", noteFirstTouch, { passive: true });
-    slider.addEventListener("input", () => slide(i, slider.value), { passive: true });
+    slider.addEventListener("input", () => {
+  const val = parseFloat(slider.value || "0");
+
+  // ✅ start ONLY when user has actually raised it above 1%
+  if (!ready && !starting && !autoStartTriggered && val > 0.01) {
+    autoStartTriggered = true;
+    beginSession(false, (firstTouchIdx !== null ? firstTouchIdx : i));
+    firstTouchIdx = null;
+  }
+
+  slide(i, slider.value);
+}, { passive: true });
   }
 });
 
