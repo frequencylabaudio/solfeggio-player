@@ -1336,17 +1336,19 @@ window.addEventListener("DOMContentLoaded", () => {
 
     slider.addEventListener("pointerdown", noteFirstTouch, { passive: true });
     slider.addEventListener("touchstart", noteFirstTouch, { passive: true });
-    slider.addEventListener("input", () => {
+   slider.addEventListener("input", () => {
+  // 1) update state/UI FIRST (this sets tracks[i].lastVal)
+  slide(i, slider.value);
+
   const val = parseFloat(slider.value || "0");
 
-  // ✅ start ONLY when user has actually raised it above 1%
+  // 2) then start once user has actually raised it above 1%
   if (!ready && !starting && !autoStartTriggered && val > 0.01) {
     autoStartTriggered = true;
-    beginSession(false, (firstTouchIdx !== null ? firstTouchIdx : i));
+    const pri = (firstTouchIdx !== null) ? firstTouchIdx : i;
     firstTouchIdx = null;
+    beginSession(false, pri);
   }
-
-  slide(i, slider.value);
 }, { passive: true });
   }
 });
