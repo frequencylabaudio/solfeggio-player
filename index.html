@@ -1182,7 +1182,19 @@ function slide(i, v) {
 
   // If session not started yet:
   // Only auto-start when user actually raises a fader above 0
- if (!ready) return;
+ if (!ready) {
+  // Only start once, only after the fader is actually above 1%
+  if (!starting && !autoStartTriggered && val > 0.01) {
+    autoStartTriggered = true;
+
+    const pri = (firstTouchIdx !== null) ? firstTouchIdx : i;
+    firstTouchIdx = null;
+
+    // Start from fader (NO defaults)
+    beginSession(false, pri);
+  }
+  return;
+}
 
   // If ready, apply gain immediately
   if (!ctx || !tracks[i].g) return;
@@ -1332,28 +1344,15 @@ window.addEventListener("DOMContentLoaded", () => {
     if (!slider) continue;
 
    const noteFirstTouch = () => {
-  if (ready || starting) return;
+  if (ready) return;
   firstTouchIdx = i;
   unlockAudio();
 };
 
     slider.addEventListener("pointerdown", noteFirstTouch, { passive: true });
     slider.addEventListener("touchstart", noteFirstTouch, { passive: true });
-  slider.addEventListener("input", () => {
-  // 1) ALWAYS update state first (this sets tracks[i].lastVal immediately)
+slider.addEventListener("input", () => {
   slide(i, slider.value);
-
-  // 2) Now decide whether to start
-  const val = parseFloat(slider.value || "0");
-  if (!ready && !starting && !autoStartTriggered && val > 0.01) {
-    autoStartTriggered = true;
-
-    const pri = (firstTouchIdx !== null) ? firstTouchIdx : i;
-    firstTouchIdx = null;
-
-    // start from fader = NO defaults
-    beginSession(false, pri);
-  }
 }, { passive: true });
   }
 });
