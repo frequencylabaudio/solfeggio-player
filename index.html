@@ -187,6 +187,19 @@
 }
     .btn-row { display: flex; gap: 4px; }
     .m-btn, .s-btn { width: 40px; height: 20px; border-radius: 4px; border: 1px solid #333; background: #1a1a1a; color: #aaa; font-size: 0.5rem; cursor: pointer; text-transform: uppercase; font-weight: bold; }
+    input[type=range]:disabled {
+  opacity: 0.35;
+  filter: grayscale(1);
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.m-btn:disabled,
+.s-btn:disabled {
+  opacity: 0.35;
+  pointer-events: none;
+  cursor: not-allowed;
+}
     .m-btn.active-mute { background: #9b2226; color: #fff; border-color: #ff4d4d; }
     .s-btn.active-solo { background: var(--start-yellow); color: #000; border-color: #fff; }
 
@@ -984,50 +997,51 @@ if (!ok) {
       await loadAndStartOne(priorityIdx);
 
       // 3) Mark ready after ONE playable channel exists
-      ready = true;
-      starting = false;
-    // Step 3: sync gains to current slider positions immediately (fixes mobile silent start)
+ready = true;
+starting = false;
+
+// ✅ Mobile-only: unlock sliders + mute/solo ONLY after Start Session
+if (isMobileNow()) {
+  unlockControls();
+}
+
+// ✅ Sync gains to current slider positions (safe for ALL devices)
 for (let k = 0; k < audioFiles.length; k++) {
   const el = document.getElementById("v" + k);
   if (el) slide(k, el.value);
 }
 
-      // ✅ Step 3: reset any “loading” UI text so nothing looks stuck
+// ✅ Reset any stuck “INITIALIZING…” UI (just in case)
 startBtns.forEach(b => {
   b.innerText = "START SESSION";
   b.disabled = false;
 });
 
-// ✅ hide portrait wrapper too (so it can’t linger)
+// ✅ Hide portrait wrapper if it exists (prevents lingering top button area)
 const topWrap = document.querySelector(".start-top-wrap");
 if (topWrap) topWrap.style.display = "none";
 
-      const now = ctx.currentTime;
-
-// MOBILE FIX: force master to wake immediately (prevents "silent until resume")
+// ✅ Master gain ramp (keep your desktop behavior intact)
+const now = ctx.currentTime;
 const isMobile = window.matchMedia("(max-width: 850px)").matches;
 
 if (isMobile) {
-  // ensure we're not stuck in a "paused" UI/state on mobile
   isPaused = false;
   const pBtnEl = document.getElementById("pauseBtn");
   if (pBtnEl) {
     pBtnEl.innerText = "PAUSE ALL";
     pBtnEl.style.background = "#55a630";
   }
-
-  // hard reset gain automation then set a real starting point
   master.gain.cancelScheduledValues(now);
   master.gain.setValueAtTime(0.0001, now);
   master.gain.setTargetAtTime(MASTER_MAX, now + 0.02, 0.08);
 } else {
-  // keep desktop behavior unchanged
   master.gain.linearRampToValueAtTime(MASTER_MAX, now + 0.2);
 }
 
-      // hide start buttons / show pause
-      startBtns.forEach(b => (b.style.display = "none"));
-      if (pBtn) pBtn.style.display = "block";
+// hide start buttons / show pause
+startBtns.forEach(b => (b.style.display = "none"));
+if (pBtn) pBtn.style.display = "block";
 
       // 4) Load the rest in the background
       audioFiles.forEach((_, i) => {
@@ -1170,6 +1184,36 @@ if (topWrap) topWrap.style.display = "";
       document.getElementById("mainAuthButtons").style.display = "flex";
       document.getElementById("emailInputArea").style.display = "none";
     }
+    // ============================================================
+// MOBILE CONTROL GATE (lock faders + mute/solo until Start Session)
+// ============================================================
+function isMobileNow() {
+  return window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+}
+
+function lockControls() {
+  for (let i = 0; i < audioFiles.length; i++) {
+    const slider = document.getElementById("v" + i);
+    const muteBtn = document.getElementById("m" + i);
+    const soloBtn = document.getElementById("s" + i);
+
+    if (slider) slider.disabled = true;
+    if (muteBtn) muteBtn.disabled = true;
+    if (soloBtn) soloBtn.disabled = true;
+  }
+}
+
+function unlockControls() {
+  for (let i = 0; i < audioFiles.length; i++) {
+    const slider = document.getElementById("v" + i);
+    const muteBtn = document.getElementById("m" + i);
+    const soloBtn = document.getElementById("s" + i);
+
+    if (slider) slider.disabled = false;
+    if (muteBtn) muteBtn.disabled = false;
+    if (soloBtn) soloBtn.disabled = false;
+  }
+}
 
     // --- 5. UTILITY LOGIC ---
     // --- FADER MOVE ---
@@ -1183,6 +1227,14 @@ function slide(i, v) {
   // If session not started yet:
   // Only auto-start when user actually raises a fader above 0
 if (!ready) {
+  // ✅ Mobile: sliders are locked until Start Session
+  if (isMobileNow()) return;
+
+  // ✅ Desktop: keep your current behavior (fader interaction auto-starts)
+  if (!starting && !autoStartTriggered && val > 0.01) {
+    autoStartTriggered = true;
+    beginSession(false, i); // desktop auto-start from the fader
+  }
   return;
 }
 
@@ -1321,36 +1373,21 @@ if (!ready) {
 
 window.addEventListener("DOMContentLoaded", () => {
   loadPresetFromUrl();
+   // Mobile: lock everything until Start Session is pressed
+  if (isMobileNow() && !ready) {
+    lockControls();
+  }
 
   // Unlock on Start Session clicks (backup)
   ["startBtn", "startBtnTop"].forEach(id => {
     const btn = document.getElementById(id);
     if (btn) btn.addEventListener("click", unlockAudio, { passive: true });
   });
-
-  // Unlock on first fader interaction (gesture-valid on iOS)
+// Always listen to fader movement (but it won't move while disabled)
   for (let i = 0; i < audioFiles.length; i++) {
     const slider = document.getElementById("v" + i);
     if (!slider) continue;
-
-   const noteFirstTouch = () => {
-  if (ready) return;
-
-  firstTouchIdx = i;
-  unlockAudio();
-
-  // ✅ Start session from the gesture (iPhone Safari-safe)
-  if (!starting && !autoStartTriggered) {
-    autoStartTriggered = true;
-    beginSession(false, i);   // start from fader, NO defaults
-  }
-};
-
-    slider.addEventListener("pointerdown", noteFirstTouch, { passive: true });
-    slider.addEventListener("touchstart", noteFirstTouch, { passive: true });
-slider.addEventListener("input", () => {
-  slide(i, slider.value);
-}, { passive: true });
+    slider.addEventListener("input", () => slide(i, slider.value));
   }
 });
 
