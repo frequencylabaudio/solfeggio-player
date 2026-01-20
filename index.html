@@ -150,7 +150,8 @@
 
 /* FORCE VERTICAL FADERS on Desktop + Mobile Landscape */
 @media (min-width: 851px), (max-width: 850px) and (orientation: landscape) {
-  input[type=range]{
+  input[type=range]::-webkit-slider-thumb{
+    margin-top: 0px;
     -webkit-appearance: slider-vertical;
     appearance: slider-vertical;
     writing-mode: bt-lr;
@@ -171,7 +172,7 @@
     border-radius: 50%;
     background: #fff;
     border: 2px solid rgba(255,255,255,0.25);
-    margin-top: -9px;
+    margin-top: 0px;
   }
   input[type=range]::-moz-range-track{
     height: 8px;
