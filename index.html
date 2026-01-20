@@ -814,7 +814,11 @@ overflow: hidden;
   let audioUnlocked = false;
 
   function unlockAudio() {
-    if (audioUnlocked) return;
+    // If Safari suspended audio later (Share/alert/etc), allow re-resume
+if (ctx && ctx.state === "running") {
+  audioUnlocked = true;
+  return;
+}
 
     try {
       // Ensure AudioContext exists during a user gesture
@@ -1098,8 +1102,14 @@ if (topWrap) topWrap.style.display = "";
     }
 
     function closeShareModal() {
-      document.getElementById("shareModal").style.display = "none";
-    }
+  document.getElementById("shareModal").style.display = "none";
+
+  // Safety: if Safari suspended audio while modal was open, recover
+  unlockAudio();
+  if (ready && !isPaused && master && ctx) {
+    master.gain.setTargetAtTime(MASTER_MAX, ctx.currentTime, 0.05);
+  }
+}
 
     function generatePresetString() {
       return tracks.map((t, i) => {
@@ -1109,18 +1119,74 @@ if (topWrap) topWrap.style.display = "";
         return `${vol}-${m}-${s}`;
       }).join(",");
     }
+    let toastEl = null;
+
+function showToast(msg) {
+  if (!toastEl) {
+    toastEl = document.createElement("div");
+    toastEl.style.position = "fixed";
+    toastEl.style.left = "50%";
+    toastEl.style.bottom = "28px";
+    toastEl.style.transform = "translateX(-50%)";
+    toastEl.style.background = "rgba(0,0,0,0.8)";
+    toastEl.style.color = "#fff";
+    toastEl.style.padding = "10px 14px";
+    toastEl.style.borderRadius = "999px";
+    toastEl.style.fontSize = "12px";
+    toastEl.style.letterSpacing = "1px";
+    toastEl.style.zIndex = "2000";
+    toastEl.style.border = "1px solid rgba(255,255,255,0.15)";
+    toastEl.style.backdropFilter = "blur(8px)";
+    toastEl.style.display = "none";
+    document.body.appendChild(toastEl);
+  }
+
+  toastEl.textContent = msg;
+  toastEl.style.display = "block";
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => {
+    toastEl.style.display = "none";
+  }, 1200);
+}
 
     function copyPresetLink() {
-      const presetData = generatePresetString();
-      const presetLink = `${window.location.origin}${window.location.pathname}?preset=${presetData}`;
-      const dummy = document.createElement("input");
-      document.body.appendChild(dummy);
-      dummy.value = presetLink;
-      dummy.select();
-      document.execCommand("copy");
-      document.body.removeChild(dummy);
-      alert("Full preset link (including Mute/Solo) copied!");
+  const presetData = generatePresetString();
+  const presetLink = `${window.location.origin}${window.location.pathname}?preset=${presetData}`;
+
+  const finish = () => {
+    // IMPORTANT: if iOS suspended audio during clipboard/popup, recover immediately
+    unlockAudio();
+
+    // If session is running and not paused, make sure master isn't stuck at 0
+    if (ready && !isPaused && master && ctx) {
+      master.gain.setTargetAtTime(MASTER_MAX, ctx.currentTime, 0.05);
     }
+
+    // Non-blocking confirmation (no alert)
+    showToast("Preset link copied!");
+  };
+
+  // Prefer modern clipboard API (best on mobile Safari when allowed)
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(presetLink).then(finish).catch(() => {
+      fallbackCopy(presetLink);
+      finish();
+    });
+  } else {
+    fallbackCopy(presetLink);
+    finish();
+  }
+}
+
+function fallbackCopy(text) {
+  const dummy = document.createElement("input");
+  dummy.value = text;
+  document.body.appendChild(dummy);
+  dummy.select();
+  dummy.setSelectionRange(0, 99999);
+  document.execCommand("copy");
+  document.body.removeChild(dummy);
+}
 
     async function handleAuth(platform) {
       let provider;
