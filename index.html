@@ -786,6 +786,7 @@ overflow: hidden;
     let startPromise = null;
     let autoStartTriggered = false;
     let firstTouchIdx = null; // remembers which fader was touched first (mobile)
+    let resumePromise = null;
 
     // Mobile-only smoothing (prevents zipper noise on touch)
     const isMobilePortrait =
@@ -822,9 +823,16 @@ overflow: hidden;
 
       // Trigger resume during gesture (do not await)
       if (ctx.state === "suspended") {
-  ctx.resume().then(() => {
-    if (ctx.state === "running") audioUnlocked = true;
-  }).catch(() => {});
+  if (!resumePromise) {
+    resumePromise = ctx.resume()
+      .then(() => {
+        if (ctx.state === "running") audioUnlocked = true;
+      })
+      .catch(() => {
+        // allow retry on the next gesture
+        resumePromise = null;
+      });
+  }
 } else if (ctx.state === "running") {
   audioUnlocked = true;
 }
@@ -931,8 +939,13 @@ overflow: hidden;
     // ✅ make sure audio context is running before starting sources
     // Don’t hang forever on resume (some slider gestures never resolve it)
 // ✅ HARD REQUIRE: do not proceed unless audio is truly running (fixes mobile silent start)
-const ok = await ensureAudioRunning(1500);
-if (!ok) throw new Error("AudioContext still suspended (mobile gesture not accepted)");
+// wait for the gesture-based resume attempt (started in unlockAudio)
+if (resumePromise) await resumePromise;
+
+// hard check: if Safari still says suspended, don't proceed
+if (!ctx || ctx.state !== "running") {
+  throw new Error("AudioContext still suspended (need user gesture)");
+}
     // 1) Create ALL gain nodes immediately...
     tracks.forEach((t, i) => {
       if (tracks[i].g) return;
