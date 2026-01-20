@@ -873,7 +873,27 @@ if (ctx && ctx.state === "running") {
 
   return ctx.state === "running";
 }
+async function recoverAudioAfterExternalUI() {
+  // 1) Try the gesture-safe unlock path
+  unlockAudio();
 
+  // 2) If Safari suspended the context, resume it
+  if (ctx && ctx.state !== "running") {
+    try { await ctx.resume(); } catch (e) {}
+  }
+
+  // 3) If session is running and user wasn’t paused, restore audible master gain
+  if (ready && ctx && master) {
+    const now = ctx.currentTime;
+    master.gain.cancelScheduledValues(now);
+
+    if (!isPaused) {
+      master.gain.setTargetAtTime(MASTER_MAX, now, 0.05);
+    } else {
+      master.gain.setTargetAtTime(0, now, 0.05);
+    }
+  }
+}
     for (let i = 0; i < 11; i++) tracks[i] = { lastVal: 0, isMuted: false, g: null };
 
     // --- 3. CORE MIXER FUNCTIONS ---
@@ -1088,27 +1108,37 @@ if (topWrap) topWrap.style.display = "";
       document.getElementById("saveModal").style.display = "block";
     }
 
-    function closeSaveModal() {
-      document.getElementById("saveModal").style.display = "none";
-      hideEmailInput();
-      if (ready && wasPlayingBeforeSave && isPaused) {
-        toggle();
-        wasPlayingBeforeSave = false;
-      }
+    async function closeSaveModal() {
+  document.getElementById("saveModal").style.display = "none";
+  hideEmailInput();
+
+  // If it was playing before Save, restore playing state (don’t rely on toggle())
+  if (ready && wasPlayingBeforeSave) {
+    isPaused = false;
+
+    const p = document.getElementById("pauseBtn");
+    if (p) {
+      p.innerText = "PAUSE ALL";
+      p.style.background = "#55a630";
     }
+
+    // Make sure Safari audio is actually running again
+    await recoverAudioAfterExternalUI();
+
+    wasPlayingBeforeSave = false;
+  } else {
+    // Even if it was paused, Safari may have suspended ctx — recover safely
+    await recoverAudioAfterExternalUI();
+  }
+}
 
     function openShareModal() {
       document.getElementById("shareModal").style.display = "block";
     }
 
-    function closeShareModal() {
+    async function closeShareModal() {
   document.getElementById("shareModal").style.display = "none";
-
-  // Safety: if Safari suspended audio while modal was open, recover
-  unlockAudio();
-  if (ready && !isPaused && master && ctx) {
-    master.gain.setTargetAtTime(MASTER_MAX, ctx.currentTime, 0.05);
-  }
+  await recoverAudioAfterExternalUI();
 }
 
     function generatePresetString() {
@@ -1196,7 +1226,8 @@ function fallbackCopy(text) {
           const result = await auth.signInWithPopup(provider);
           savePresetToFirebase(result.user.uid);
         } catch (error) {
-          alert(error.message);
+          showToast(error.message || "Sign-in canceled");
+          await recoverAudioAfterExternalUI();
         }
       }
     }
@@ -1223,10 +1254,11 @@ function fallbackCopy(text) {
             `
           }
         });
-        alert("Mix saved successfully! Check " + userEmail + " for your link.");
+        showToast("Mix saved! Check your email.");
         closeSaveModal();
       } catch (e) {
-        alert("Save failed: " + e.message);
+        showToast("Save failed: " + e.message);
+        await recoverAudioAfterExternalUI();
       }
     }
 
@@ -1236,10 +1268,13 @@ function fallbackCopy(text) {
       auth.sendSignInLinkToEmail(email, actionCodeSettings)
         .then(() => {
           window.localStorage.setItem("emailForSignIn", email);
-          alert("Magic link sent to " + email);
+          showToast("Magic link sent!");
           closeSaveModal();
         })
-        .catch(err => alert(err.message));
+        .catch(async (err) => {
+          showToast(err.message || "Failed to send link");
+          await recoverAudioAfterExternalUI();
+        });
     }
 
     function showEmailInput() {
@@ -1439,6 +1474,12 @@ if (!ready) {
 
 
 window.addEventListener("DOMContentLoaded", () => {
+  // When returning from Gmail/Email popups or app-switching on iOS Safari
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) recoverAudioAfterExternalUI();
+});
+window.addEventListener("focus", () => recoverAudioAfterExternalUI());
+window.addEventListener("pageshow", () => recoverAudioAfterExternalUI());
   loadPresetFromUrl();
    // Mobile: lock everything until Start Session is pressed
   if (isMobileNow() && !ready) {
