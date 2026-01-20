@@ -1182,10 +1182,7 @@ function slide(i, v) {
 
   // If session not started yet:
   // Only auto-start when user actually raises a fader above 0
- if (!ready) {
-  // engine starts from touchstart now (gesture-safe on iPhone)
-  return;
-}
+ if (!ready) return;
 
   // If ready, apply gain immediately
   if (!ctx || !tracks[i].g) return;
