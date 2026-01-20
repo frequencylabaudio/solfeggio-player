@@ -706,7 +706,7 @@ overflow: hidden;
 
       <div id="emailInputArea">
         <input type="email" id="userEmail" class="modal-input" placeholder="Enter your email address">
-        <button class="send-btn" onclick="sendMagicLink()">SEND MAGIC LINK</button>
+        <button class="send-btn" onclick="sendPresetEmail()">SEND</button>
         <div class="back-btn" onclick="hideEmailInput()">← Back</div>
       </div>
 
@@ -1262,20 +1262,45 @@ function fallbackCopy(text) {
       }
     }
 
-    function sendMagicLink() {
-      const email = document.getElementById("userEmail").value;
-      const actionCodeSettings = { url: window.location.href, handleCodeInApp: true };
-      auth.sendSignInLinkToEmail(email, actionCodeSettings)
-        .then(() => {
-          window.localStorage.setItem("emailForSignIn", email);
-          showToast("Magic link sent!");
-          closeSaveModal();
-        })
-        .catch(async (err) => {
-          showToast(err.message || "Failed to send link");
-          await recoverAudioAfterExternalUI();
-        });
-    }
+    async function sendPresetEmail() {
+  const emailEl = document.getElementById("userEmail");
+  const email = (emailEl?.value || "").trim();
+
+  if (!email) {
+    showToast("Enter an email first.");
+    return;
+  }
+
+  // Build the same preset link as Gmail flow
+  const presetData = generatePresetString();
+  const presetLink = `${window.location.origin}${window.location.pathname}?preset=${presetData}`;
+
+  try {
+    // Send via your existing Firestore -> mail pipeline (same as Gmail)
+    await db.collection("mail").add({
+      to: email,
+      message: {
+        subject: "Your Sacred Soundscape is Ready ✨",
+        html: `
+          <p>Welcome back to your resonance.</p>
+          <p>
+            Your perfect balance of Solfeggio frequencies is ready for your next session.
+            No need to re-adjust your faders or toggle your mutes—we’ve remembered everything for you.
+          </p>
+          <p><strong><a href="${presetLink}">[Open Your Soundscape]</a></strong></p>
+          <p>May this soundscape bring you the peace and clarity you seek today.</p>
+          <p>Much Love by Frequency Lab</p>
+        `
+      }
+    });
+
+    showToast("Sent! Check your email.");
+    closeSaveModal();
+  } catch (err) {
+    showToast("Email failed: " + (err?.message || "Unknown error"));
+    await recoverAudioAfterExternalUI();
+  }
+}
 
     function showEmailInput() {
       document.getElementById("mainAuthButtons").style.display = "none";
