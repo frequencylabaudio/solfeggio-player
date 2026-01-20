@@ -986,6 +986,11 @@ if (!ok) {
       // 3) Mark ready after ONE playable channel exists
       ready = true;
       starting = false;
+    // Step 3: sync gains to current slider positions immediately (fixes mobile silent start)
+for (let k = 0; k < audioFiles.length; k++) {
+  const el = document.getElementById("v" + k);
+  if (el) slide(k, el.value);
+}
 
       // ✅ Step 3: reset any “loading” UI text so nothing looks stuck
 startBtns.forEach(b => {
