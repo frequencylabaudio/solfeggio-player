@@ -942,8 +942,8 @@ overflow: hidden;
 // wait for the gesture-based resume attempt (started in unlockAudio)
 if (resumePromise) await resumePromise;
 
-// hard check: if Safari still says suspended, don't proceed
-if (!ctx || ctx.state !== "running") {
+const ok = await ensureAudioRunning(1500);
+if (!ok) {
   throw new Error("AudioContext still suspended (need user gesture)");
 }
     // 1) Create ALL gain nodes immediately...
