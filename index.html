@@ -289,7 +289,6 @@
   }
   input[type=range]{
   --pct: 0%;
-  --pctPad: 0%;
   --fill: #ffffff;
 }
 input[type=range]::-webkit-slider-runnable-track{
@@ -298,8 +297,8 @@ input[type=range]::-webkit-slider-runnable-track{
   background: linear-gradient(
     to right,
     var(--fill) 0%,
-    var(--fill) var(--pctPad),
-    #2a2a2a var(--pctPad),
+    var(--fill) var(--pct),
+    #2a2a2a var(--pct),
     #2a2a2a 100%
   );
 }
@@ -319,8 +318,8 @@ input[type=range]::-webkit-slider-runnable-track{
   background: linear-gradient(
     to right,
     var(--fill) 0%,
-    var(--fill) var(--pctPad),
-    #2a2a2a var(--pctPad),
+    var(--fill) var(--pct),
+    #2a2a2a var(--pct),
     #2a2a2a 100%
   );
 }
@@ -1622,24 +1621,16 @@ if (!ready) {
 
   // ✅ ADD THIS INSIDE updateUI
   const slider = document.getElementById("v" + i);
-if (slider) {
-  const pct = Math.max(0, Math.min(100, val * 100));
-  const chan = document.getElementById("c" + i);
-
-  const fill = chan
+  if (slider) {
+    const pct = Math.max(0, Math.min(100, val * 100));
+    const chan = document.getElementById("c" + i);
+    const fill = chan
     ? getComputedStyle(chan).getPropertyValue("--clr").trim() || "#ffffff"
     : "#ffffff";
 
-  const thumbRadius = 13; // your thumb is 26px
-  const w = slider.getBoundingClientRect().width || 1;
-  const pad = (thumbRadius / w) * 100;
-
-  // clamp so it never overshoots
-  const pctPad = Math.max(0, Math.min(100, pct * (1 - 2 * pad / 100) + pad));
-
-  slider.style.setProperty("--pct", pct + "%");
-  slider.style.setProperty("--pctPad", pctPad + "%");
-  slider.style.setProperty("--fill", fill);
+    slider.style.setProperty("--pct", pct + "%");
+    slider.style.setProperty("--fill", fill);
+  }
 }
     
     function toggle() {
