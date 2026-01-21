@@ -589,13 +589,52 @@ overflow: hidden;
     overflow: visible;      /* overrides global overflow:hidden */
     contain: none;          /* overrides global contain:paint (this is key) */
   }
+  
   .chan input[type=range]{
+    -webkit-appearance: none;  /* IMPORTANT: not slider-vertical */
+    appearance: none;
+    width: 150px;              /* this becomes the vertical travel distance */
+    height: 18px;              /* track thickness “box” */
+    transform: rotate(-90deg); /* min(0%) ends up at the bottom */
+    transform-origin: center;   
     display: block;
-    margin-left: auto;
-    margin-right: auto;
-    height: 160px;     /* optional, makes sure you’re not forcing a short height */
-}
+    margin: 0 auto 16px;
+    background: transparent;
+  }
+ .chan input[type=range]::-webkit-slider-runnable-track{
+    height: 8px;
+    border-radius: 999px;
+  }
 
+  /* Thumb */
+  .chan input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    appearance: none;
+
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid rgba(255,255,255,0.25);
+
+    margin-top: -9px; /* centers thumb on the 8px track */
+    box-sizing: border-box;
+  }
+
+  /* Firefox */
+  .chan input[type=range]::-moz-range-track{
+    height: 8px;
+    border-radius: 999px;
+  }
+  .chan input[type=range]::-moz-range-thumb{
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid rgba(255,255,255,0.25);
+    box-sizing: border-box;
+  }
+}
 
   .desc { height: 38px; }
   /* NEW: LANDSCAPE ONLY button spacing fix (does not change channel border size) */
