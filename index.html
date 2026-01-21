@@ -502,14 +502,6 @@ overflow: hidden;
    SINGLE HORIZONTAL SCROLL (no nested scroll)
    ========================================================== */
 @media (max-width: 850px) and (orientation: landscape) {
-
-  .footer-credit{
-    position: absolute;   /* no longer follows the viewport */
-    right: 12px;
-    bottom: 10px;
-    z-index: 2;           /* keep it low so it can't sit over modals/buttons */
-    pointer-events: none; /* so it can never block taps */
-  }
    
   html, body {
     height: 100%;
@@ -597,74 +589,11 @@ overflow: hidden;
     overflow: visible;      /* overrides global overflow:hidden */
     contain: none;          /* overrides global contain:paint (this is key) */
   }
-    /* LANDSCAPE ONLY: prevent Safari vertical slider thumb from being clipped */
-  .chan{
-    overflow: visible;      /* overrides global overflow:hidden */
-    contain: none;          /* overrides global contain:paint */
-  }
-
-  /* LANDSCAPE ONLY — slider: centered, full circle (no cropping), no overlap with buttons */
-  /* LANDSCAPE ONLY — centered vertical slider (no shifting) */
-.chan input[type=range]{
-  -webkit-appearance: slider-vertical;
-  appearance: slider-vertical;
-  writing-mode: bt-lr;
-
-  /* Keep actual slider width = track width */
-  width: 18px;
-
-  /* Add "safe room" so the circle never gets chopped */
-  padding: 0;            /* total visual box becomes 30px */
-  box-sizing: border-box;
-
-  height: 138px;
-
+  .chan input[type=range]{
   display: block;
-  margin: 0 auto 16px;
-
-  background: transparent;
-  overflow: visible;
-
-  /* ensure no old positioning affects it */
-  position: static;
-  left: auto;
-  transform: none;
+  margin-left: auto;
+  margin-right: auto;
 }
-
-
-  /* Match your “good” look: same thumb as desktop (white, full circle) */
-  .chan input[type=range]::-webkit-slider-thumb{
-    -webkit-appearance: none;
-    appearance: none;
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: #fff;
-    border: 2px solid rgba(255,255,255,0.25);
-    margin: 0;              /* prevents sideways offsets */
-    box-sizing: border-box;
-  }
-
-  .chan input[type=range]::-moz-range-thumb{
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: #fff;
-    border: 2px solid rgba(255,255,255,0.25);
-    box-sizing: border-box;
-  }
-
-  /* Keep the track centered inside the wider (30px) control */
-  .chan input[type=range]::-webkit-slider-runnable-track{
-    width: 8px;
-    margin: 0 auto;
-    border-radius: 999px;
-  }
-  .chan input[type=range]::-moz-range-track{
-    width: 8px;
-    margin: 0 auto;
-    border-radius: 999px;
-  }
 
 
   .desc { height: 38px; }
@@ -695,21 +624,18 @@ overflow: hidden;
   .modal-content { max-height: 85vh; overflow-y: auto; }
   /* LANDSCAPE ONLY: footer in bottom-right but not fixed/sticky */
   /* LANDSCAPE ONLY: bottom-right but NOT sticky (not fixed) */
-  .footer-credit{
-    position: absolute; 
-    inset: auto !important;
-    top: auto !important;
-    right: 12px;
-    bottom: 10px;
-    left: auto !important;
-    pointer-events: none;
-    z-index: 2;
-    width: 100%;
-    text-align: right;
-    padding: 0 18px 12px;
-    margin-top: 10px;
-    pointer-events: none; /* so it can never block taps */
-  }
+  /* LANDSCAPE ONLY — footer bottom-right, not sticky, never blocks taps */
+.footer-credit{
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  z-index: 1;
+  pointer-events: none;
+  width: auto;         /* IMPORTANT: not 100% */
+  padding: 0;          /* IMPORTANT: remove big padding that can cover controls */
+  margin: 0;
+}
+
 }
   </style>
 </head>
