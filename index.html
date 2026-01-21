@@ -583,42 +583,53 @@ overflow: hidden;
     align-items: flex-start;
   }
 
- .chan { flex: 0 0 85px; width: 85px; padding: 10px 0; }
-
-/* LANDSCAPE ONLY: prevent clipping */
+/* LANDSCAPE ONLY — channel column */
 .chan{
+  flex: 0 0 85px;
+  width: 85px;
+  padding: 10px 0;
+
   overflow: visible;
   contain: none;
-}
-  .chan{
-  min-height: 240px;   /* gives space for the rotated slider */
+
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.chan input[type=range]{
+/* LANDSCAPE ONLY — slider “lane” (this is B) */
+.fader-slot{
+  width: 34px;       /* narrow lane so slider stays centered */
+  height: 170px;     /* visible fader height */
+  position: relative;
+  margin: 10px auto 14px;
+}
+
+/* LANDSCAPE ONLY — rotated slider centered inside the lane */
+.fader-slot input[type=range]{
   -webkit-appearance: none;
   appearance: none;
 
-  width: 150px;              /* becomes vertical travel distance */
-  height: 18px;              /* slider box height */
+  width: 170px;      /* travel distance (becomes vertical after rotate) */
+  height: 18px;
 
-  transform: rotate(-90deg);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(-90deg);
   transform-origin: center;
 
-  display: block;
-  margin: 0 auto 16px;
+  margin: 0;
   background: transparent;
 }
 
-.chan input[type=range]::-webkit-slider-runnable-track{
+.fader-slot input[type=range]::-webkit-slider-runnable-track{
   height: 8px;
   border-radius: 999px;
-  background: #2a2a2a;  /* <-- add this so the line appears */
+  background: #2a2a2a;
 }
 
-.chan input[type=range]::-webkit-slider-thumb{
+.fader-slot input[type=range]::-webkit-slider-thumb{
   -webkit-appearance: none;
   appearance: none;
 
@@ -632,13 +643,13 @@ overflow: hidden;
   box-sizing: border-box;
 }
 
-.chan input[type=range]::-moz-range-track{
+.fader-slot input[type=range]::-moz-range-track{
   height: 8px;
   border-radius: 999px;
-  background: #2a2a2a;  /* <-- add this too */
+  background: #2a2a2a;
 }
 
-.chan input[type=range]::-moz-range-thumb{
+.fader-slot input[type=range]::-moz-range-thumb{
   width: 26px;
   height: 26px;
   border-radius: 50%;
@@ -731,7 +742,9 @@ overflow: hidden;
                     <div class="hz">${ch.hz}</div>
                     <div class="desc">${ch.d}</div>
                     <div class="vol-label" id="l${i}">0%</div>
-                    <input type="range" id="v${i}" min="0" max="1" step="0.01" value="0">
+                    <div class="fader-slot">
+  <input type="range" id="v${i}" min="0" max="1" step="0.01" value="0">
+</div>
                     <div class="btn-row">
                       <button class="m-btn" id="m${i}" onclick="muteTrack(${i})">Mute</button>
                       <button class="s-btn" id="s${i}" onclick="soloTrack(${i})">Solo</button>
