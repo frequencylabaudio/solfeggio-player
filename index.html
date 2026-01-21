@@ -297,8 +297,8 @@ input[type=range]::-webkit-slider-runnable-track{
   background: linear-gradient(
     to right,
     var(--fill) 0%,
-    var(--fill) var(--pct),
-    #2a2a2a var(--pct),
+    var(--fill) var(--pctPad, var(--pct)),
+    #2a2a2a var(--pctPad, var(--pct)),
     #2a2a2a 100%
   );
 }
@@ -318,8 +318,8 @@ input[type=range]::-webkit-slider-runnable-track{
   background: linear-gradient(
     to right,
     var(--fill) 0%,
-    var(--fill) var(--pct),
-    #2a2a2a var(--pct),
+    var(--fill) var(--pctPad, var(--pct)),
+    #2a2a2a var(--pctPad, var(--pct)),
     #2a2a2a 100%
   );
 }
@@ -1630,6 +1630,21 @@ if (!ready) {
 
     slider.style.setProperty("--pct", pct + "%");
     slider.style.setProperty("--fill", fill);
+    // ✅ Thumb-centered edge (SAFE: won't break audio if anything goes wrong)
+try {
+  const thumbRadius = 13; // 26px thumb / 2
+  const w = slider.getBoundingClientRect().width;
+  if (w && w > 0) {
+    const pad = (thumbRadius / w) * 100;                 // % padding at each end
+    const pctPad = pad + (pct * (100 - 2 * pad) / 100);  // remap 0-100 into padded range
+    slider.style.setProperty("--pctPad", pctPad + "%");
+  } else {
+    slider.style.setProperty("--pctPad", pct + "%");
+  }
+} catch (e) {
+  slider.style.setProperty("--pctPad", pct + "%");
+}
+    
   }
 }
     
