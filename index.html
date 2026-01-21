@@ -619,7 +619,7 @@ overflow: hidden;
 
     <main>
       <div class="start-top-wrap">
-  <button id="startBtnTop" onclick="handleStartButton(true)">START SESSION</button>
+  <button id="startBtnTop" onclick="beginSession(true)">START SESSION</button>
 </div>
       <div class="scroll-container">
         <div class="mixer-unit">
@@ -656,7 +656,7 @@ overflow: hidden;
           </div>
 
           <div class="main-controls">
-            <button id="startBtn" onclick="handleStartButton(true)">Start Session</button>
+            <button id="startBtn" onclick="beginSession(true)">Start Session</button>
             <button id="pauseBtn" onclick="toggle()">Pause All</button>
             <div class="timer-wrap">
               <span class="timer-label">Timer:</span>
@@ -801,7 +801,6 @@ overflow: hidden;
     let autoStartTriggered = false;
     let firstTouchIdx = null; // remembers which fader was touched first (mobile)
     let resumePromise = null;
-    let needsMobileResume = false; // mobile: Safari tab-return requires Start Session tap
 
     // Mobile-only smoothing (prevents zipper noise on touch)
     const isMobilePortrait =
@@ -926,61 +925,6 @@ async function recoverAudioAfterExternalUI() {
         updateUI(i, val);
       });
     }
-
-    async function handleStartButton(useDefaults = true) {
-  // Mobile "resume" case after Safari suspension:
-  if (isMobileNow() && needsMobileResume && ready) {
-    // Must be a user gesture path
-    unlockAudio();
-
-    // Ensure context is truly running
-    if (resumePromise) await resumePromise;
-    const ok = await ensureAudioRunning(1500);
-    if (!ok) {
-      // still blocked; keep start button visible so user can try again
-      showStartButtonsAsResume("START SESSION");
-      return;
-    }
-
-    // Restore audible gain using existing fader values (no defaults)
-    needsMobileResume = false;
-    starting = false;
-
-    // Resume playback state
-    isPaused = false;
-
-    // Make master audible again
-    if (master && ctx) {
-      const now = ctx.currentTime;
-      master.gain.cancelScheduledValues(now);
-      master.gain.setTargetAtTime(MASTER_MAX, now + 0.02, 0.08);
-    }
-
-    // Unlock UI controls (sliders + mute/solo) now that audio is running
-    unlockControls();
-
-    // Show Pause and hide Start buttons
-    showPauseButtonOnly();
-
-    // Update pause button text/color
-    const p = document.getElementById("pauseBtn");
-    if (p) {
-      p.innerText = "PAUSE ALL";
-      p.style.background = "#55a630";
-    }
-
-    // Apply gains to match current slider positions
-    for (let k = 0; k < audioFiles.length; k++) {
-      const el = document.getElementById("v" + k);
-      if (el) slide(k, el.value);
-    }
-
-    return;
-  }
-
-  // Normal behavior (desktop + first-time mobile start)
-  return beginSession(useDefaults);
-}
 
     async function beginSession(useDefaults = true, priorityIdx = null) {
   if (ready) return;
@@ -1397,43 +1341,6 @@ function unlockControls() {
     if (soloBtn) soloBtn.disabled = false;
   }
 }
-    function showStartButtonsAsResume(label = "RESUME SESSION") {
-  const startBtn = document.getElementById("startBtn");
-  const startBtnTop = document.getElementById("startBtnTop");
-  const topWrap = document.querySelector(".start-top-wrap");
-  const pauseBtn = document.getElementById("pauseBtn");
-
-  // Show start buttons (both)
-  if (topWrap) topWrap.style.display = ""; // show wrapper
-  if (startBtnTop) {
-    startBtnTop.style.display = "block";
-    startBtnTop.disabled = false;
-    startBtnTop.innerText = label;
-  }
-  if (startBtn) {
-    startBtn.style.display = "";
-    startBtn.disabled = false;
-    startBtn.innerText = label;
-  }
-
-  // Hide pause while we require a resume gesture
-  if (pauseBtn) pauseBtn.style.display = "none";
-}
-
-function showPauseButtonOnly() {
-  const startBtn = document.getElementById("startBtn");
-  const startBtnTop = document.getElementById("startBtnTop");
-  const topWrap = document.querySelector(".start-top-wrap");
-  const pauseBtn = document.getElementById("pauseBtn");
-
-  // Hide both starts
-  if (startBtn) startBtn.style.display = "none";
-  if (startBtnTop) startBtnTop.style.display = "none";
-  if (topWrap) topWrap.style.display = "none";
-
-  // Show pause
-  if (pauseBtn) pauseBtn.style.display = "block";
-}
 
     // --- 5. UTILITY LOGIC ---
     // --- FADER MOVE ---
@@ -1593,32 +1500,11 @@ if (!ready) {
 
 window.addEventListener("DOMContentLoaded", () => {
   // When returning from Gmail/Email popups or app-switching on iOS Safari
-function maybeRequireMobileResume() {
-  if (!isMobileNow()) return;
-  if (!ready) return;        // only when a session already exists
-  if (!ctx) return;
-
-  // If Safari suspended the audio context, force user to tap Start Session again
-  if (ctx.state !== "running") {
-    needsMobileResume = true;
-
-    // Lock controls until user taps Start/Resume
-    lockControls();
-
-    // Show Start Session again (as Resume)
-    showStartButtonsAsResume("START SESSION");
-
-    // Also reset pause UI state (because audio is effectively off)
-    isPaused = true;
-  }
-}
-
-// Run on tab/app return moments
 document.addEventListener("visibilitychange", () => {
-  if (!document.hidden) maybeRequireMobileResume();
+  if (!document.hidden) recoverAudioAfterExternalUI();
 });
-window.addEventListener("pageshow", () => maybeRequireMobileResume());
-window.addEventListener("focus", () => maybeRequireMobileResume());
+window.addEventListener("focus", () => recoverAudioAfterExternalUI());
+window.addEventListener("pageshow", () => recoverAudioAfterExternalUI());
   loadPresetFromUrl();
    // Mobile: lock everything until Start Session is pressed
   if (isMobileNow() && !ready) {
