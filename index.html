@@ -132,61 +132,79 @@
     .hz { font-size: 0.8rem; font-weight: 800; margin-bottom: 4px; color: var(--clr); }
     .desc { font-size: 0.5rem; font-weight: 700; height: 44px; color: #b0b0b0; line-height: 1.2; padding: 0 4px; display: flex; align-items: center; justify-content: center; text-align: center; text-transform: uppercase; }
     .vol-label { font-size: 0.65rem; font-family: monospace; color: #999; margin-bottom: 6px; }
-    /* GLOBAL: vertical faders (desktop + mobile landscape) */
-    @media (min-width: 851px) {
-      input[type=range] {
-        height: 210px;
-      }
-      .chan {
-        padding-top: 16px;
-        padding-bottom: 16px;
-      }
-    }
-  input[type=range]{
-  -webkit-appearance: none;
-  appearance: none;
+    /* ==========================================================
+   FADERS (FIXED)
+   - Desktop + mobile landscape = vertical sliders
+   - Prevents the “big white block” default rendering
+   ========================================================== */
+
+/* Keep your chan padding tweak */
+@media (min-width: 851px) {
+  .chan {
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+}
+
+/* Default: vertical faders */
+input[type="range"]{
+  -webkit-appearance: slider-vertical;
+  appearance: slider-vertical;
+  writing-mode: bt-lr;
+
+  width: 18px;
+  height: 210px;
+  margin: 0 0 12px;
+
+  background: transparent;
   cursor: pointer;
 }
 
-/* FORCE VERTICAL FADERS on Desktop + Mobile Landscape */
-@media (min-width: 851px), (max-width: 850px) and (orientation: landscape) {
-  input[type=range]::-webkit-slider-thumb{
-    margin-top: 0px;
-    -webkit-appearance: slider-vertical;
-    appearance: slider-vertical;
-    writing-mode: bt-lr;
-    width: 18px;
-    background: transparent;
-  }
+/* WebKit track + thumb (Chrome/Safari/Edge) */
+input[type="range"]::-webkit-slider-runnable-track{
+  width: 8px;
+  background: #2a2a2a;
+  border-radius: 999px;
 }
- input[type=range]::-webkit-slider-runnable-track{
-    height: 8px;
-    background: transparent;
-    border-radius: 999px;
-  }
-  input[type=range]::-webkit-slider-thumb{
-    -webkit-appearance: none;
-    appearance: none;
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: #fff;
-    border: 2px solid rgba(255,255,255,0.25);
-    margin-top: 0px;
-  }
-  input[type=range]::-moz-range-track{
-    height: 8px;
-    background: transparent;
-    border-radius: 999px;
-  }
-    input[type=range]::-moz-range-thumb{
+input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance: none;
+  appearance: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid rgba(255,255,255,0.25);
+  margin-top: -9px; /* centers thumb on the track */
+}
+
+/* Firefox track + thumb */
+input[type="range"]::-moz-range-track{
+  width: 8px;
+  background: #2a2a2a;
+  border-radius: 999px;
+}
+input[type="range"]::-moz-range-thumb{
   width: 26px;
   height: 26px;
   border-radius: 50%;
   background: #fff;
   border: 2px solid rgba(255,255,255,0.25);
 }
-    .btn-row { display: flex; gap: 4px; }
+
+/* Slightly shorter in mobile landscape if you want */
+@media (max-width: 850px) and (orientation: landscape) {
+  input[type="range"]{
+    height: 150px;
+  }
+}
+
+/* Disabled look stays the same */
+input[type="range"]:disabled {
+  opacity: 0.35;
+  filter: grayscale(1);
+  pointer-events: none;
+  cursor: not-allowed;
+}
     .m-btn, .s-btn { width: 40px; height: 20px; border-radius: 4px; border: 1px solid #333; background: #1a1a1a; color: #aaa; font-size: 0.5rem; cursor: pointer; text-transform: uppercase; font-weight: bold; }
     input[type=range]:disabled {
   opacity: 0.35;
