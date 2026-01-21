@@ -516,7 +516,6 @@ overflow: hidden;
 
   /* ONE scroller: the outer wrapper */
   .page-wrapper {
-    position: relative; /* 🔑 anchors footer to scrolling content */
     display: flex;
     flex-direction: row;
     align-items: stretch;
@@ -532,19 +531,6 @@ overflow: hidden;
     touch-action: pan-x;
     overscroll-behavior: contain;
   }
-
-.page-wrapper > .ad-sidebar-stack:last-of-type .footer-credit{
-  margin-top: 10px;        /* just a little gap under AD UNIT 4 */
-  font-size: 0.7rem;
-  color: #666;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  white-space: nowrap;
-  pointer-events: none;
-
-  align-self: flex-end;     /* tuck to the inside-right edge */
-  padding-right: 6px;
-}
 
   /* Ads are NOT sticky (just normal columns that scroll with the page-wrapper) */
   .ad-sidebar-stack {
@@ -713,16 +699,20 @@ overflow: hidden;
   .btn-utility, .btn-save, .btn-share-main { padding: 9px 16px; font-size: 0.62rem; }
 
   .modal-content { max-height: 85vh; overflow-y: auto; }
-  
+  /* LANDSCAPE ONLY: footer in bottom-right but not fixed/sticky */
+  /* LANDSCAPE ONLY: bottom-right but NOT sticky (not fixed) */
+  /* LANDSCAPE ONLY — footer bottom-right, not sticky, never blocks taps */
+.footer-credit{
+  position: fixed;
+  right: 12px;
+  bottom: 10px;
+  z-index: 1;
+  pointer-events: none;
+  width: auto;        
+  padding: 0;          
+  margin: 0;
 }
-    @media (min-width: 851px) {
-  .footer-credit{
-    position: static;
-    right: 18px;
-    bottom: 14px;
-    z-index: 40;
-    white-space: nowrap;
-  }
+
 }
   </style>
 </head>
@@ -814,8 +804,8 @@ overflow: hidden;
       <aside class="ad-box"><span class="ad-text">AD UNIT 3</span></aside>
       <aside class="ad-box"><span class="ad-text">AD UNIT 4</span></aside>
     </div>
-      <div class="footer-credit">Created By Keunho Koh</div>
-  </div> <!-- closes .page-wrapper -->
+  </div>
+<div class="footer-credit">Created By Keunho Koh</div>
   <!-- SAVE MODAL (pauses audio) -->
   <div id="saveModal" class="modal-overlay" onclick="closeSaveModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
