@@ -176,9 +176,13 @@ input[type="range"]::-webkit-slider-thumb{
 input[type="range"]::-moz-range-track{
   width: 8px;
   height: 100%;
-  margin: 0 auto;
   background: #2a2a2a;
   border-radius: 999px;
+
+  /* ✅ forces true centering inside the input */
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
 }
 input[type="range"]::-moz-range-thumb{
   width: 26px;
@@ -233,19 +237,45 @@ input[type="range"]:disabled {
   pointer-events: none;
   cursor: not-allowed;
 }
+    /* Base Mute / Solo button style (Desktop + Landscape + Portrait) */
+.m-btn, .s-btn{
+  background: #141414;
+  color: #b0b0b0;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: 0.15s;
+}
 
-    .m-btn.active-mute { background: #9b2226; color: #fff; border-color: #ff4d4d; }
-    .s-btn.active-solo { background: var(--start-yellow); color: #000; border-color: #fff; }
+.m-btn:hover, .s-btn:hover{
+  border-color: #555;
+  color: #e0e0e0;
+}
 
-    .main-controls { display: flex; flex-wrap: nowrap; justify-content: center; align-items: center; gap: 12px; white-space: nowrap; }
+.m-btn:disabled, .s-btn:disabled{
+  opacity: 0.35;
+  cursor: not-allowed;
+}
 
-    #startBtn { background: var(--start-yellow); color: #000; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; }
-    #pauseBtn { background: #55a630; color: #fff; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; display: none; }
-    #startBtnTop { display: none; }
-    .timer-wrap { display: flex; align-items: center; gap: 10px; background: #111; padding: 6px 18px; border-radius: 50px; border: 1px solid #333; }
-    .timer-label { font-size: 0.65rem; color: #666; text-transform: uppercase; font-weight: bold; }
-    select { background: transparent; color: var(--start-yellow); border: none; font-weight: bold; font-family: monospace; cursor: pointer; outline: none; }
-    #timerDisplay { font-family: monospace; color: #55a630; font-size: 0.85rem; min-width: 55px; }
+/* active states */
+.m-btn.active-mute { background: #9b2226; color: #fff; border-color: #ff4d4d; }
+.s-btn.active-solo { background: var(--start-yellow); color: #000; border-color: #fff; }
+
+/* main controls */
+.main-controls { display: flex; flex-wrap: nowrap; justify-content: center; align-items: center; gap: 12px; white-space: nowrap; }
+
+#startBtn { background: var(--start-yellow); color: #000; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; }
+#pauseBtn { background: #55a630; color: #fff; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; display: none; }
+#startBtnTop { display: none; }
+
+.timer-wrap { display: flex; align-items: center; gap: 10px; background: #111; padding: 6px 18px; border-radius: 50px; border: 1px solid #333; }
+.timer-label { font-size: 0.65rem; color: #666; text-transform: uppercase; font-weight: bold; }
+select { background: transparent; color: var(--start-yellow); border: none; font-weight: bold; font-family: monospace; cursor: pointer; outline: none; }
+#timerDisplay { font-family: monospace; color: #55a630; font-size: 0.85rem; min-width: 55px; }
 
     .btn-utility { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: 600; }
     .btn-save { background: #20c997; color: #000; padding: 10px 24px; border-radius: 50px; border: none; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
@@ -305,15 +335,15 @@ input[type="range"]:disabled {
   --fill: #ffffff;
 }
 input[type=range]::-webkit-slider-runnable-track{
-  height: 8px;
-  border-radius: 999px;
-  background: linear-gradient(
-    to right,
-    var(--fill) 0%,
-    var(--fill) var(--pct),
-    #2a2a2a var(--pct),
-    #2a2a2a 100%
-  );
+    width: 8px;
+    height: 100%;
+    background: #2a2a2a;
+    border-radius: 999px;
+
+  /* ✅ forces true centering inside the input */
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
 }
   input[type=range]::-webkit-slider-thumb{
     -webkit-appearance: none;
