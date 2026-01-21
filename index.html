@@ -584,64 +584,67 @@ overflow: hidden;
   }
 
   .chan { flex: 0 0 85px; width: 85px; padding: 10px 0; }
-  /* LANDSCAPE ONLY — clean vertical slider sizing + spacing */
-  input[type=range]{
+  /* LANDSCAPE ONLY: prevent Safari vertical slider thumb from being clipped */
+  .chan{
+    overflow: visible;      /* overrides global overflow:hidden */
+    contain: none;          /* overrides global contain:paint (this is key) */
+  }
+  /* LANDSCAPE ONLY — vertical slider: centered, not clipped, no overlap with buttons */
+input[type=range]{
   -webkit-appearance: slider-vertical;
   appearance: slider-vertical;
-  writing-mode: bt-lr;
 
-  width: 18px;
-
-  /* slightly taller so 0% reaches bottom WITHOUT negative margins */
+  /* Give Safari a slightly wider box than the thumb to prevent cropping */
+  width: 24px;          /* thumb is 18px, so this gives safe room */
   height: 138px;
 
-  /* IMPORTANT: creates clean separation so slider never enters button area */
-  display: block;
-  margin: 0 auto 16px;
+  /* Hard-center (more reliable than margin:auto for iOS slider-vertical) */
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+
+  /* Separation from the Mute/Solo row so track never crosses buttons */
+  margin: 0 0 16px 0;
+
   padding: 0;
   background: transparent;
 }
 
-  /* LANDSCAPE ONLY — Safari centering fix */
+/* WebKit thumb (iOS/Safari/Chrome) */
 input[type=range]::-webkit-slider-thumb{
   -webkit-appearance: none;
   appearance: none;
+
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  margin: 0;
+  margin: 0;                 /* prevents weird offsets */
   box-sizing: border-box;
-
-  /* ✅ forces true horizontal centering in iOS Safari */
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
 }
 
+/* WebKit track (keep it centered inside the 24px control) */
 input[type=range]::-webkit-slider-runnable-track{
   width: 8px;
+  margin-left: auto;
+  margin-right: auto;
   border-radius: 999px;
-
-  /* ✅ centers the track in the same coordinate system as thumb */
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
-  margin: 0;
 }
 
-
+/* Firefox track/thumb */
 input[type=range]::-moz-range-track{
   width: 8px;
-  margin: 0 auto;
+  margin-left: auto;
+  margin-right: auto;
   border-radius: 999px;
 }
-  input[type=range]::-moz-range-thumb{
+input[type=range]::-moz-range-thumb{
   width: 18px;
   height: 18px;
   border-radius: 50%;
   border: none;
   box-sizing: border-box;
 }
+
   .desc { height: 38px; }
   /* NEW: LANDSCAPE ONLY button spacing fix (does not change channel border size) */
 .btn-row{
@@ -668,6 +671,15 @@ input[type=range]::-moz-range-track{
   .btn-utility, .btn-save, .btn-share-main { padding: 9px 16px; font-size: 0.62rem; }
 
   .modal-content { max-height: 85vh; overflow-y: auto; }
+  /* LANDSCAPE ONLY: footer in bottom-right but not fixed/sticky */
+.footer-credit{
+  position: static !important;   /* overrides global position:fixed */
+  width: 100%;
+  text-align: right;
+  padding: 0 18px 12px;
+  margin-top: 8px;
+}
+
 }
   </style>
 </head>
