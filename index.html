@@ -596,31 +596,33 @@ overflow: hidden;
   }
 
   /* LANDSCAPE ONLY — slider: centered, full circle (no cropping), no overlap with buttons */
-  .chan input[type=range]{
-    -webkit-appearance: slider-vertical;
-    appearance: slider-vertical;
-    writing-mode: bt-lr;
+  /* LANDSCAPE ONLY — centered vertical slider (no shifting) */
+.chan input[type=range]{
+  -webkit-appearance: slider-vertical;
+  appearance: slider-vertical;
+  writing-mode: bt-lr;
 
-    /* IMPORTANT: must be >= thumb width so Safari doesn't chop the circle */
-    width: 30px;
+  /* Keep actual slider width = track width */
+  width: 18px;
 
-    height: 138px;
+  /* Add "safe room" so the circle never gets chopped */
+  padding: 0 6px;            /* total visual box becomes 30px */
+  box-sizing: content-box;
 
-    /* true centering inside the channel */
-    display: block;
-    margin: 0 auto 16px;
+  height: 138px;
 
-    /* IMPORTANT: allows thumb to render outside the input box if Safari wants to */
-    overflow: visible;
+  display: block;
+  margin: 0 auto 16px;
 
-    padding: 0;
-    background: transparent;
+  background: transparent;
+  overflow: visible;
 
-    /* kills any leftover translate/left from older attempts */
-    left: auto;
-    transform: none;
-    position: static;
-  }
+  /* ensure no old positioning affects it */
+  position: static;
+  left: auto;
+  transform: none;
+}
+
 
   /* Match your “good” look: same thumb as desktop (white, full circle) */
   .chan input[type=range]::-webkit-slider-thumb{
@@ -686,17 +688,20 @@ overflow: hidden;
   /* LANDSCAPE ONLY: footer in bottom-right but not fixed/sticky */
   /* LANDSCAPE ONLY: bottom-right but NOT sticky (not fixed) */
   .footer-credit{
-    position: absolute !important;   /* not fixed */
-    right: 18px;
-    bottom: 14px;
-    margin: 0;
-    padding: 0;
+    position: static !important;
+    inset: auto !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+
+    z-index: auto !important;
+
+    width: 100%;
     text-align: right;
-    width: auto;
-    z-index: 40;
+    padding: 0 18px 12px;
+    margin-top: 10px;
   }
-
-
 }
   </style>
 </head>
