@@ -590,9 +590,10 @@ overflow: hidden;
     contain: none;          /* overrides global contain:paint (this is key) */
   }
   .chan input[type=range]{
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    height: auto;     /* optional, makes sure you’re not forcing a short height */
 }
 
 
