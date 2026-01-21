@@ -150,7 +150,8 @@
 
 /* FORCE VERTICAL FADERS on Desktop + Mobile Landscape */
 @media (min-width: 851px), (max-width: 850px) and (orientation: landscape) {
-  input[type=range]{
+  input[type=range]::-webkit-slider-thumb{
+    margin-top: 0px;
     -webkit-appearance: slider-vertical;
     appearance: slider-vertical;
     writing-mode: bt-lr;
@@ -171,7 +172,7 @@
     border-radius: 50%;
     background: #fff;
     border: 2px solid rgba(255,255,255,0.25);
-    margin-top: -9px;
+    margin-top: 0px;
   }
   input[type=range]::-moz-range-track{
     height: 8px;
@@ -187,6 +188,19 @@
 }
     .btn-row { display: flex; gap: 4px; }
     .m-btn, .s-btn { width: 40px; height: 20px; border-radius: 4px; border: 1px solid #333; background: #1a1a1a; color: #aaa; font-size: 0.5rem; cursor: pointer; text-transform: uppercase; font-weight: bold; }
+    input[type=range]:disabled {
+  opacity: 0.35;
+  filter: grayscale(1);
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.m-btn:disabled,
+.s-btn:disabled {
+  opacity: 0.35;
+  pointer-events: none;
+  cursor: not-allowed;
+}
     .m-btn.active-mute { background: #9b2226; color: #fff; border-color: #ff4d4d; }
     .s-btn.active-solo { background: var(--start-yellow); color: #000; border-color: #fff; }
 
@@ -605,7 +619,7 @@ overflow: hidden;
 
     <main>
       <div class="start-top-wrap">
-  <button id="startBtnTop" onclick="beginSession(true)">START SESSION</button>
+  <button id="startBtnTop" onclick="handleStartButton(true)">START SESSION</button>
 </div>
       <div class="scroll-container">
         <div class="mixer-unit">
@@ -642,7 +656,7 @@ overflow: hidden;
           </div>
 
           <div class="main-controls">
-            <button id="startBtn" onclick="beginSession(true)">Start Session</button>
+            <button id="startBtn" onclick="handleStartButton(true)">Start Session</button>
             <button id="pauseBtn" onclick="toggle()">Pause All</button>
             <div class="timer-wrap">
               <span class="timer-label">Timer:</span>
@@ -692,7 +706,7 @@ overflow: hidden;
 
       <div id="emailInputArea">
         <input type="email" id="userEmail" class="modal-input" placeholder="Enter your email address">
-        <button class="send-btn" onclick="sendMagicLink()">SEND MAGIC LINK</button>
+        <button class="send-btn" onclick="sendPresetEmail()">SEND</button>
         <div class="back-btn" onclick="hideEmailInput()">← Back</div>
       </div>
 
@@ -787,6 +801,7 @@ overflow: hidden;
     let autoStartTriggered = false;
     let firstTouchIdx = null; // remembers which fader was touched first (mobile)
     let resumePromise = null;
+    let needsMobileResume = false; // mobile: Safari tab-return requires Start Session tap
 
     // Mobile-only smoothing (prevents zipper noise on touch)
     const isMobilePortrait =
@@ -800,7 +815,11 @@ overflow: hidden;
   let audioUnlocked = false;
 
   function unlockAudio() {
-    if (audioUnlocked) return;
+    // If Safari suspended audio later (Share/alert/etc), allow re-resume
+if (ctx && ctx.state === "running") {
+  audioUnlocked = true;
+  return;
+}
 
     try {
       // Ensure AudioContext exists during a user gesture
@@ -855,7 +874,27 @@ overflow: hidden;
 
   return ctx.state === "running";
 }
+async function recoverAudioAfterExternalUI() {
+  // 1) Try the gesture-safe unlock path
+  unlockAudio();
 
+  // 2) If Safari suspended the context, resume it
+  if (ctx && ctx.state !== "running") {
+    try { await ctx.resume(); } catch (e) {}
+  }
+
+  // 3) If session is running and user wasn’t paused, restore audible master gain
+  if (ready && ctx && master) {
+    const now = ctx.currentTime;
+    master.gain.cancelScheduledValues(now);
+
+    if (!isPaused) {
+      master.gain.setTargetAtTime(MASTER_MAX, now, 0.05);
+    } else {
+      master.gain.setTargetAtTime(0, now, 0.05);
+    }
+  }
+}
     for (let i = 0; i < 11; i++) tracks[i] = { lastVal: 0, isMuted: false, g: null };
 
     // --- 3. CORE MIXER FUNCTIONS ---
@@ -887,6 +926,61 @@ overflow: hidden;
         updateUI(i, val);
       });
     }
+
+    async function handleStartButton(useDefaults = true) {
+  // Mobile "resume" case after Safari suspension:
+  if (isMobileNow() && needsMobileResume && ready) {
+    // Must be a user gesture path
+    unlockAudio();
+
+    // Ensure context is truly running
+    if (resumePromise) await resumePromise;
+    const ok = await ensureAudioRunning(1500);
+    if (!ok) {
+      // still blocked; keep start button visible so user can try again
+      showStartButtonsAsResume("START SESSION");
+      return;
+    }
+
+    // Restore audible gain using existing fader values (no defaults)
+    needsMobileResume = false;
+    starting = false;
+
+    // Resume playback state
+    isPaused = false;
+
+    // Make master audible again
+    if (master && ctx) {
+      const now = ctx.currentTime;
+      master.gain.cancelScheduledValues(now);
+      master.gain.setTargetAtTime(MASTER_MAX, now + 0.02, 0.08);
+    }
+
+    // Unlock UI controls (sliders + mute/solo) now that audio is running
+    unlockControls();
+
+    // Show Pause and hide Start buttons
+    showPauseButtonOnly();
+
+    // Update pause button text/color
+    const p = document.getElementById("pauseBtn");
+    if (p) {
+      p.innerText = "PAUSE ALL";
+      p.style.background = "#55a630";
+    }
+
+    // Apply gains to match current slider positions
+    for (let k = 0; k < audioFiles.length; k++) {
+      const el = document.getElementById("v" + k);
+      if (el) slide(k, el.value);
+    }
+
+    return;
+  }
+
+  // Normal behavior (desktop + first-time mobile start)
+  return beginSession(useDefaults);
+}
 
     async function beginSession(useDefaults = true, priorityIdx = null) {
   if (ready) return;
@@ -984,50 +1078,51 @@ if (!ok) {
       await loadAndStartOne(priorityIdx);
 
       // 3) Mark ready after ONE playable channel exists
-      ready = true;
-      starting = false;
-    // Step 3: sync gains to current slider positions immediately (fixes mobile silent start)
+ready = true;
+starting = false;
+
+// ✅ Mobile-only: unlock sliders + mute/solo ONLY after Start Session
+if (isMobileNow()) {
+  unlockControls();
+}
+
+// ✅ Sync gains to current slider positions (safe for ALL devices)
 for (let k = 0; k < audioFiles.length; k++) {
   const el = document.getElementById("v" + k);
   if (el) slide(k, el.value);
 }
 
-      // ✅ Step 3: reset any “loading” UI text so nothing looks stuck
+// ✅ Reset any stuck “INITIALIZING…” UI (just in case)
 startBtns.forEach(b => {
   b.innerText = "START SESSION";
   b.disabled = false;
 });
 
-// ✅ hide portrait wrapper too (so it can’t linger)
+// ✅ Hide portrait wrapper if it exists (prevents lingering top button area)
 const topWrap = document.querySelector(".start-top-wrap");
 if (topWrap) topWrap.style.display = "none";
 
-      const now = ctx.currentTime;
-
-// MOBILE FIX: force master to wake immediately (prevents "silent until resume")
+// ✅ Master gain ramp (keep your desktop behavior intact)
+const now = ctx.currentTime;
 const isMobile = window.matchMedia("(max-width: 850px)").matches;
 
 if (isMobile) {
-  // ensure we're not stuck in a "paused" UI/state on mobile
   isPaused = false;
   const pBtnEl = document.getElementById("pauseBtn");
   if (pBtnEl) {
     pBtnEl.innerText = "PAUSE ALL";
     pBtnEl.style.background = "#55a630";
   }
-
-  // hard reset gain automation then set a real starting point
   master.gain.cancelScheduledValues(now);
   master.gain.setValueAtTime(0.0001, now);
   master.gain.setTargetAtTime(MASTER_MAX, now + 0.02, 0.08);
 } else {
-  // keep desktop behavior unchanged
   master.gain.linearRampToValueAtTime(MASTER_MAX, now + 0.2);
 }
 
-      // hide start buttons / show pause
-      startBtns.forEach(b => (b.style.display = "none"));
-      if (pBtn) pBtn.style.display = "block";
+// hide start buttons / show pause
+startBtns.forEach(b => (b.style.display = "none"));
+if (pBtn) pBtn.style.display = "block";
 
       // 4) Load the rest in the background
       audioFiles.forEach((_, i) => {
@@ -1069,22 +1164,38 @@ if (topWrap) topWrap.style.display = "";
       document.getElementById("saveModal").style.display = "block";
     }
 
-    function closeSaveModal() {
-      document.getElementById("saveModal").style.display = "none";
-      hideEmailInput();
-      if (ready && wasPlayingBeforeSave && isPaused) {
-        toggle();
-        wasPlayingBeforeSave = false;
-      }
+    async function closeSaveModal() {
+  document.getElementById("saveModal").style.display = "none";
+  hideEmailInput();
+
+  // If it was playing before Save, restore playing state (don’t rely on toggle())
+  if (ready && wasPlayingBeforeSave) {
+    isPaused = false;
+
+    const p = document.getElementById("pauseBtn");
+    if (p) {
+      p.innerText = "PAUSE ALL";
+      p.style.background = "#55a630";
     }
+
+    // Make sure Safari audio is actually running again
+    await recoverAudioAfterExternalUI();
+
+    wasPlayingBeforeSave = false;
+  } else {
+    // Even if it was paused, Safari may have suspended ctx — recover safely
+    await recoverAudioAfterExternalUI();
+  }
+}
 
     function openShareModal() {
       document.getElementById("shareModal").style.display = "block";
     }
 
-    function closeShareModal() {
-      document.getElementById("shareModal").style.display = "none";
-    }
+    async function closeShareModal() {
+  document.getElementById("shareModal").style.display = "none";
+  await recoverAudioAfterExternalUI();
+}
 
     function generatePresetString() {
       return tracks.map((t, i) => {
@@ -1094,18 +1205,74 @@ if (topWrap) topWrap.style.display = "";
         return `${vol}-${m}-${s}`;
       }).join(",");
     }
+    let toastEl = null;
+
+function showToast(msg) {
+  if (!toastEl) {
+    toastEl = document.createElement("div");
+    toastEl.style.position = "fixed";
+    toastEl.style.left = "50%";
+    toastEl.style.bottom = "28px";
+    toastEl.style.transform = "translateX(-50%)";
+    toastEl.style.background = "rgba(0,0,0,0.8)";
+    toastEl.style.color = "#fff";
+    toastEl.style.padding = "10px 14px";
+    toastEl.style.borderRadius = "999px";
+    toastEl.style.fontSize = "12px";
+    toastEl.style.letterSpacing = "1px";
+    toastEl.style.zIndex = "2000";
+    toastEl.style.border = "1px solid rgba(255,255,255,0.15)";
+    toastEl.style.backdropFilter = "blur(8px)";
+    toastEl.style.display = "none";
+    document.body.appendChild(toastEl);
+  }
+
+  toastEl.textContent = msg;
+  toastEl.style.display = "block";
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => {
+    toastEl.style.display = "none";
+  }, 1200);
+}
 
     function copyPresetLink() {
-      const presetData = generatePresetString();
-      const presetLink = `${window.location.origin}${window.location.pathname}?preset=${presetData}`;
-      const dummy = document.createElement("input");
-      document.body.appendChild(dummy);
-      dummy.value = presetLink;
-      dummy.select();
-      document.execCommand("copy");
-      document.body.removeChild(dummy);
-      alert("Full preset link (including Mute/Solo) copied!");
+  const presetData = generatePresetString();
+  const presetLink = `${window.location.origin}${window.location.pathname}?preset=${presetData}`;
+
+  const finish = () => {
+    // IMPORTANT: if iOS suspended audio during clipboard/popup, recover immediately
+    unlockAudio();
+
+    // If session is running and not paused, make sure master isn't stuck at 0
+    if (ready && !isPaused && master && ctx) {
+      master.gain.setTargetAtTime(MASTER_MAX, ctx.currentTime, 0.05);
     }
+
+    // Non-blocking confirmation (no alert)
+    showToast("Preset link copied!");
+  };
+
+  // Prefer modern clipboard API (best on mobile Safari when allowed)
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(presetLink).then(finish).catch(() => {
+      fallbackCopy(presetLink);
+      finish();
+    });
+  } else {
+    fallbackCopy(presetLink);
+    finish();
+  }
+}
+
+function fallbackCopy(text) {
+  const dummy = document.createElement("input");
+  dummy.value = text;
+  document.body.appendChild(dummy);
+  dummy.select();
+  dummy.setSelectionRange(0, 99999);
+  document.execCommand("copy");
+  document.body.removeChild(dummy);
+}
 
     async function handleAuth(platform) {
       let provider;
@@ -1115,7 +1282,8 @@ if (topWrap) topWrap.style.display = "";
           const result = await auth.signInWithPopup(provider);
           savePresetToFirebase(result.user.uid);
         } catch (error) {
-          alert(error.message);
+          showToast(error.message || "Sign-in canceled");
+          await recoverAudioAfterExternalUI();
         }
       }
     }
@@ -1142,24 +1310,53 @@ if (topWrap) topWrap.style.display = "";
             `
           }
         });
-        alert("Mix saved successfully! Check " + userEmail + " for your link.");
+        showToast("Mix saved! Check your email.");
         closeSaveModal();
       } catch (e) {
-        alert("Save failed: " + e.message);
+        showToast("Save failed: " + e.message);
+        await recoverAudioAfterExternalUI();
       }
     }
 
-    function sendMagicLink() {
-      const email = document.getElementById("userEmail").value;
-      const actionCodeSettings = { url: window.location.href, handleCodeInApp: true };
-      auth.sendSignInLinkToEmail(email, actionCodeSettings)
-        .then(() => {
-          window.localStorage.setItem("emailForSignIn", email);
-          alert("Magic link sent to " + email);
-          closeSaveModal();
-        })
-        .catch(err => alert(err.message));
-    }
+    async function sendPresetEmail() {
+  const emailEl = document.getElementById("userEmail");
+  const email = (emailEl?.value || "").trim();
+
+  if (!email) {
+    showToast("Enter an email first.");
+    return;
+  }
+
+  // Build the same preset link as Gmail flow
+  const presetData = generatePresetString();
+  const presetLink = `${window.location.origin}${window.location.pathname}?preset=${presetData}`;
+
+  try {
+    // Send via your existing Firestore -> mail pipeline (same as Gmail)
+    await db.collection("mail").add({
+      to: email,
+      message: {
+        subject: "Your Sacred Soundscape is Ready ✨",
+        html: `
+          <p>Welcome back to your resonance.</p>
+          <p>
+            Your perfect balance of Solfeggio frequencies is ready for your next session.
+            No need to re-adjust your faders or toggle your mutes—we’ve remembered everything for you.
+          </p>
+          <p><strong><a href="${presetLink}">[Open Your Soundscape]</a></strong></p>
+          <p>May this soundscape bring you the peace and clarity you seek today.</p>
+          <p>Much Love by Frequency Lab</p>
+        `
+      }
+    });
+
+    showToast("Sent! Check your email.");
+    closeSaveModal();
+  } catch (err) {
+    showToast("Email failed: " + (err?.message || "Unknown error"));
+    await recoverAudioAfterExternalUI();
+  }
+}
 
     function showEmailInput() {
       document.getElementById("mainAuthButtons").style.display = "none";
@@ -1170,6 +1367,73 @@ if (topWrap) topWrap.style.display = "";
       document.getElementById("mainAuthButtons").style.display = "flex";
       document.getElementById("emailInputArea").style.display = "none";
     }
+    // ============================================================
+// MOBILE CONTROL GATE (lock faders + mute/solo until Start Session)
+// ============================================================
+function isMobileNow() {
+  return window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+}
+
+function lockControls() {
+  for (let i = 0; i < audioFiles.length; i++) {
+    const slider = document.getElementById("v" + i);
+    const muteBtn = document.getElementById("m" + i);
+    const soloBtn = document.getElementById("s" + i);
+
+    if (slider) slider.disabled = true;
+    if (muteBtn) muteBtn.disabled = true;
+    if (soloBtn) soloBtn.disabled = true;
+  }
+}
+
+function unlockControls() {
+  for (let i = 0; i < audioFiles.length; i++) {
+    const slider = document.getElementById("v" + i);
+    const muteBtn = document.getElementById("m" + i);
+    const soloBtn = document.getElementById("s" + i);
+
+    if (slider) slider.disabled = false;
+    if (muteBtn) muteBtn.disabled = false;
+    if (soloBtn) soloBtn.disabled = false;
+  }
+}
+    function showStartButtonsAsResume(label = "RESUME SESSION") {
+  const startBtn = document.getElementById("startBtn");
+  const startBtnTop = document.getElementById("startBtnTop");
+  const topWrap = document.querySelector(".start-top-wrap");
+  const pauseBtn = document.getElementById("pauseBtn");
+
+  // Show start buttons (both)
+  if (topWrap) topWrap.style.display = ""; // show wrapper
+  if (startBtnTop) {
+    startBtnTop.style.display = "block";
+    startBtnTop.disabled = false;
+    startBtnTop.innerText = label;
+  }
+  if (startBtn) {
+    startBtn.style.display = "";
+    startBtn.disabled = false;
+    startBtn.innerText = label;
+  }
+
+  // Hide pause while we require a resume gesture
+  if (pauseBtn) pauseBtn.style.display = "none";
+}
+
+function showPauseButtonOnly() {
+  const startBtn = document.getElementById("startBtn");
+  const startBtnTop = document.getElementById("startBtnTop");
+  const topWrap = document.querySelector(".start-top-wrap");
+  const pauseBtn = document.getElementById("pauseBtn");
+
+  // Hide both starts
+  if (startBtn) startBtn.style.display = "none";
+  if (startBtnTop) startBtnTop.style.display = "none";
+  if (topWrap) topWrap.style.display = "none";
+
+  // Show pause
+  if (pauseBtn) pauseBtn.style.display = "block";
+}
 
     // --- 5. UTILITY LOGIC ---
     // --- FADER MOVE ---
@@ -1183,6 +1447,14 @@ function slide(i, v) {
   // If session not started yet:
   // Only auto-start when user actually raises a fader above 0
 if (!ready) {
+  // ✅ Mobile: sliders are locked until Start Session
+  if (isMobileNow()) return;
+
+  // ✅ Desktop: keep your current behavior (fader interaction auto-starts)
+  if (!starting && !autoStartTriggered && val > 0.01) {
+    autoStartTriggered = true;
+    beginSession(false, i); // desktop auto-start from the fader
+  }
   return;
 }
 
@@ -1320,37 +1592,49 @@ if (!ready) {
 
 
 window.addEventListener("DOMContentLoaded", () => {
+  // When returning from Gmail/Email popups or app-switching on iOS Safari
+function maybeRequireMobileResume() {
+  if (!isMobileNow()) return;
+  if (!ready) return;        // only when a session already exists
+  if (!ctx) return;
+
+  // If Safari suspended the audio context, force user to tap Start Session again
+  if (ctx.state !== "running") {
+    needsMobileResume = true;
+
+    // Lock controls until user taps Start/Resume
+    lockControls();
+
+    // Show Start Session again (as Resume)
+    showStartButtonsAsResume("START SESSION");
+
+    // Also reset pause UI state (because audio is effectively off)
+    isPaused = true;
+  }
+}
+
+// Run on tab/app return moments
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) maybeRequireMobileResume();
+});
+window.addEventListener("pageshow", () => maybeRequireMobileResume());
+window.addEventListener("focus", () => maybeRequireMobileResume());
   loadPresetFromUrl();
+   // Mobile: lock everything until Start Session is pressed
+  if (isMobileNow() && !ready) {
+    lockControls();
+  }
 
   // Unlock on Start Session clicks (backup)
   ["startBtn", "startBtnTop"].forEach(id => {
     const btn = document.getElementById(id);
     if (btn) btn.addEventListener("click", unlockAudio, { passive: true });
   });
-
-  // Unlock on first fader interaction (gesture-valid on iOS)
+// Always listen to fader movement (but it won't move while disabled)
   for (let i = 0; i < audioFiles.length; i++) {
     const slider = document.getElementById("v" + i);
     if (!slider) continue;
-
-   const noteFirstTouch = () => {
-  if (ready) return;
-
-  firstTouchIdx = i;
-  unlockAudio();
-
-  // ✅ Start session from the gesture (iPhone Safari-safe)
-  if (!starting && !autoStartTriggered) {
-    autoStartTriggered = true;
-    beginSession(false, i);   // start from fader, NO defaults
-  }
-};
-
-    slider.addEventListener("pointerdown", noteFirstTouch, { passive: true });
-    slider.addEventListener("touchstart", noteFirstTouch, { passive: true });
-slider.addEventListener("input", () => {
-  slide(i, slider.value);
-}, { passive: true });
+    slider.addEventListener("input", () => slide(i, slider.value));
   }
 });
 
