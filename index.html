@@ -602,20 +602,33 @@ overflow: hidden;
   background: transparent;
 }
 
-  input[type=range]::-webkit-slider-thumb{
+  /* LANDSCAPE ONLY — Safari centering fix */
+input[type=range]::-webkit-slider-thumb{
   -webkit-appearance: none;
   appearance: none;
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  margin: 0;            /* IMPORTANT: removes off-center behavior */
+  margin: 0;
   box-sizing: border-box;
+
+  /* ✅ forces true horizontal centering in iOS Safari */
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
 }
-  input[type=range]::-webkit-slider-runnable-track{
+
+input[type=range]::-webkit-slider-runnable-track{
   width: 8px;
-  margin: 0 auto;        /* centers the line inside the 18px slider */
   border-radius: 999px;
+
+  /* ✅ centers the track in the same coordinate system as thumb */
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
 }
+
 
 input[type=range]::-moz-range-track{
   width: 8px;
