@@ -588,7 +588,17 @@ overflow: hidden;
   }
 
   .chan { flex: 0 0 85px; width: 85px; padding: 10px 0; }
-  input[type=range] { height: 118px; margin-bottom: 0;}
+  input[type=range]{
+  height: 126px;
+  margin-bottom: -8px;
+
+  /* NEW: center the whole slider perfectly */
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+
+  /* NEW: iOS/Safari sometimes draws 1px off — uncomment if still left */
+}
   input[type=range]::-webkit-slider-thumb{
   -webkit-appearance: none;
   appearance: none;
@@ -603,6 +613,20 @@ overflow: hidden;
   border-radius: 50%;
 }
   .desc { height: 38px; }
+  /* NEW: LANDSCAPE ONLY button spacing fix (does not change channel border size) */
+.btn-row{
+  display: flex;
+  justify-content: center;
+  gap: 6px;              /* slightly closer together than before */
+  padding: 0 6px;        /* pulls buttons away from the chan edges */
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* NEW: reduce width slightly so they don't touch the edges in 85px channel */
+.m-btn, .s-btn{
+  width: 38px;           /* was 40px globally */
+}
 
   .main-controls {
     gap: 10px;
