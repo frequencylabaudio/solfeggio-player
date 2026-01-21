@@ -280,8 +280,8 @@
     height: 24px;
     margin: 0;
     cursor: pointer;
-    grid-column: 2 / 3;
-    justify-self: start;
+    grid-column: 1 / -1;
+    justify-self: stretch;
     /* base background (JS will overwrite with gradient when moved) */
     background: #2a2a2a;
     border-radius: 999px;
@@ -503,7 +503,7 @@ overflow: hidden;
 
   .vol-label{
     margin: 0;
-    grid-column: 2 / 3;     /* keep it in the slider column */
+    grid-column: 1 / 2;     /* keep it in the slider column */
     justify-self: start;    /* LEFT align */
     align-self: center;
     font-size: 0.8rem;
