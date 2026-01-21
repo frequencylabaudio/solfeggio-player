@@ -516,6 +516,7 @@ overflow: hidden;
 
   /* ONE scroller: the outer wrapper */
   .page-wrapper {
+    position: relative; /* 🔑 anchors footer to scrolling content */
     display: flex;
     flex-direction: row;
     align-items: stretch;
