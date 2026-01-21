@@ -502,11 +502,7 @@ overflow: hidden;
    SINGLE HORIZONTAL SCROLL (no nested scroll)
    ========================================================== */
 @media (max-width: 850px) and (orientation: landscape) {
-   input[type=range]{
-    -webkit-appearance: slider-vertical;
-    width: 18px;
-    margin-bottom: 12px;
-  }
+   
   html, body {
     height: 100%;
     overflow-x: hidden;
@@ -588,44 +584,66 @@ overflow: hidden;
   }
 
   .chan { flex: 0 0 85px; width: 85px; padding: 10px 0; }
+  /* LANDSCAPE ONLY — clean vertical slider sizing + spacing */
   input[type=range]{
-  height: 126px;
-  margin-bottom: -8px;
+  -webkit-appearance: slider-vertical;
+  appearance: slider-vertical;
+  writing-mode: bt-lr;
 
-  /* NEW: center the whole slider perfectly */
+  width: 18px;
+
+  /* slightly taller so 0% reaches bottom WITHOUT negative margins */
+  height: 138px;
+
+  /* IMPORTANT: creates clean separation so slider never enters button area */
   display: block;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto 10px;
 
-  /* NEW: iOS/Safari sometimes draws 1px off — uncomment if still left */
+  padding: 0;
+  background: transparent;
 }
+
   input[type=range]::-webkit-slider-thumb{
   -webkit-appearance: none;
   appearance: none;
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  margin-top: -6px;
+  margin: 0;            /* IMPORTANT: removes off-center behavior */
+  box-sizing: border-box;
+}
+  input[type=range]::-webkit-slider-runnable-track{
+  width: 8px;
+  margin: 0 auto;        /* centers the line inside the 18px slider */
+  border-radius: 999px;
+}
+
+input[type=range]::-moz-range-track{
+  width: 8px;
+  margin: 0 auto;
+  border-radius: 999px;
 }
   input[type=range]::-moz-range-thumb{
   width: 18px;
   height: 18px;
   border-radius: 50%;
+  border: none;
+  box-sizing: border-box;
 }
   .desc { height: 38px; }
   /* NEW: LANDSCAPE ONLY button spacing fix (does not change channel border size) */
 .btn-row{
   display: flex;
   justify-content: center;
-  gap: 6px;              /* slightly closer together than before */
-  padding: 0 6px;        /* pulls buttons away from the chan edges */
+  gap: 6px;              /* closer together */
+  padding: 0 10px;       /* MORE space from chan edges */
   box-sizing: border-box;
   width: 100%;
 }
 
-/* NEW: reduce width slightly so they don't touch the edges in 85px channel */
+/* LANDSCAPE ONLY — slightly narrower buttons so they don't kiss the border */
 .m-btn, .s-btn{
-  width: 38px;           /* was 40px globally */
+  width: 34px;
 }
 
   .main-controls {
