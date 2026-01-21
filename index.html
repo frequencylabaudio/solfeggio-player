@@ -589,61 +589,73 @@ overflow: hidden;
     overflow: visible;      /* overrides global overflow:hidden */
     contain: none;          /* overrides global contain:paint (this is key) */
   }
-  /* LANDSCAPE ONLY — vertical slider: centered, not clipped, no overlap with buttons */
-input[type=range]{
-  -webkit-appearance: slider-vertical;
-  appearance: slider-vertical;
+    /* LANDSCAPE ONLY: prevent Safari vertical slider thumb from being clipped */
+  .chan{
+    overflow: visible;      /* overrides global overflow:hidden */
+    contain: none;          /* overrides global contain:paint */
+  }
 
-  /* Give Safari a slightly wider box than the thumb to prevent cropping */
-  width: 24px;          /* thumb is 18px, so this gives safe room */
-  height: 138px;
+  /* LANDSCAPE ONLY — slider: centered, full circle (no cropping), no overlap with buttons */
+  .chan input[type=range]{
+    -webkit-appearance: slider-vertical;
+    appearance: slider-vertical;
+    writing-mode: bt-lr;
 
-  /* Hard-center (more reliable than margin:auto for iOS slider-vertical) */
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
+    /* IMPORTANT: must be >= thumb width so Safari doesn't chop the circle */
+    width: 30px;
 
-  /* Separation from the Mute/Solo row so track never crosses buttons */
-  margin: 0 0 16px 0;
+    height: 138px;
 
-  padding: 0;
-  background: transparent;
-}
+    /* true centering inside the channel */
+    display: block;
+    margin: 0 auto 16px;
 
-/* WebKit thumb (iOS/Safari/Chrome) */
-input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance: none;
-  appearance: none;
+    /* IMPORTANT: allows thumb to render outside the input box if Safari wants to */
+    overflow: visible;
 
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  margin: 0;                 /* prevents weird offsets */
-  box-sizing: border-box;
-}
+    padding: 0;
+    background: transparent;
 
-/* WebKit track (keep it centered inside the 24px control) */
-input[type=range]::-webkit-slider-runnable-track{
-  width: 8px;
-  margin-left: auto;
-  margin-right: auto;
-  border-radius: 999px;
-}
+    /* kills any leftover translate/left from older attempts */
+    left: auto;
+    transform: none;
+    position: static;
+  }
 
-/* Firefox track/thumb */
-input[type=range]::-moz-range-track{
-  width: 8px;
-  margin-left: auto;
-  margin-right: auto;
-  border-radius: 999px;
-}
-input[type=range]::-moz-range-thumb{
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  border: none;
-  box-sizing: border-box;
-}
+  /* Match your “good” look: same thumb as desktop (white, full circle) */
+  .chan input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    appearance: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid rgba(255,255,255,0.25);
+    margin: 0;              /* prevents sideways offsets */
+    box-sizing: border-box;
+  }
+
+  .chan input[type=range]::-moz-range-thumb{
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid rgba(255,255,255,0.25);
+    box-sizing: border-box;
+  }
+
+  /* Keep the track centered inside the wider (30px) control */
+  .chan input[type=range]::-webkit-slider-runnable-track{
+    width: 8px;
+    margin: 0 auto;
+    border-radius: 999px;
+  }
+  .chan input[type=range]::-moz-range-track{
+    width: 8px;
+    margin: 0 auto;
+    border-radius: 999px;
+  }
+
 
   .desc { height: 38px; }
   /* NEW: LANDSCAPE ONLY button spacing fix (does not change channel border size) */
@@ -672,13 +684,18 @@ input[type=range]::-moz-range-thumb{
 
   .modal-content { max-height: 85vh; overflow-y: auto; }
   /* LANDSCAPE ONLY: footer in bottom-right but not fixed/sticky */
-.footer-credit{
-  position: static !important;   /* overrides global position:fixed */
-  width: 100%;
-  text-align: right;
-  padding: 0 18px 12px;
-  margin-top: 8px;
-}
+  /* LANDSCAPE ONLY: bottom-right but NOT sticky (not fixed) */
+  .footer-credit{
+    position: absolute !important;   /* not fixed */
+    right: 18px;
+    bottom: 14px;
+    margin: 0;
+    padding: 0;
+    text-align: right;
+    width: auto;
+    z-index: 40;
+  }
+
 
 }
   </style>
