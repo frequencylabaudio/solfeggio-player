@@ -140,11 +140,18 @@
 
 /* Keep your chan padding tweak */
 @media (min-width: 851px) {
+  input[type=range] {
+    height: 210px;
+    width: 26px;          /* ✅ match thumb size so it centers */
+    display: block;       /* ✅ allows margin auto centering */
+    margin: 0 auto;       /* ✅ centers inside the channel */
+  }
   .chan {
     padding-top: 16px;
     padding-bottom: 16px;
   }
 }
+
 
 /* Default: vertical faders */
 input[type="range"]{
@@ -522,8 +529,9 @@ overflow: hidden;
 @media (max-width: 850px) and (orientation: landscape) {
    input[type=range]{
     -webkit-appearance: slider-vertical;
-    width: 18px;
-    margin-bottom: 12px;
+    width: 26px;          /* ✅ match thumb size so it centers */
+    display: block;
+    margin: 0 auto 12px;  /* ✅ centered */
   }
   html, body {
     height: 100%;
