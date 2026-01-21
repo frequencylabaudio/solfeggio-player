@@ -502,6 +502,16 @@ overflow: hidden;
    SINGLE HORIZONTAL SCROLL (no nested scroll)
    ========================================================== */
 @media (max-width: 850px) and (orientation: landscape) {
+
+  .mixer-unit { position: relative; padding-bottom: 34px; } /* reserves space so it doesn't cover buttons */
+
+  .footer-credit{
+    position: absolute;   /* no longer follows the viewport */
+    right: 12px;
+    bottom: 10px;
+    z-index: 2;           /* keep it low so it can't sit over modals/buttons */
+    pointer-events: none; /* so it can never block taps */
+  }
    
   html, body {
     height: 100%;
@@ -574,7 +584,6 @@ overflow: hidden;
     flex-direction: column;
     align-items: center;
   }
-
   /* Reduce mixer footprint so controls don’t get clipped */
   .mixer {
     margin-bottom: 10px;
@@ -606,8 +615,8 @@ overflow: hidden;
   width: 18px;
 
   /* Add "safe room" so the circle never gets chopped */
-  padding: 0 6px;            /* total visual box becomes 30px */
-  box-sizing: content-box;
+  padding: 0;            /* total visual box becomes 30px */
+  box-sizing: border-box;
 
   height: 138px;
 
@@ -792,9 +801,7 @@ overflow: hidden;
       <aside class="ad-box"><span class="ad-text">AD UNIT 4</span></aside>
     </div>
   </div>
-
-  <div class="footer-credit">Created By Keunho Koh</div>
-
+<div class="footer-credit">Created By Keunho Koh</div>
   <!-- SAVE MODAL (pauses audio) -->
   <div id="saveModal" class="modal-overlay" onclick="closeSaveModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
