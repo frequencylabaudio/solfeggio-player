@@ -157,9 +157,13 @@ input[type="range"]{
 input[type="range"]::-webkit-slider-runnable-track{
   width: 8px;
   height: 100%;
-  margin: 0 auto;           /* centers the track inside the 26px input */
   background: #2a2a2a;
   border-radius: 999px;
+
+  /* ✅ true centering inside the input box (fixes left/right drift) */
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
 }
 input[type="range"]::-webkit-slider-thumb{
   -webkit-appearance: none;
@@ -250,7 +254,15 @@ input[type="range"]:disabled {
   cursor: pointer;
   transition: 0.15s;
 }
-
+/* ✅ Desktop default: Mute + Solo side-by-side */
+.btn-row{
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
 .m-btn:hover, .s-btn:hover{
   border-color: #555;
   color: #e0e0e0;
@@ -575,6 +587,11 @@ overflow: hidden;
     overflow-x: hidden;
     overflow-y: auto;
   }
+  /* ✅ Landscape ONLY: keep Mute + Solo stacked */
+.btn-row{
+  flex-direction: column;
+  gap: 8px;
+}
 
   /* Tighten header spacing */
   .title-container { margin-top: 10px; max-width: 100%; }
