@@ -129,43 +129,55 @@
       contain: paint;
       overflow: hidden;
     }
+    /* Gives buttons breathing room from the channel border */
+.btn-row{
+  width: 100%;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+/* Let buttons shrink instead of pushing into borders */
+.m-btn, .s-btn{
+  flex: 1;
+  min-width: 0;
+  padding: 6px 0;  /* tighter horizontally */
+}
     .hz { font-size: 0.8rem; font-weight: 800; margin-bottom: 4px; color: var(--clr); }
     .desc { font-size: 0.5rem; font-weight: 700; height: 44px; color: #b0b0b0; line-height: 1.2; padding: 0 4px; display: flex; align-items: center; justify-content: center; text-align: center; text-transform: uppercase; }
     .vol-label { font-size: 0.65rem; font-family: monospace; color: #999; margin-bottom: 6px; }
   /* ==========================================================
-   FADERS (CENTERED THUMB FIX)
-   Desktop + Mobile Landscape = vertical sliders
-   Portrait = handled later in your portrait media query
+   FADERS (ONE TRACK, NO NATIVE WHITE BAR)
+   Desktop + Mobile Landscape = rotated horizontal slider
+   Portrait = normal horizontal slider (handled below)
    ========================================================== */
 
-/* Base vertical slider (used by Desktop + Mobile Landscape) */
-input[type="range"]{
-  -webkit-appearance: slider-vertical;
-  appearance: slider-vertical;
-  writing-mode: bt-lr;
+.fader{
+  --pct: 0%;
+  --fill: #ffffff;
 
-  width: 26px;              /* MUST match thumb width */
-  height: 210px;
-  display: block;
-  margin: 0 auto 12px;      /* centers the whole control in the channel */
-  padding: 0;
-  background: transparent;
-  cursor: pointer;
-}
+  -webkit-appearance: none;
+  appearance: none;
 
-/* WebKit track + thumb (Chrome/Safari/Edge) */
-input[type="range"]::-webkit-slider-runnable-track{
-  width: 8px;
-  height: 100%;
-  background: #2a2a2a;
+  background: linear-gradient(
+    to right,
+    var(--fill) 0%,
+    var(--fill) var(--pct),
+    #2a2a2a var(--pct),
+    #2a2a2a 100%
+  );
   border-radius: 999px;
-
-  /* ✅ true centering inside the input box (fixes left/right drift) */
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
+  cursor: pointer;
+  padding: 0;
+  display: block;
 }
-input[type="range"]::-webkit-slider-thumb{
+
+/* Track is transparent because the input itself carries the gradient */
+.fader::-webkit-slider-runnable-track{
+  height: 8px;
+  background: transparent;
+  border-radius: 999px;
+}
+.fader::-webkit-slider-thumb{
   -webkit-appearance: none;
   appearance: none;
   width: 26px;
@@ -173,22 +185,15 @@ input[type="range"]::-webkit-slider-thumb{
   border-radius: 50%;
   background: #fff;
   border: 2px solid rgba(255,255,255,0.25);
-  margin: 0;                /* IMPORTANT: don’t offset it */
+  margin-top: -9px; /* centers 26px thumb on 8px track */
 }
 
-/* Firefox track + thumb */
-input[type="range"]::-moz-range-track{
-  width: 8px;
-  height: 100%;
-  background: #2a2a2a;
+.fader::-moz-range-track{
+  height: 8px;
+  background: transparent;
   border-radius: 999px;
-
-  /* ✅ forces true centering inside the input */
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
 }
-input[type="range"]::-moz-range-thumb{
+.fader::-moz-range-thumb{
   width: 26px;
   height: 26px;
   border-radius: 50%;
@@ -196,51 +201,45 @@ input[type="range"]::-moz-range-thumb{
   border: 2px solid rgba(255,255,255,0.25);
 }
 
-/* Desktop spacing inside channel */
-@media (min-width: 851px) {
-  .chan {
-    padding-top: 16px;
-    padding-bottom: 16px;
+/* -------- Desktop (vertical look via rotation) -------- */
+@media (min-width: 851px){
+  .fader{
+    width: 210px;     /* becomes visual height after rotation */
+    height: 26px;
+    margin: 0 auto 12px;
+    transform: rotate(-90deg);
+    transform-origin: center;
   }
 }
 
-/* Mobile landscape: shorter slider, still centered */
-@media (max-width: 850px) and (orientation: landscape) {
-  /* keep the slider centered */
-  input[type="range"]{
-    height: 150px;
-    width: 22px;            /* smaller control width */
+/* -------- Mobile Landscape (same rotation, smaller knob) -------- */
+@media (max-width: 850px) and (orientation: landscape){
+  .fader{
+    width: 150px;
+    height: 22px;
     margin: 0 auto 10px;
+    transform: rotate(-90deg);
+    transform-origin: center;
   }
-
-  /* WebKit (Safari/Chrome iOS) thumb smaller */
-  input[type="range"]::-webkit-slider-thumb{
+  .fader::-webkit-slider-thumb{
     width: 20px;
     height: 20px;
+    margin-top: -6px; /* centers 20px thumb on 8px track */
   }
-
-  /* Firefox thumb smaller */
-  input[type="range"]::-moz-range-thumb{
+  .fader::-moz-range-thumb{
     width: 20px;
     height: 20px;
-  }
-
-  /* keep the track centered and clean */
-  input[type="range"]::-webkit-slider-runnable-track{
-    width: 8px;
-  }
-  input[type="range"]::-moz-range-track{
-    width: 8px;
   }
 }
 
 /* Disabled */
-input[type="range"]:disabled {
+.fader:disabled{
   opacity: 0.35;
   filter: grayscale(1);
   pointer-events: none;
   cursor: not-allowed;
 }
+
     /* Base Mute / Solo button style (Desktop + Landscape + Portrait) */
 .m-btn, .s-btn{
   background: #141414;
@@ -330,61 +329,42 @@ select { background: transparent; color: var(--start-yellow); border: none; font
    VERTICAL MOBILE (PORTRAIT) ONLY
    ========================================================== */
 @media (max-width: 850px) and (orientation: portrait) {
-  input[type=range]{
-    -webkit-appearance: none;
-    appearance: none;
+    .fader{
+    transform: none;
     width: 100%;
     height: 24px;
     margin: 0;
-    cursor: pointer;
-    grid-column: 1 / 3;
-    /* base background (JS will overwrite with gradient when moved) */
-    background: #2a2a2a;
-    border-radius: 999px;
   }
-  input[type=range]{
-  --pct: 0%;
-  --fill: #ffffff;
-}
-input[type=range]::-webkit-slider-runnable-track{
-    width: 8px;
-    height: 100%;
-    background: #2a2a2a;
-    border-radius: 999px;
 
-  /* ✅ forces true centering inside the input */
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
-}
-  input[type=range]::-webkit-slider-thumb{
-    -webkit-appearance: none;
-    appearance: none;
+  .fader::-webkit-slider-runnable-track{
+    height: 8px;
+    background: transparent;   /* IMPORTANT: don't cover the gradient */
+    border-radius: 999px;
+  }
+
+  .fader::-webkit-slider-thumb{
     width: 26px;
     height: 26px;
     border-radius: 50%;
     background: #fff;
     border: 2px solid rgba(255,255,255,0.25);
-    margin-top: -9px;
+    margin-top: -9px;          /* centers thumb on 8px track */
   }
-  input[type=range]::-moz-range-track{
-  height: 8px;
-  border-radius: 999px;
-  background: linear-gradient(
-    to right,
-    var(--fill) 0%,
-    var(--fill) var(--pct),
-    #2a2a2a var(--pct),
-    #2a2a2a 100%
-  );
-}
-  input[type=range]::-moz-range-thumb{
+
+  .fader::-moz-range-track{
+    height: 8px;
+    background: transparent;
+    border-radius: 999px;
+  }
+
+  .fader::-moz-range-thumb{
     width: 26px;
     height: 26px;
     border-radius: 50%;
     background: #fff;
     border: 2px solid rgba(255,255,255,0.25);
   }
+
   #startBtnTop { display: block; }
   .start-top-wrap{
   position: sticky;
@@ -577,6 +557,11 @@ overflow: hidden;
    FIXED: no clipping, no weird stretching, controls visible
    ========================================================== */
 @media (max-width: 850px) and (orientation: landscape) {
+  .m-btn, .s-btn{
+    width: 100%;
+    padding: 6px 0;
+    font-size: 0.58rem;
+  }
 
   /* Never show the portrait-only top start button in landscape */
   .start-top-wrap { display: none !important; }
@@ -721,7 +706,7 @@ overflow: hidden;
                     <div class="hz">${ch.hz}</div>
                     <div class="desc">${ch.d}</div>
                     <div class="vol-label" id="l${i}">0%</div>
-                    <input type="range" orient="vertical" id="v${i}" min="0" max="1" step="0.01" value="0">
+                    <input class="fader" type="range" id="v${i}" min="0" max="1" step="0.01" value="0">
                     <div class="btn-row">
                       <button class="m-btn" id="m${i}" onclick="muteTrack(${i})">Mute</button>
                       <button class="s-btn" id="s${i}" onclick="soloTrack(${i})">Solo</button>
