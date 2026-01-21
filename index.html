@@ -503,8 +503,6 @@ overflow: hidden;
    ========================================================== */
 @media (max-width: 850px) and (orientation: landscape) {
 
-  .mixer-unit { position: relative; padding-bottom: 34px; } /* reserves space so it doesn't cover buttons */
-
   .footer-credit{
     position: absolute;   /* no longer follows the viewport */
     right: 12px;
@@ -579,6 +577,7 @@ overflow: hidden;
 
   /* Keep your content wide so the page-wrapper can scroll */
   .mixer-unit {
+    position: relative; padding-bottom: 34px;
     min-width: 720px;
     display: flex;
     flex-direction: column;
@@ -697,19 +696,19 @@ overflow: hidden;
   /* LANDSCAPE ONLY: footer in bottom-right but not fixed/sticky */
   /* LANDSCAPE ONLY: bottom-right but NOT sticky (not fixed) */
   .footer-credit{
-    position: static !important;
+    position: absolute; 
     inset: auto !important;
     top: auto !important;
-    right: auto !important;
-    bottom: auto !important;
+    right: 12px;
+    bottom: 10px;
     left: auto !important;
-
-    z-index: auto !important;
-
+    pointer-events: none;
+    z-index: 2;
     width: 100%;
     text-align: right;
     padding: 0 18px 12px;
     margin-top: 10px;
+    pointer-events: none; /* so it can never block taps */
   }
 }
   </style>
