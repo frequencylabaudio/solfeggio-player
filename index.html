@@ -590,6 +590,12 @@ overflow: hidden;
   overflow: visible;
   contain: none;
 }
+  .chan{
+  min-height: 240px;   /* gives space for the rotated slider */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
 .chan input[type=range]{
   -webkit-appearance: none;
@@ -639,7 +645,6 @@ overflow: hidden;
   background: #fff;
   border: 2px solid rgba(255,255,255,0.25);
   box-sizing: border-box;
-}
 }
 
   .desc { height: 38px; }
