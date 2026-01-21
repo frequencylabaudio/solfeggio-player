@@ -704,13 +704,15 @@ overflow: hidden;
   /* LANDSCAPE ONLY: bottom-right but NOT sticky (not fixed) */
   /* LANDSCAPE ONLY — footer bottom-right, not sticky, never blocks taps */
 .footer-credit{
-    position: absolute;
-    right: 12px;
-    bottom: 14px;
-    z-index: 1;
-    pointer-events: none;
-    white-space: nowrap;
-  }
+  position: static;        /* <-- not absolute */
+  align-self: flex-end;    /* bottom of the row */
+  margin-left: auto;       /* <-- pushes it to far right of the scroll */
+  margin-bottom: 14px;
+  padding-right: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 1;
+}
 
 }
     @media (min-width: 851px) {
