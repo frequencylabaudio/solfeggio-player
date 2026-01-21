@@ -596,11 +596,14 @@ overflow: hidden;
   flex-direction: column;
   align-items: center;
 }
-
+.chan input[type=range]{
+  --pct: 0%;
+  --fill: #ffffff;
+}
 /* LANDSCAPE ONLY — slider “lane” (this is B) */
 .fader-slot{
   width: 34px;       /* narrow lane so slider stays centered */
-  height: 138px;     /* visible fader height */
+  height: 130px;     /* visible fader height */
   position: relative;
   margin: 10px auto 14px;
 }
@@ -610,7 +613,7 @@ overflow: hidden;
   -webkit-appearance: none;
   appearance: none;
 
-  width: 138px;      /* travel distance (becomes vertical after rotate) */
+  width: 130px;      /* travel distance (becomes vertical after rotate) */
   height: 18px;
 
   position: absolute;
@@ -626,7 +629,13 @@ overflow: hidden;
 .fader-slot input[type=range]::-webkit-slider-runnable-track{
   height: 8px;
   border-radius: 999px;
-  background: #2a2a2a;
+  background: linear-gradient(
+    to right,
+    var(--fill) 0%,
+    var(--fill) var(--pct),
+    #2a2a2a var(--pct),
+    #2a2a2a 100%
+  );
 }
 
 .fader-slot input[type=range]::-webkit-slider-thumb{
