@@ -132,37 +132,23 @@
     .hz { font-size: 0.8rem; font-weight: 800; margin-bottom: 4px; color: var(--clr); }
     .desc { font-size: 0.5rem; font-weight: 700; height: 44px; color: #b0b0b0; line-height: 1.2; padding: 0 4px; display: flex; align-items: center; justify-content: center; text-align: center; text-transform: uppercase; }
     .vol-label { font-size: 0.65rem; font-family: monospace; color: #999; margin-bottom: 6px; }
-    /* ==========================================================
-   FADERS (FIXED)
-   - Desktop + mobile landscape = vertical sliders
-   - Prevents the “big white block” default rendering
+  /* ==========================================================
+   FADERS (CENTERED THUMB FIX)
+   Desktop + Mobile Landscape = vertical sliders
+   Portrait = handled later in your portrait media query
    ========================================================== */
 
-/* Keep your chan padding tweak */
-@media (min-width: 851px) {
-  input[type=range] {
-    height: 210px;
-    width: 26px;          /* ✅ match thumb size so it centers */
-    display: block;       /* ✅ allows margin auto centering */
-    margin: 0 auto;       /* ✅ centers inside the channel */
-  }
-  .chan {
-    padding-top: 16px;
-    padding-bottom: 16px;
-  }
-}
-
-
-/* Default: vertical faders */
+/* Base vertical slider (used by Desktop + Mobile Landscape) */
 input[type="range"]{
   -webkit-appearance: slider-vertical;
   appearance: slider-vertical;
   writing-mode: bt-lr;
 
-  width: 18px;
+  width: 26px;              /* MUST match thumb width */
   height: 210px;
-  margin: 0 0 12px;
-
+  display: block;
+  margin: 0 auto 12px;      /* centers the whole control in the channel */
+  padding: 0;
   background: transparent;
   cursor: pointer;
 }
@@ -170,6 +156,8 @@ input[type="range"]{
 /* WebKit track + thumb (Chrome/Safari/Edge) */
 input[type="range"]::-webkit-slider-runnable-track{
   width: 8px;
+  height: 100%;
+  margin: 0 auto;           /* centers the track inside the 26px input */
   background: #2a2a2a;
   border-radius: 999px;
 }
@@ -181,12 +169,14 @@ input[type="range"]::-webkit-slider-thumb{
   border-radius: 50%;
   background: #fff;
   border: 2px solid rgba(255,255,255,0.25);
-  margin-top: -9px; /* centers thumb on the track */
+  margin: 0;                /* IMPORTANT: don’t offset it */
 }
 
 /* Firefox track + thumb */
 input[type="range"]::-moz-range-track{
   width: 8px;
+  height: 100%;
+  margin: 0 auto;
   background: #2a2a2a;
   border-radius: 999px;
 }
@@ -198,34 +188,52 @@ input[type="range"]::-moz-range-thumb{
   border: 2px solid rgba(255,255,255,0.25);
 }
 
-/* Slightly shorter in mobile landscape if you want */
-@media (max-width: 850px) and (orientation: landscape) {
-  input[type="range"]{
-    height: 150px;
+/* Desktop spacing inside channel */
+@media (min-width: 851px) {
+  .chan {
+    padding-top: 16px;
+    padding-bottom: 16px;
   }
 }
 
-/* Disabled look stays the same */
+/* Mobile landscape: shorter slider, still centered */
+@media (max-width: 850px) and (orientation: landscape) {
+  /* keep the slider centered */
+  input[type="range"]{
+    height: 150px;
+    width: 22px;            /* smaller control width */
+    margin: 0 auto 10px;
+  }
+
+  /* WebKit (Safari/Chrome iOS) thumb smaller */
+  input[type="range"]::-webkit-slider-thumb{
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Firefox thumb smaller */
+  input[type="range"]::-moz-range-thumb{
+    width: 20px;
+    height: 20px;
+  }
+
+  /* keep the track centered and clean */
+  input[type="range"]::-webkit-slider-runnable-track{
+    width: 8px;
+  }
+  input[type="range"]::-moz-range-track{
+    width: 8px;
+  }
+}
+
+/* Disabled */
 input[type="range"]:disabled {
   opacity: 0.35;
   filter: grayscale(1);
   pointer-events: none;
   cursor: not-allowed;
 }
-    .m-btn, .s-btn { width: 40px; height: 20px; border-radius: 4px; border: 1px solid #333; background: #1a1a1a; color: #aaa; font-size: 0.5rem; cursor: pointer; text-transform: uppercase; font-weight: bold; }
-    input[type=range]:disabled {
-  opacity: 0.35;
-  filter: grayscale(1);
-  pointer-events: none;
-  cursor: not-allowed;
-}
 
-.m-btn:disabled,
-.s-btn:disabled {
-  opacity: 0.35;
-  pointer-events: none;
-  cursor: not-allowed;
-}
     .m-btn.active-mute { background: #9b2226; color: #fff; border-color: #ff4d4d; }
     .s-btn.active-solo { background: var(--start-yellow); color: #000; border-color: #fff; }
 
@@ -524,17 +532,16 @@ overflow: hidden;
 }
 /* ==========================================================
    MOBILE LANDSCAPE (HORIZONTAL) ONLY
-   SINGLE HORIZONTAL SCROLL (no nested scroll)
+   FIXED: no clipping, no weird stretching, controls visible
    ========================================================== */
 @media (max-width: 850px) and (orientation: landscape) {
-   input[type=range]{
-    -webkit-appearance: slider-vertical;
-    width: 26px;          /* ✅ match thumb size so it centers */
-    display: block;
-    margin: 0 auto 12px;  /* ✅ centered */
-  }
+
+  /* Never show the portrait-only top start button in landscape */
+  .start-top-wrap { display: none !important; }
+  #startBtnTop { display: none !important; }
+
   html, body {
-    height: 100%;
+    height: auto;
     overflow-x: hidden;
     overflow-y: auto;
   }
@@ -544,68 +551,64 @@ overflow: hidden;
   h1 { font-size: 1.6rem; }
   .subtitle { margin-bottom: 10px; }
 
-  /* ONE scroller: the outer wrapper */
+  /* ONE horizontal scroller (but DO NOT clip vertically) */
   .page-wrapper {
     display: flex;
     flex-direction: row;
-    align-items: stretch;
+    align-items: flex-start;     /* IMPORTANT: stops weird stretching */
     gap: 12px;
 
-    padding: 0 10px;
+    padding: 0 10px calc(18px + env(safe-area-inset-bottom));
     width: 100%;
 
-    overflow-x: auto;     /* <-- only horizontal scroll */
-    overflow-y: hidden;
+    overflow-x: auto;            /* horizontal scroll */
+    overflow-y: visible;         /* IMPORTANT: no vertical clipping */
     -webkit-overflow-scrolling: touch;
 
-    touch-action: pan-x;
+    touch-action: auto;          /* IMPORTANT: prevents broken touch behavior */
     overscroll-behavior: contain;
   }
 
-  /* Ads are NOT sticky (just normal columns that scroll with the page-wrapper) */
+  /* Ads columns */
   .ad-sidebar-stack {
-   flex: 0 0 90px;
-   width: 90px;
+    flex: 0 0 90px;
+    width: 90px;
 
-   display: flex;
-   flex-direction: column;
+    display: flex;
+    flex-direction: column;
 
-   position: static;
-   height: auto;
+    position: static;
+    height: auto;
 
-   /* NEW: tighten spacing */
-   justify-content: flex-start;   /* was space-between */
-   gap: 10px;                     /* controls distance between ad 1/2 and 3/4 */
-   padding-top: 6px;              /* slight alignment with mixer top */
-}
+    justify-content: flex-start;
+    gap: 10px;
+    padding-top: 6px;
+  }
 
   .ad-box {
     width: 90px;
-    height: 120px;        /* adjust as desired */
+    height: 120px;
     border-radius: 18px;
-    border: 1px solid rgba(255,255,255,0.08);
-    background: radial-gradient(120% 120% at 50% 20%, rgba(255,255,255,0.05), rgba(0,0,0,0) 55%),
-                linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0));
+    border: 1px dashed rgba(255,255,255,0.18);
+    background: #111;
     box-shadow: inset 0 0 0 1px rgba(0,0,0,0.35);
   }
+
   .ad-text { font-size: 9px; opacity: 0.55; transform: rotate(-90deg); }
 
-  /* Turn OFF inner horizontal scrolling */
+  /* Turn OFF inner horizontal scrolling (page-wrapper is the ONLY scroller) */
   main { flex: 0 0 auto; width: auto; }
-  .scroll-container {
-    overflow: visible;    /* <-- no horizontal scroll here */
-    padding-bottom: 0;
-  }
+  .scroll-container { overflow: visible; padding-bottom: 0; }
 
-  /* Keep your content wide so the page-wrapper can scroll */
+  /* Keep content wide so wrapper scrolls */
   .mixer-unit {
     min-width: 720px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding-bottom: calc(18px + env(safe-area-inset-bottom));
   }
 
-  /* Reduce mixer footprint so controls don’t get clipped */
   .mixer {
     margin-bottom: 10px;
     padding: 14px 10px;
@@ -614,12 +617,12 @@ overflow: hidden;
   }
 
   .chan { flex: 0 0 85px; width: 85px; padding: 10px 0; }
-  input[type=range] { height: 118px; margin-bottom: 10px;}
-  .desc { height: 38px; }
 
+  /* Make sure controls aren’t hidden behind the iPhone home bar */
   .main-controls {
     gap: 10px;
-    padding-bottom: 4px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    margin-bottom: calc(10px + env(safe-area-inset-bottom));
   }
 
   #startBtn, #pauseBtn { padding: 12px 30px; font-size: 0.75rem; }
@@ -627,6 +630,7 @@ overflow: hidden;
 
   .modal-content { max-height: 85vh; overflow-y: auto; }
 }
+
   </style>
 </head>
 
@@ -670,7 +674,7 @@ overflow: hidden;
                     <div class="hz">${ch.hz}</div>
                     <div class="desc">${ch.d}</div>
                     <div class="vol-label" id="l${i}">0%</div>
-                    <input type="range" id="v${i}" min="0" max="1" step="0.01" value="0">
+                    <input type="range" orient="vertical" id="v${i}" min="0" max="1" step="0.01" value="0">
                     <div class="btn-row">
                       <button class="m-btn" id="m${i}" onclick="muteTrack(${i})">Mute</button>
                       <button class="s-btn" id="s${i}" onclick="soloTrack(${i})">Solo</button>
