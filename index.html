@@ -242,7 +242,7 @@
     .howto-list li { margin: 10px 0 14px; }
     .howto-list strong { color: var(--start-yellow); letter-spacing: 1px; text-transform: uppercase; font-size: 0.78rem; display: inline-block; margin-bottom: 4px; }
   .footer-credit{
-  position: fixed;
+  position: static; /* default: does NOT follow */
   right: 18px;
   bottom: 14px;
   font-size: 0.75rem;
@@ -520,7 +520,7 @@ overflow: hidden;
     flex-direction: row;
     align-items: stretch;
     gap: 12px;
-
+    position: relative;
     padding: 0 10px;
     width: 100%;
 
