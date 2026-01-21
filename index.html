@@ -1647,6 +1647,15 @@ try {
     
   }
 }
+    function refreshAllSliderUI() {
+  for (let i = 0; i < audioFiles.length; i++) {
+    const slider = document.getElementById("v" + i);
+    if (!slider) continue;
+
+    const val = Math.max(0, Math.min(1, parseFloat(slider.value) || 0));
+    updateUI(i, val); // UI only (recomputes --pctPad using the new width)
+  }
+}
     
     function toggle() {
       if (!ready) return;
@@ -1783,6 +1792,9 @@ window.addEventListener("focus", () => maybeRequireMobileResume());
     if (!slider) continue;
     slider.addEventListener("input", () => slide(i, slider.value));
   }
+  setTimeout(refreshAllSliderUI, 0);
+  window.addEventListener("orientationchange", () => setTimeout(refreshAllSliderUI, 150));
+  window.addEventListener("resize", () => setTimeout(refreshAllSliderUI, 150));
 });
 
 
