@@ -228,6 +228,15 @@
     .timer-wrap { display: flex; align-items: center; gap: 10px; background: #111; padding: 6px 18px; border-radius: 50px; border: 1px solid #333; }
     .timer-label { font-size: 0.65rem; color: #666; text-transform: uppercase; font-weight: bold; }
     select { background: transparent; color: var(--start-yellow); border: none; font-weight: bold; font-family: monospace; cursor: pointer; outline: none; }
+    /* ==========================================================
+   FIX 1 (SAFE): Windows Desktop dropdown options visibility
+   - Only targets the Timer dropdown list items
+   - Does NOT change layout/padding/borders of the select itself
+   ========================================================== */
+#timerSelect option {
+  background: #0b0b0b;     /* dark dropdown menu */
+  color: #ffd60a;          /* readable text */
+}
     #timerDisplay { font-family: monospace; color: #55a630; font-size: 0.85rem; min-width: 55px; }
 
     .btn-utility { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-size: 0.65rem; text-transform: uppercase; font-weight: 600; }
