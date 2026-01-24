@@ -220,7 +220,16 @@
     .m-btn.active-mute { background: #9b2226; color: #fff; border-color: #ff4d4d; }
     .s-btn.active-solo { background: var(--start-yellow); color: #000; border-color: #fff; }
 
-    .main-controls { display: flex; flex-wrap: nowrap; justify-content: center; align-items: center; gap: 12px; white-space: nowrap; }
+    .main-controls{
+      display: flex;
+      flex-wrap: wrap;          /* ✅ prevents overflow */
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      max-width: 100%;          /* ✅ never wider than its container */
+      white-space: normal;      /* ✅ allow wrapping */
+}
+
 
     #startBtn { background: var(--start-yellow); color: #000; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; }
     #pauseBtn { background: #55a630; color: #fff; padding: 14px 40px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; display: none; }
@@ -870,6 +879,7 @@ overflow: hidden;
               </select>
               <span id="timerDisplay">--:--</span>
             </div>
+            <button id="motionBtn" class="btn-utility" onclick="toggleMotion()">Motion</button>
             <button id="muteAllBtn" class="btn-utility" onclick="toggleMuteAll()">Mute All</button>
             <button class="btn-utility" onclick="randomize()">Randomize</button>
             <button class="btn-utility" onclick="resetFaders()">Reset</button>
@@ -995,15 +1005,25 @@ overflow: hidden;
     let firstTouchIdx = null; // remembers which fader was touched first (mobile)
     let resumePromise = null;
     let needsMobileResume = false; // mobile: Safari tab-return requires Start Session tap
+    const MASTER_MAX = 0.6;
+    const MOBILE_GAIN_TC = 0.12;
+    const DESKTOP_GAIN_TC = 0.05;
+
+    // --- MOTION (volume movement) ---
+    let motionOn = false;
+    let motionRAF = null;
+    const MOTION_HZ = 0.15;        // 0.15 Hz
+    const MOTION_DEPTH = 0.15;     // +15% absolute (0.00 -> 0.15)
+    const MOTION_MASTER_SCALE = 0.90; // extra headroom when Motion is ON
+    let motionPhases = Array(audioFiles.length).fill(0).map(() => Math.random() * Math.PI * 2);
+    let masterBaseMax = MASTER_MAX; // remember original MASTER_MAX behavior
+
 
     // Mobile-only smoothing (prevents zipper noise on touch)
     const isMobilePortrait =
      window.matchMedia &&
      window.matchMedia("(max-width: 850px) and (orientation: portrait)").matches;
 
-    const MOBILE_GAIN_TC = 0.12;
-    const DESKTOP_GAIN_TC = 0.05;
-    const MASTER_MAX = 0.6;
      // --- STEP 2: MOBILE/iOS AUDIO UNLOCK (reliable first interaction) ---
   let audioUnlocked = false;
 
@@ -1248,7 +1268,7 @@ if (!ok) {
         const target =
           (tracks[i].isMuted || (soloIdx !== -1 && soloIdx !== i))
             ? 0
-            : tracks[i].lastVal * 0.7;
+            : Math.min(tracks[i].lastVal * 0.7, 1);
 
         tracks[i].g.gain.linearRampToValueAtTime(target, now + 0.12);
       }
@@ -1680,7 +1700,6 @@ function showPauseButtonOnly() {
 }
 
     // --- 5. UTILITY LOGIC ---
-    // --- FADER MOVE ---
 function slide(i, v) {
   const val = Math.max(0, Math.min(1, parseFloat(v) || 0));
   tracks[i].lastVal = val;
@@ -1690,19 +1709,19 @@ function slide(i, v) {
 
   // If session not started yet:
   // Only auto-start when user actually raises a fader above 0
-if (!ready) {
-  // ✅ Mobile: sliders are locked until Start Session
-  if (isMobileNow()) return;
+  if (!ready) {
+    // ✅ Mobile: sliders are locked until Start Session
+    if (isMobileNow()) return;
 
-  // ✅ Desktop: keep your current behavior (fader interaction auto-starts)
-  if (!starting && !autoStartTriggered && val > 0.01) {
-    autoStartTriggered = true;
-    beginSession(false, i); // desktop auto-start from the fader
+    // ✅ Desktop: keep your current behavior (fader interaction auto-starts)
+    if (!starting && !autoStartTriggered && val > 0.01) {
+      autoStartTriggered = true;
+      beginSession(false, i); // desktop auto-start from the fader
+    }
+    return;
   }
-  return;
-}
 
-  // If ready, apply gain immediately
+  // ✅ If ready, apply gain immediately
   if (!ctx || !tracks[i].g) return;
 
   const tc = isMobilePortraitNow() ? MOBILE_GAIN_TC : DESKTOP_GAIN_TC;
@@ -1712,6 +1731,85 @@ if (!ready) {
       : val * 0.7;
 
   tracks[i].g.gain.setTargetAtTime(target, ctx.currentTime, tc);
+}
+
+  function setMasterForMotion() {
+  if (!master || !ctx) return;
+  const now = ctx.currentTime;
+  master.gain.cancelScheduledValues(now);
+
+  // If paused, keep silent. If playing, apply headroom when motion is on.
+  const target = isPaused ? 0 : (motionOn ? MASTER_MAX * MOTION_MASTER_SCALE : MASTER_MAX);
+  master.gain.setTargetAtTime(target, now + 0.01, 0.08);
+}
+
+function applyGainOnly(i, effectiveVal) {
+  if (!ready || !ctx || !tracks[i]?.g) return;
+
+  // Respect mute/solo rules
+  const audible = !(tracks[i].isMuted || (soloIdx !== -1 && soloIdx !== i));
+  const tc = isMobilePortraitNow() ? MOBILE_GAIN_TC : DESKTOP_GAIN_TC;
+
+  const safeVal = Math.max(0, Math.min(1, effectiveVal)); // ✅ prevents >100% value
+  const target = audible ? (safeVal * 0.7) : 0;
+
+  tracks[i].g.gain.setTargetAtTime(target, ctx.currentTime, tc);
+}
+
+function motionLoop(tMs) {
+  if (!motionOn) return;
+
+  const t = (tMs || performance.now()) / 1000;
+  const w = 2 * Math.PI * MOTION_HZ;
+
+  for (let i = 0; i < audioFiles.length; i++) {
+    const base = tracks[i].lastVal;
+    if (base <= 0.01) {          // keep truly “off” channels silent
+      applyGainOnly(i, 0);
+      continue;
+    }
+    const mod01 = (Math.sin(motionPhases[i] + w * t) + 1) / 2;
+    const effective = base + (MOTION_DEPTH * mod01);
+    applyGainOnly(i, effective);
+      }
+
+  motionRAF = requestAnimationFrame(motionLoop);
+}
+
+function stopMotionLoop() {
+  if (motionRAF) cancelAnimationFrame(motionRAF);
+  motionRAF = null;
+
+  // restore static gains to exact slider positions
+  for (let i = 0; i < audioFiles.length; i++) {
+    applyGainOnly(i, tracks[i].lastVal);
+  }
+}
+
+function toggleMotion() {
+  if (!ready) return; // Motion only makes sense once audio exists
+
+  motionOn = !motionOn;
+
+  // re-randomize phases each time it is enabled (so it feels alive)
+  if (motionOn) {
+    motionPhases = Array(audioFiles.length).fill(0).map(() => Math.random() * Math.PI * 2);
+  }
+
+  // button UI state
+  const btn = document.getElementById("motionBtn");
+  if (btn) {
+    btn.classList.toggle("active-solo", motionOn); // reuse your yellow style
+    btn.innerText = motionOn ? "Motion: On" : "Motion";
+  }
+
+  setMasterForMotion();
+
+  if (motionOn) {
+    motionRAF = requestAnimationFrame(motionLoop);
+  } else {
+    stopMotionLoop();
+  }
 }
 
     function updateUI(i, val) {
@@ -1772,7 +1870,10 @@ try {
     function toggle() {
       if (!ready) return;
       isPaused = !isPaused;
-      master.gain.setTargetAtTime(isPaused ? 0 : 0.6, ctx.currentTime, 0.2);
+      
+      setMasterForMotion(); // ✅ keeps headroom logic consistent with Motion
+      
+      master.gain.setTargetAtTime(isPaused ? 0 : (motionOn ? MASTER_MAX * MOTION_MASTER_SCALE : MASTER_MAX), ctx.currentTime, 0.2);
       document.getElementById("pauseBtn").innerText = isPaused ? "RESUME ALL" : "PAUSE ALL";
       document.getElementById("pauseBtn").style.background = isPaused ? "#222" : "#55a630";
     }
@@ -1782,7 +1883,7 @@ try {
       timeLeft = parseInt(seconds);
       if (!ready && timeLeft > 0) { beginSession(); return; }
       if (ready) {
-        master.gain.setTargetAtTime(0.6, ctx.currentTime, 0.5);
+        master.gain.setTargetAtTime(motionOn ? MASTER_MAX * MOTION_MASTER_SCALE : MASTER_MAX, ctx.currentTime, 0.5);
         isPaused = false;
         document.getElementById("pauseBtn").innerText = "PAUSE ALL";
         if (timeLeft > 0) startCountdown();
