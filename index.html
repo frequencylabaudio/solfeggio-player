@@ -1218,17 +1218,9 @@ async function recoverAudioAfterExternalUI() {
     master.connect(ctx.destination);
   }
 
-
-  // IMPORTANT: resume as early as possible
-
   startPromise = (async () => {
   try {
-    // ✅ make sure audio context is running before starting sources
-    // Don’t hang forever on resume (some slider gestures never resolve it)
-// ✅ HARD REQUIRE: do not proceed unless audio is truly running (fixes mobile silent start)
-// wait for the gesture-based resume attempt (started in unlockAudio)
 if (resumePromise) await resumePromise;
-
 const ok = await ensureAudioRunning(1500);
 if (!ok) {
   throw new Error("AudioContext still suspended (need user gesture)");
@@ -1266,14 +1258,26 @@ if (!ok) {
         const firstActive = tracks.findIndex(t => t.lastVal > 0.01 && !t.isMuted);
         priorityIdx = (firstActive !== -1) ? firstActive : 0;
       }
+    let loadedCount = 0;
+const totalCount = audioFiles.length;
 
+function setInitText() {
+  const msg = `INITIALIZING... ${loadedCount}/${totalCount}`;
+  startBtns.forEach(b => {
+    b.innerText = msg;
+    b.disabled = true;
+  });
+}
+setInitText();
       // 2) Load priority channel first (fast audible feedback)
       await loadAndStartOne(priorityIdx);
-
-      // 3) Mark ready after ONE playable channel exists
-ready = true;
-starting = false;
-
+    loadedCount++;
+setInitText();
+    // ✅ DO NOT unlock UI or switch buttons yet — keep initializing until all files load
+    
+      // 3) Don't mark ready yet — wait until ALL files are loaded
+// still starting — keep UI in INITIALIZING until all files load
+    if (false) {
 // ✅ Mobile-only: unlock sliders + mute/solo ONLY after Start Session
 if (isMobileNow()) {
   unlockControls();
@@ -1316,12 +1320,59 @@ if (isMobile) {
 // hide start buttons / show pause
 startBtns.forEach(b => (b.style.display = "none"));
 if (pBtn) pBtn.style.display = "block";
+} // closes if(false)
+      
+      // 4) Load the rest (await them so we can keep INITIALIZING until all are ready)
+for (let i = 0; i < totalCount; i++) {
+  if (i === priorityIdx) continue;
+  await loadAndStartOne(i);
+  loadedCount++;
+  setInitText();
+}
+    // ensure the last UI update shows 11/11
+setInitText();
+    
+    // ✅ NOW everything is loaded
+ready = true;
+starting = false;
 
-      // 4) Load the rest in the background
-      audioFiles.forEach((_, i) => {
-        if (i === priorityIdx) return;
-        loadAndStartOne(i).catch(() => {});
-      });
+// unlock controls now that audio is fully ready
+if (isMobileNow()) unlockControls();
+
+// Sync gains to current slider positions
+for (let k = 0; k < audioFiles.length; k++) {
+  const el = document.getElementById("v" + k);
+  if (el) slide(k, el.value);
+}
+
+// restore Start button text (won't be visible after we hide it, but safe)
+startBtns.forEach(b => {
+  b.innerText = "START SESSION";
+  b.disabled = false;
+});
+
+// Hide portrait wrapper if it exists
+const topWrap = document.querySelector(".start-top-wrap");
+if (topWrap) topWrap.style.display = "none";
+
+// Master gain ramp
+const now = ctx.currentTime;
+const isMobile = window.matchMedia("(max-width: 850px)").matches;
+
+isPaused = false;
+const pBtnEl = document.getElementById("pauseBtn");
+if (pBtnEl) {
+  pBtnEl.innerText = "PAUSE ALL";
+  pBtnEl.style.background = "#55a630";
+}
+
+master.gain.cancelScheduledValues(now);
+master.gain.setValueAtTime(0.0001, now);
+master.gain.setTargetAtTime(MASTER_MAX, now + 0.02, isMobile ? 0.08 : 0.12);
+
+// hide start buttons / show pause
+startBtns.forEach(b => (b.style.display = "none"));
+if (pBtn) pBtn.style.display = "block";
 
       if (timeLeft > 0) startCountdown();
     } catch (err) {
