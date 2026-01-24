@@ -737,9 +737,61 @@ overflow: hidden;
   .btn-utility, .btn-save, .btn-share-main { padding: 9px 16px; font-size: 0.62rem; }
 
   .modal-content { max-height: 85vh; overflow-y: auto; }
-  /* LANDSCAPE ONLY: footer in bottom-right but not fixed/sticky */
-  /* LANDSCAPE ONLY: bottom-right but NOT sticky (not fixed) */
-  /* LANDSCAPE ONLY — footer bottom-right, not sticky, never blocks taps */
+  /* ==========================================================
+   STEP 3 (LOW RISK):
+   SMALL MOBILE LANDSCAPE (SHORT HEIGHT) — keep controls visible
+   Targets iPhone SE / short landscape screens
+   ========================================================== */
+@media (max-width: 850px) and (orientation: landscape) and (max-height: 420px) {
+
+  /* 1) Make the control bar stay visible */
+  .main-controls{
+    position: fixed;
+    left: 10px;
+    right: 10px;
+    bottom: 8px;
+    z-index: 1200;
+
+    background: rgba(5,5,5,0.92);
+    backdrop-filter: blur(10px);
+
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 18px;
+
+    padding: 8px 10px;
+    gap: 8px;
+
+    /* allow wrapping so it doesn't overflow */
+    flex-wrap: wrap;
+    white-space: normal;
+    justify-content: center;
+  }
+
+  /* 2) Prevent the fixed bar from covering your mixer/buttons area */
+  .mixer-unit{
+    padding-bottom: 92px; /* space for the fixed controls bar */
+  }
+
+  /* 3) Tighten button sizes slightly so everything fits */
+  #startBtn, #pauseBtn{
+    padding: 10px 18px;
+    font-size: 0.72rem;
+  }
+  .btn-utility, .btn-save, .btn-share-main{
+    padding: 8px 12px;
+    font-size: 0.58rem;
+  }
+
+  /* 4) Make timer row more compact */
+  .timer-wrap{
+    padding: 5px 12px;
+    gap: 8px;
+  }
+  #timerDisplay{
+    min-width: 48px;
+    font-size: 0.78rem;
+  }
+}
 
 }
   </style>
