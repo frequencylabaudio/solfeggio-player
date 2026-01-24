@@ -755,50 +755,53 @@ overflow: hidden;
 
   /* 1) Make the control bar stay visible */
   .main-controls{
-    position: fixed;
-    left: 10px;
-    right: 10px;
-    bottom: 8px;
-    z-index: 1200;
+  position: fixed;
+  left: 10px;
+  right: 10px;
+  bottom: 8px;
+  z-index: 1200;
 
-    background: rgba(5,5,5,0.92);
-    backdrop-filter: blur(10px);
+  background: rgba(5,5,5,0.92);
+  backdrop-filter: blur(10px);
 
-    border: 1px solid rgba(255,255,255,0.10);
-    border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 18px;
 
-    padding: 8px 10px;
-    gap: 8px;
+  padding: 6px 8px;      /* tighter than before */
+  gap: 6px;              /* tighter than before */
 
-    /* allow wrapping so it doesn't overflow */
-    flex-wrap: wrap;
-    white-space: normal;
-    justify-content: center;
-  }
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+
+  white-space: normal;
+}
 
   /* 2) Prevent the fixed bar from covering your mixer/buttons area */
   .mixer-unit{
-    padding-bottom: 92px; /* space for the fixed controls bar */
+    padding-bottom: 112px; /* space for the fixed controls bar */
   }
 
   /* 3) Tighten button sizes slightly so everything fits */
   #startBtn, #pauseBtn{
-    padding: 10px 18px;
-    font-size: 0.72rem;
+  padding: 8px 12px;
+  font-size: 0.66rem;
   }
   .btn-utility, .btn-save, .btn-share-main{
-    padding: 8px 12px;
-    font-size: 0.58rem;
+  padding: 6px 10px;
+  font-size: 0.54rem;
   }
 
   /* 4) Make timer row more compact */
   .timer-wrap{
-    padding: 5px 12px;
-    gap: 8px;
+  flex: 1 1 220px;
+  padding: 4px 10px;
+  gap: 6px;
   }
   #timerDisplay{
-    min-width: 48px;
-    font-size: 0.78rem;
+  min-width: 44px;
+  font-size: 0.74rem;
   }
 }
 
