@@ -1012,7 +1012,6 @@ overflow: hidden;
     let firstTouchIdx = null; // remembers which fader was touched first (mobile)
     let resumePromise = null;
     let needsMobileResume = false; // mobile: Safari tab-return requires Start Session tap
-    let needsMobileRebuild = false; // ✅ Safari killed audio engine; must rebuild
     const MASTER_MAX = 0.6;
     const MOBILE_GAIN_TC = 0.12;
     const DESKTOP_GAIN_TC = 0.05;
@@ -1147,42 +1146,10 @@ async function recoverAudioAfterExternalUI() {
         updateUI(i, val);
       });
     }
-    function hardResetAudioEngine() {
-  try { stopMotionLoop(); } catch (e) {}
-
-  // reset startup state
-  ready = false;
-  starting = false;
-  startPromise = null;
-  autoStartTriggered = false;
-
-  // drop graph references so beginSession rebuilds cleanly
-  tracks.forEach(t => { t.g = null; });
-
-  if (master) {
-    try { master.disconnect(); } catch (e) {}
-  }
-  if (ctx) {
-    try { ctx.close(); } catch (e) {}
-  }
-
-  master = null;
-  ctx = null;
-}
 
     async function handleStartButton(useDefaults = true) {
   // Mobile "resume" case after Safari suspension:
   if (isMobileNow() && needsMobileResume && ready) {
-    // ✅ If Safari killed the audio engine, rebuild it on Start Session
-if (needsMobileRebuild) {
-  hardResetAudioEngine();
-  needsMobileRebuild = false;
-  needsMobileResume = false;
-
-  // Rebuild WITHOUT defaults so faders stay as user set them
-  await beginSession(false);
-  return;
-}
     // Must be a user gesture path
     unlockAudio();
 
@@ -2004,30 +1971,23 @@ window.addEventListener("DOMContentLoaded", () => {
   // When returning from Gmail/Email popups or app-switching on iOS Safari
 function maybeRequireMobileResume() {
   if (!isMobileNow()) return;
-  if (!ready) return; // only when a session already exists
+  if (!ready) return;        // only when a session already exists
+  if (!ctx) return;
 
-  // ✅ If ctx is missing or closed, Safari killed audio → require rebuild
-  if (!ctx || ctx.state === "closed") {
-    needsMobileResume = true;
-    needsMobileRebuild = true;
-
-    lockControls();
-    showStartButtonsAsResume("START SESSION");
-    isPaused = true;
-    return;
-  }
-
-  // ✅ If ctx exists but isn't running, require user-gesture resume
+  // If Safari suspended the audio context, force user to tap Start Session again
   if (ctx.state !== "running") {
     needsMobileResume = true;
-    needsMobileRebuild = false;
 
+    // Lock controls until user taps Start/Resume
     lockControls();
+
+    // Show Start Session again (as Resume)
     showStartButtonsAsResume("START SESSION");
+
+    // Also reset pause UI state (because audio is effectively off)
     isPaused = true;
   }
 }
-
 
 // Run on tab/app return moments
 document.addEventListener("visibilitychange", () => {
