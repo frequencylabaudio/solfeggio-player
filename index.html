@@ -765,6 +765,16 @@ overflow: hidden;
     text-align: right;
   }
 
+  /* LANDSCAPE: never show the portrait-only top Start button */
+  .start-top-wrap,
+  #startBtnTop{
+    display: none !important;
+  }
+
+  /* LANDSCAPE: bottom Start button is the only one */
+  #startBtn{
+    display: inline-flex !important; /* or block, depending on your button styling */
+  }
 
   #startBtn, #pauseBtn { padding: 12px 30px; font-size: 0.75rem; }
   .btn-utility, .btn-save, .btn-share-main { padding: 9px 16px; font-size: 0.62rem; }
