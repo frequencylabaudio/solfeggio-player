@@ -657,7 +657,7 @@ overflow: hidden;
   -webkit-appearance: none;
   appearance: none;
 
-  width: 130px;      /* travel distance (becomes vertical after rotate) */
+  width: 110px;      /* travel distance (becomes vertical after rotate) */
   height: 18px;
 
   position: absolute;
@@ -753,7 +753,7 @@ overflow: hidden;
    SMALL MOBILE LANDSCAPE (SHORT HEIGHT) — keep controls visible
    Targets iPhone SE / short landscape screens
    ========================================================== */
-@media (max-width: 850px) and (orientation: landscape) and (max-height: 420px) {
+@media (max-width: 850px) and (orientation: landscape) and (max-height: 460px) {
 
   /* 1) Make the control bar stay visible */
   .main-controls{
@@ -804,6 +804,53 @@ overflow: hidden;
   #timerDisplay{
   min-width: 44px;
   font-size: 0.74rem;
+  }
+   /* ✅ Make everything shorter so Mute/Solo stays visible (no vertical scroll) */
+
+  /* Tighten header height */
+  .title-container { margin-top: 6px; }
+  h1 { font-size: 1.25rem; }
+  .subtitle { margin-bottom: 6px; font-size: 0.62rem; }
+
+  /* Shrink mixer panel + channels */
+  .mixer { padding: 10px 8px; margin-bottom: 8px; }
+
+  .chan{
+    flex: 0 0 78px;
+    width: 78px;
+    padding: 6px 0;
+  }
+
+  .desc{
+    height: 30px;
+    font-size: 0.45rem;
+    line-height: 1.1;
+  }
+
+  .vol-label{
+    margin-bottom: 4px;
+    font-size: 0.55rem;
+  }
+
+  /* Shrink fader lane so bottom buttons fit on-screen */
+  .fader-slot{
+    height: 88px;
+    margin: 6px auto 6px;
+  }
+  .fader-slot input[type=range]{
+    width: 88px; /* travel distance after rotate */
+  }
+
+  /* Shrink mute/solo row slightly */
+  .btn-row{
+    margin-top: 0px;
+    gap: 4px;
+    padding: 0 8px;
+  }
+  .m-btn, .s-btn{
+    height: 18px;
+    width: 32px;
+    font-size: 0.48rem;
   }
 }
   </style>
