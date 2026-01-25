@@ -1015,6 +1015,36 @@ overflow: hidden;
     const MASTER_MAX = 0.6;
     const MOBILE_GAIN_TC = 0.12;
     const DESKTOP_GAIN_TC = 0.05;
+    function hardResetAudioEngine() {
+  try { if (motionRAF) cancelAnimationFrame(motionRAF); } catch(e) {}
+  motionRAF = null;
+  motionOn = false;
+
+  // Stop timer
+  try { clearInterval(timerInterval); } catch(e) {}
+  timerInterval = null;
+
+  // Close context (kills all sources reliably on iOS Safari)
+  try { if (ctx && typeof ctx.close === "function") ctx.close(); } catch(e) {}
+
+  ctx = null;
+  master = null;
+
+  // Reset per-track gain node refs (keep lastVal + mute/solo states)
+  tracks.forEach(t => { t.g = null; });
+
+  // Reset state gates so beginSession can run again
+  ready = false;
+  starting = false;
+  startPromise = null;
+  resumePromise = null;
+  audioUnlocked = false;
+  autoStartTriggered = false;
+
+  // Keep UI logic consistent
+  // (We want Start Session to be required after return)
+  isPaused = true;
+}
 
     // --- MOTION (volume movement) ---
     let motionOn = false;
@@ -1150,53 +1180,17 @@ async function recoverAudioAfterExternalUI() {
     async function handleStartButton(useDefaults = true) {
   // Mobile "resume" case after Safari suspension:
   if (isMobileNow() && needsMobileResume && ready) {
-    // Must be a user gesture path
-    unlockAudio();
+  // iOS Safari tab/app return can be "running" but silent.
+  // Rebuild the audio engine from scratch (keep UI states).
+  needsMobileResume = false;
 
-    // Ensure context is truly running
-    if (resumePromise) await resumePromise;
-    const ok = await ensureAudioRunning(1500);
-    if (!ok) {
-      // still blocked; keep start button visible so user can try again
-      showStartButtonsAsResume("START SESSION");
-      return;
-    }
+  hardResetAudioEngine();
 
-    // Restore audible gain using existing fader values (no defaults)
-    needsMobileResume = false;
-    starting = false;
+  // Recreate audio using existing fader values (no defaults)
+  await beginSession(false);
 
-    // Resume playback state
-    isPaused = false;
-
-    // Make master audible again
-    if (master && ctx) {
-      const now = ctx.currentTime;
-      master.gain.cancelScheduledValues(now);
-      master.gain.setTargetAtTime(MASTER_MAX, now + 0.02, 0.08);
-    }
-
-    // Unlock UI controls (sliders + mute/solo) now that audio is running
-    unlockControls();
-
-    // Show Pause and hide Start buttons
-    showPauseButtonOnly();
-
-    // Update pause button text/color
-    const p = document.getElementById("pauseBtn");
-    if (p) {
-      p.innerText = "PAUSE ALL";
-      p.style.background = "#55a630";
-    }
-
-    // Apply gains to match current slider positions
-    for (let k = 0; k < audioFiles.length; k++) {
-      const el = document.getElementById("v" + k);
-      if (el) slide(k, el.value);
-    }
-
-    return;
-  }
+  return;
+}
 
   // Normal behavior (desktop + first-time mobile start)
   return beginSession(useDefaults);
@@ -1975,7 +1969,7 @@ function maybeRequireMobileResume() {
   if (!ctx) return;
 
   // If Safari suspended the audio context, force user to tap Start Session again
-  if (ctx.state !== "running") {
+  if (true) {
     needsMobileResume = true;
 
     // Lock controls until user taps Start/Resume
