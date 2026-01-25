@@ -1265,17 +1265,29 @@ async function recoverAudioAfterExternalUI() {
 
   const pBtn = document.getElementById("pauseBtn");
 
-  // Only apply the 25% defaults when Start Session was explicitly pressed
+  // Only apply defaults when Start Session was explicitly pressed
   // AND there is no preset param.
   const urlParams = new URLSearchParams(window.location.search);
   if (useDefaults && !urlParams.get("preset")) {
+
+    // 1) choose a random starter index based on mode
+    const isPortrait = isMobilePortraitNow();
+    const starterIdx = isPortrait
+      ? Math.floor(Math.random() * 4)          // 0–3 only (first 4 faders)
+      : Math.floor(Math.random() * audioFiles.length); // 0–10 (any fader)
+
+    // 2) set all faders to 0, except the chosen one at 0.25
     tracks.forEach((t, i) => {
-      t.lastVal = 0.25;
+      const val = (i === starterIdx) ? 0.25 : 0;
+
+      t.lastVal = val;
+
       const inputEl = document.getElementById("v" + i);
-      if (inputEl) inputEl.value = 0.25;
-      updateUI(i, 0.25);
+      if (inputEl) inputEl.value = val;
+
+      updateUI(i, val);
     });
-  }
+}
 
   // UI feedback (but do NOT permanently trap the button in "INITIALIZING")
       //set initializing text AND disable the buttons while loading
@@ -1937,7 +1949,7 @@ try {
     function setTimer(seconds) {
       clearInterval(timerInterval);
       timeLeft = parseInt(seconds);
-      if (!ready && timeLeft > 0) { beginSession(); return; }
+      if (!ready && timeLeft > 0) { beginSession(false); return; }
       if (ready) {
         master.gain.setTargetAtTime(motionOn ? MASTER_MAX * MOTION_MASTER_SCALE : MASTER_MAX, ctx.currentTime, 0.5);
         isPaused = false;
