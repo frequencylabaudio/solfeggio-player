@@ -2060,12 +2060,27 @@ try {
     }
 
     function randomize() {
-      tracks.forEach((_, i) => {
-        const v = (Math.random() * 0.4 + 0.1).toFixed(2);
-        const input = document.getElementById("v" + i);
-        if (input) { input.value = v; slide(i, v); }
-      });
+  // pick 3 unique random indices
+  const picked = new Set();
+  while (picked.size < 3) {
+    picked.add(Math.floor(Math.random() * audioFiles.length));
+  }
+
+  tracks.forEach((_, i) => {
+    const input = document.getElementById("v" + i);
+    if (!input) return;
+
+    if (picked.has(i)) {
+      const v = (Math.random() * 0.4 + 0.1).toFixed(2); // same range as before
+      input.value = v;
+      slide(i, v);
+    } else {
+      input.value = 0;
+      slide(i, 0);
     }
+  });
+}
+
 
     function resetFaders() {
       soloIdx = -1;
