@@ -829,6 +829,37 @@ overflow: hidden;
   min-width: 44px;
   font-size: 0.74rem;
   }
+  /* tighten title/subtitle a bit */
+  .title-container { margin-top: 6px; }
+  .subtitle { margin-bottom: 6px; }
+
+  /* shrink mixer padding */
+  .mixer{
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  /* shrink each channel column slightly */
+  .chan{
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  /* reduce the fader lane height (this is the big one) */
+  .fader-slot{
+    height: 92px;      /* was 110px */
+    margin: 6px auto 8px;
+  }
+
+  /* shorten the slider travel distance to match the smaller lane */
+  .fader-slot input[type=range]{
+    width: 112px;      /* was 130px */
+  }
+
+  /* tighten the description block */
+  .desc{
+    height: 32px;      /* was 38px */
+  }
 }
   </style>
 </head>
