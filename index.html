@@ -964,7 +964,7 @@ overflow: hidden;
 
           <div class="main-controls">
             <button id="startBtn" onclick="handleStartButton(true)">Start Session</button>
-            <button id="pauseBtn" onclick="toggle()">Pause All</button>
+            <button id="pauseBtn" onclick="toggle()">PAUSE</button>
             <div class="timer-wrap">
               <span class="timer-label">Timer:</span>
               <select id="timerSelect" onchange="setTimer(this.value)">
@@ -1445,7 +1445,7 @@ if (isMobile) {
   isPaused = false;
   const pBtnEl = document.getElementById("pauseBtn");
   if (pBtnEl) {
-      pBtnEl.innerText = "PAUSE ALL";
+      pBtnEl.innerText = "PAUSE";
       pBtnEl.style.background = PAUSE_RED;
       pBtnEl.style.color = "#fff";
   }
@@ -1509,7 +1509,7 @@ const isMobile = window.matchMedia("(max-width: 850px)").matches;
 isPaused = false;
 const pBtnEl = document.getElementById("pauseBtn");
 if (pBtnEl) {
-  pBtnEl.innerText = "PAUSE ALL";
+  pBtnEl.innerText = "PAUSE";
   pBtnEl.style.background = "#9b2226";
 }
 
@@ -1565,7 +1565,7 @@ if (topWrap) topWrap.style.display = "";
 
     const p = document.getElementById("pauseBtn");
     if (p) {
-      p.innerText = "PAUSE ALL";
+      p.innerText = "PAUSE";
       p.style.background = PAUSE_RED;
       p.style.color = "#fff";
     }
@@ -2010,7 +2010,7 @@ try {
       master.gain.setTargetAtTime(isPaused ? 0 : (motionOn ? MASTER_MAX * MOTION_MASTER_SCALE : MASTER_MAX), ctx.currentTime, 0.2);
             const p = document.getElementById("pauseBtn");
       if (p) {
-        p.innerText = isPaused ? "RESUME ALL" : "PAUSE ALL";
+        p.innerText = isPaused ? "RESUME" : "PAUSE";
         p.style.background = isPaused ? RESUME_GREEN : PAUSE_RED;
         p.style.color = "#fff";
       }
@@ -2026,7 +2026,7 @@ try {
         isPaused = false;
         const p = document.getElementById("pauseBtn");
         if (p) {
-          p.innerText = "PAUSE ALL";
+          p.innerText = "PAUSE";
           p.style.background = PAUSE_RED;
           p.style.color = "#fff";
         }
