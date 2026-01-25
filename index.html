@@ -1245,6 +1245,9 @@ async function recoverAudioAfterExternalUI() {
     function loadPresetFromUrl() {
       const urlParams = new URLSearchParams(window.location.search);
       const presetData = urlParams.get("preset");
+      const motionParam = urlParams.get("motion");
+      window.__motionWanted = (motionParam === "1"); // store for later
+
       if (!presetData) return;
       const channelStrings = presetData.split(",");
 
@@ -1463,6 +1466,14 @@ setInitText();
 ready = true;
 starting = false;
 
+    // Apply Motion state from preset link after audio is ready
+    if (window.__motionWanted && !motionOn) {
+      toggleMotion(); // turns it ON + starts loop + updates button
+    }
+    if (!window.__motionWanted && motionOn) {
+      toggleMotion(); // turns it OFF if needed
+    }
+
 // unlock controls now that audio is fully ready
 if (isMobileNow()) unlockControls();
 
@@ -1608,7 +1619,9 @@ function showToast(msg) {
 
     function copyPresetLink() {
   const presetData = generatePresetString();
-  const presetLink = `${window.location.origin}${window.location.pathname}?preset=${presetData}`;
+  const motionParam = motionOn ? "1" : "0";
+  const presetLink = `${window.location.origin}${window.location.pathname}?preset=${presetData}&motion=${motionParam}`;
+
 
   const finish = () => {
     // IMPORTANT: if iOS suspended audio during clipboard/popup, recover immediately
@@ -1662,7 +1675,9 @@ function fallbackCopy(text) {
     async function savePresetToFirebase(uid) {
       const presetData = generatePresetString();
       const userEmail = auth.currentUser.email;
-      const presetLink = `${window.location.origin}${window.location.pathname}?preset=${presetData}`;
+      const motionParam = motionOn ? "1" : "0";
+      const presetLink = `${window.location.origin}${window.location.pathname}?preset=${presetData}&motion=${motionParam}`;
+
       try {
         await db.collection("presets").doc(uid).set({
           encodedData: presetData,
@@ -1700,7 +1715,9 @@ function fallbackCopy(text) {
 
   // Build the same preset link as Gmail flow
   const presetData = generatePresetString();
-  const presetLink = `${window.location.origin}${window.location.pathname}?preset=${presetData}`;
+  const motionParam = motionOn ? "1" : "0";
+  const presetLink = `${window.location.origin}${window.location.pathname}?preset=${presetData}&motion=${motionParam}`;
+
 
   try {
     // Send via your existing Firestore -> mail pipeline (same as Gmail)
