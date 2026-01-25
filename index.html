@@ -860,6 +860,43 @@ overflow: hidden;
   .desc{
     height: 32px;      /* was 38px */
   }
+    /* ==========================================================
+     BUG #2 FIX (SAFE):
+     Short landscape screens (ex: iPhone 12) — make full fader visible
+     Does NOT touch .main-controls layout/positions
+     ========================================================== */
+
+  /* tighten top header spacing so mixer sits higher */
+  .title-container { margin-top: 6px; }
+  h1 { font-size: 1.35rem; }
+  .subtitle { margin-bottom: 6px; }
+
+  /* reduce mixer vertical footprint */
+  .mixer {
+    padding: 10px 8px;     /* smaller than 14px 10px */
+    margin-bottom: 6px;
+  }
+
+  /* reduce each channel height slightly */
+  .chan{
+    padding: 6px 0;        /* was 8px 0 */
+    flex: 0 0 80px;
+    width: 80px;
+  }
+
+  /* reduce label + desc height so fader area fits */
+  .vol-label { margin-bottom: 4px; font-size: 0.6rem; }
+  .desc { height: 32px; }
+
+  /* fader lane shorter + slider travel shorter so bottom isn't cut */
+  .fader-slot{
+    height: 96px;          /* was 110px */
+    margin: 6px auto 8px;
+  }
+
+  .fader-slot input[type=range]{
+    width: 112px;          /* was 130px (too tall after rotate on short screens) */
+  }
 }
   </style>
 </head>
