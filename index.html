@@ -1049,11 +1049,11 @@ overflow: hidden;
           Start with one tone, then gradually add others. Small changes often feel more powerful than extremes.
         </li>
         <li>
-            <strong>MOTION</strong><br />
-            Adds gentle movement for each frequency for a more organic & flowing mix.
+          <strong>MOTION</strong><br />
+          Use <b>Motion</b> to add gentle movement for each frequency to experience a more organic & flowing mix.
           </li>
         <li>
-          <strong>PERSISTENCE</strong><br />
+          <strong>SAVE</strong><br />
           Use <b>Save</b> to generate a link so you can return to your custom mix on any device.
         </li>
       </ul>
@@ -1373,7 +1373,7 @@ if (!ok) {
     });
 
       async function loadAndStartOne(i) {
-        const res = await fetch(audioFiles[i] + ".wav");
+        const res = await fetch(audioFiles[i] + ".mp3");
         const buf = await ctx.decodeAudioData(await res.arrayBuffer());
 
         const src = ctx.createBufferSource();
