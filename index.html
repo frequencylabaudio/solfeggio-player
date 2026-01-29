@@ -2082,8 +2082,6 @@ try {
     }
   });
 }
-
-
     function resetFaders() {
       soloIdx = -1;
       document.querySelectorAll(".s-btn").forEach(b => b.classList.remove("active-solo"));
@@ -2119,8 +2117,6 @@ try {
     function isMobilePortraitNow() {
   return window.matchMedia("(max-width: 850px) and (orientation: portrait)").matches;
 }
-
-
 window.addEventListener("DOMContentLoaded", () => {
   // When returning from Gmail/Email popups or app-switching on iOS Safari
 function maybeRequireMobileResume() {
@@ -2142,7 +2138,6 @@ function maybeRequireMobileResume() {
     isPaused = true;
   }
 }
-
 // Run on tab/app return moments
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden) maybeRequireMobileResume();
@@ -2154,7 +2149,6 @@ window.addEventListener("focus", () => maybeRequireMobileResume());
   if (isMobileNow() && !ready) {
     lockControls();
   }
-
   // Unlock on Start Session clicks (backup)
   ["startBtn", "startBtnTop"].forEach(id => {
     const btn = document.getElementById(id);
@@ -2170,11 +2164,15 @@ window.addEventListener("focus", () => maybeRequireMobileResume());
   window.addEventListener("orientationchange", () => setTimeout(refreshAllSliderUI, 150));
   window.addEventListener("resize", () => setTimeout(refreshAllSliderUI, 150));
 });
-
-
-
 // (optional) remove/avoid double-calling loadPresetFromUrl if you still have window.onload = loadPresetFromUrl;
-
   </script>
+    <!-- FOOTER: AdSense-required links -->
+  <footer class="footer-credit">
+    <a href="/privacy.html">Privacy</a>
+    <span>·</span>
+    <a href="/terms.html">Terms</a>
+    <span>·</span>
+    <a href="/contact.html">Contact</a>
+  </footer>
 </body>
 </html>
