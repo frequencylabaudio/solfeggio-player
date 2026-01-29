@@ -1254,7 +1254,9 @@ async function recoverAudioAfterExternalUI() {
       const urlParams = new URLSearchParams(window.location.search);
       const presetData = urlParams.get("preset");
       const motionParam = urlParams.get("motion");
-      window.__motionWanted = (motionParam === "1"); // store for later
+
+        // Default = ON, unless the URL explicitly sets motion=0
+        window.__motionWanted = (motionParam === null) ? true : (motionParam === "1");
 
       if (!presetData) return;
       const channelStrings = presetData.split(",");
