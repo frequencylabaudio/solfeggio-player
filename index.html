@@ -2188,7 +2188,7 @@ function maybeRequireMobileResume() {
   if (!ctx) return;
 
   // If Safari suspended the audio context, force user to tap Start Session again
-  if (true) {
+  if (ctx.state !== "running") {
     needsMobileResume = true;
 
     // Lock controls until user taps Start/Resume
