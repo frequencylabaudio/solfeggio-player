@@ -1166,6 +1166,32 @@ overflow: hidden;
     const db = firebase.firestore();
     const auth = firebase.auth();
 
+    // ------------------------------------------------------------
+// EMAIL QUEUE (Option B): send email server-side via Cloud Function
+// - Replace FUNCTION_URL with your deployed HTTPS endpoint
+// - During rollout, we keep a safe fallback (optional)
+// ------------------------------------------------------------
+const FUNCTION_URL = "PASTE_YOUR_CLOUD_FUNCTION_HTTPS_URL_HERE";
+
+async function queueMailViaFunction(to, presetLink) {
+  if (!FUNCTION_URL || FUNCTION_URL.startsWith("PASTE_")) {
+    throw new Error("Cloud Function URL not set yet.");
+  }
+
+  const res = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ to, presetLink })
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error("Function error: " + (text || res.status));
+  }
+
+  return true;
+}
+
     // --- 2. MIXER ENGINE VARIABLES ---
     const audioFiles = ["69.3Hz","174Hz","285Hz","396Hz","417Hz","432Hz","528Hz","639Hz","741Hz","852Hz","963Hz"];
     let ctx, master, tracks = [], ready = false, starting = false, isPaused = false, wasPlayingBeforeSave = false;
@@ -1758,19 +1784,29 @@ function fallbackCopy(text) {
           encodedData: presetData,
           timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
-        await db.collection("mail").add({
-          to: userEmail,
-          message: {
-            subject: "Your Sacred Soundscape is Ready ✨",
-            html: `
-              <p>Welcome back to your resonance.</p>
-              <p>Your perfect balance of Solfeggio frequencies is ready for your next session. No need to re-adjust your faders or toggle your mutes—we’ve remembered everything for you.</p>
-              <p><strong><a href="${presetLink}">[Open Your Soundscape]</a></strong></p>
-              <p>May this soundscape bring you the peace and clarity you seek today.</p>
-              <p>Much Love by Frequency Lab</p>
-            `
-          }
-        });
+    // Option B: queue mail server-side (prevents Firestore abuse)
+    try {
+      await queueMailViaFunction(email, presetLink);
+    } catch (e) {
+      // Optional fallback during rollout (remove once function is live)
+      console.warn("Mail function failed, fallback to Firestore:", e);
+      await db.collection("mail").add({
+        to: email,
+        message: {
+          subject: "Your Sacred Soundscape is Ready ✨",
+          html: `
+            <p>Welcome back to your resonance.</p>
+            <p>
+              Your perfect balance of Solfeggio frequencies is ready for your next session.
+              No need to re-adjust your faders or toggle your mutes—we’ve remembered everything for you.
+            </p>
+            <p><strong><a href="${presetLink}">[Open Your Soundscape]</a></strong></p>
+            <p>May this soundscape bring you the peace and clarity you seek today.</p>
+            <p>Much Love by Frequency Lab</p>
+          `
+        }
+      });
+    }
         showToast("Mix saved! Check your email.");
         closeSaveModal();
       } catch (e) {
