@@ -811,13 +811,18 @@ overflow: hidden;
    SINGLE HORIZONTAL SCROLL (no nested scroll)
    ========================================================== */
 @media (max-width: 850px) and (orientation: landscape) {
-   
   html, body {
     height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
   }
-
+  .intro-copy{
+  font-size: 0.75rem;
+  line-height: 1.35;
+  opacity: 0.85;
+  margin: 6px 0 10px;
+  max-width: 720px; /* optional, keeps it tidy */
+  }
   /* Tighten header spacing */
   .title-container { margin-top: 10px; max-width: 100%; }
   h1 { font-size: 1.6rem; }
@@ -1184,10 +1189,6 @@ overflow: hidden;
   <span>·</span>
   <a href="/contact.html">Contact</a>
 </nav>
-  <p class="intro-copy">
-  Solfeggio Player lets you explore relaxing frequency tones by blending multiple sound layers.<br>
-  Create a calm, personalized listening experience by adjusting each channel’s volume.
-</p>
   <div class="page-wrapper">
     <div class="ad-sidebar-stack">
       <!-- Sidebar Ad 1 -->
@@ -1220,6 +1221,10 @@ overflow: hidden;
       <div class="start-top-wrap">
   <button id="startBtnTop" onclick="handleStartButton(true)">START SESSION</button>
 </div>
+      <p class="intro-copy">
+  Solfeggio Player lets you explore relaxing frequency tones by blending multiple sound layers.<br>
+  Create a calm, personalized listening experience by adjusting each channel’s volume.
+</p>
       <div class="scroll-container">
         <div class="mixer-unit">
           <div class="mixer" id="mixer-ui">
