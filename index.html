@@ -87,6 +87,60 @@
       border-radius: 18px;
       box-sizing: border-box;
     }
+    /* AdSense: on-page content block + jump nav */
+.content-nav{
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 10px 0 18px;
+}
+
+.content-nav a{
+  color: #888;
+  text-decoration: none;
+  border: 1px solid #222;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.content-nav a:hover{
+  color: #ffd60a;
+  border-color: #ffd60a;
+}
+
+.content-panel{
+  max-width: 900px;
+  width: 100%;
+  margin: 10px auto 30px;
+  padding: 22px 18px;
+  border-radius: 18px;
+  border: 1px solid #151515;
+  background: rgba(10,10,10,0.75);
+  text-align: left;
+  line-height: 1.65;
+  color: #cfcfcf;
+}
+
+.content-panel h2{
+  color: #ffd60a;
+  font-size: 0.95rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin: 18px 0 10px;
+}
+
+.ad-portrait-bottom{
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto 30px;
+  display: none; /* default hidden; shown only in portrait */
+  border-radius: 18px;
+  overflow: hidden;
+}
 
 /* Landscape tablets / smaller screens */
 @media (max-width: 1100px){
@@ -567,6 +621,15 @@ overflow: hidden;
   gap: 8px;
   margin-top: 2px;
   }
+  /* AdSense safe compromise: no ads above the mixer in portrait */
+.ad-sidebar-stack{
+  display: none !important;
+}
+
+/* Show single ad below content in portrait */
+.ad-portrait-bottom{
+  display: block;
+}
   .m-btn, .s-btn { width: 64px; height: 28px; border-radius: 8px; font-size: 0.6rem; }
 
   /* Modals fit on mobile */
@@ -942,7 +1005,13 @@ overflow: hidden;
     <button class="info-icon" type="button" aria-label="How to use" onclick="openHowToModal()">i</button>
   </div>
   <div class="subtitle">By Frequency Lab</div>
-
+  <!-- AdSense: visible on-page navigation to real content -->
+<nav class="content-nav" aria-label="Page sections">
+  <a href="#about">About</a>
+  <a href="#how">How it works</a>
+  <a href="#faq">FAQ</a>
+  <a href="#safety">Safety</a>
+</nav>
   <div class="page-wrapper">
     <div class="ad-sidebar-stack">
       <!-- Sidebar Ad 1 -->
@@ -955,7 +1024,8 @@ overflow: hidden;
 <script>
      (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
-      <!-- Sidebar Ad 2 -->
+            <!-- Sidebar Ad 2 (TEMP DISABLED DURING REVIEW; reused as portrait bottom ad) -->
+      <!--
 <ins class="adsbygoogle"
      style="display:block"
      data-ad-client="ca-pub-6943946832605299"
@@ -965,6 +1035,7 @@ overflow: hidden;
 <script>
      (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
+      -->
     </div>
 
     <main>
@@ -1034,6 +1105,40 @@ overflow: hidden;
             <button class="btn-save" onclick="openSaveModal()">Save</button>
             <button class="btn-share-main" onclick="openShareModal()">Share</button>
           </div>
+          <!-- AdSense: real publisher content (visible on-page, not in a modal) -->
+<section class="content-panel" aria-label="Solfeggio information">
+  <h2 id="about">What are Solfeggio frequencies?</h2>
+  <p>
+    Solfeggio frequencies are tones that many listeners use for relaxation, meditation, and focus.
+  </p>
+
+  <h2 id="how">How this player works</h2>
+  <p>
+    Each channel is a tone you mix like a DJ. Start with one fader and slowly add more.
+  </p>
+
+  <h2 id="faq">FAQ</h2>
+  <p><strong>Do I need headphones?</strong> Not required.</p>
+  <p><strong>Is louder better?</strong> No — lower volume is better.</p>
+
+  <h2 id="safety">Safety</h2>
+  <p>
+    Keep volume moderate. Stop if you feel discomfort.
+  </p>
+</section>
+
+<!-- Portrait-only ad -->
+<div class="ad-portrait-bottom">
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-6943946832605299"
+       data-ad-slot="8752470712"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
         </div>
       </div>
     </main>
@@ -1049,7 +1154,8 @@ overflow: hidden;
 <script>
      (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
-      <!-- Sidebar Ad 4 -->
+            <!-- Sidebar Ad 4 (TEMP DISABLED DURING REVIEW) -->
+      <!--
 <ins class="adsbygoogle"
      style="display:block"
      data-ad-client="ca-pub-6943946832605299"
@@ -1059,6 +1165,7 @@ overflow: hidden;
 <script>
      (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
+      -->
     </div>
   </div>
 
