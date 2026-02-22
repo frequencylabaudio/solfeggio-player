@@ -68,6 +68,28 @@
       box-sizing: border-box;
       gap: 20px;
     }
+    .legal-nav{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin: 6px 0 10px;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color:#666;
+}
+
+.legal-nav a{
+  color:#888;
+  text-decoration:none;
+  font-weight:600;
+}
+
+.legal-nav a:hover{
+  color:#ffd60a;
+  text-decoration: underline;
+}
 
     /* ==========================================================
    REVIEW MODE (Desktop + Landscape)
@@ -985,9 +1007,6 @@ overflow: hidden;
   border: 2px solid rgba(255,255,255,0.25);
   box-sizing: border-box;
 }
-  .footer-credit{
-  display: none !important;
-}
 
   .desc { height: 38px; }
   /* NEW: LANDSCAPE ONLY button spacing fix (does not change channel border size) */
@@ -1178,6 +1197,13 @@ overflow: hidden;
     <button class="info-icon" type="button" aria-label="How to use" onclick="openHowToModal()">i</button>
   </div>
   <div class="subtitle">By Frequency Lab</div>
+  <nav class="legal-nav" aria-label="Legal">
+  <a href="/privacy.html">Privacy</a>
+  <span>·</span>
+  <a href="/terms.html">Terms</a>
+  <span>·</span>
+  <a href="/contact.html">Contact</a>
+</nav>
   <p class="intro-copy">
   Solfeggio Player lets you explore relaxing frequency tones by blending multiple sound layers.<br>
   Create a calm, personalized listening experience by adjusting each channel’s volume.
