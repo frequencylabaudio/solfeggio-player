@@ -305,7 +305,19 @@
   /* Optional: rebalance the grid so the center is still centered */
   .page-wrapper{
     grid-template-columns: 140px 1fr;
-  }   
+  }
+      /* Desktop + landscape: left-aligned intro copy above mixer */
+.intro-copy{
+  max-width: 900px;   /* matches your content-panel width vibe */
+  width: 100%;
+  margin: 12px auto 18px;
+  padding: 0 12px;
+  box-sizing: border-box;
+  text-align: left;
+  color: #cfcfcf;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
     }
   input[type=range]{
   -webkit-appearance: none;
@@ -1160,6 +1172,10 @@ overflow: hidden;
     <button class="info-icon" type="button" aria-label="How to use" onclick="openHowToModal()">i</button>
   </div>
   <div class="subtitle">By Frequency Lab</div>
+  <p class="intro-copy">
+  Solfeggio Player lets you explore relaxing frequency tones by blending multiple sound layers.<br>
+  Create a calm, personalized listening experience by adjusting each channel’s volume.
+</p>
   <div class="page-wrapper">
     <div class="ad-sidebar-stack">
       <!-- Sidebar Ad 1 -->
