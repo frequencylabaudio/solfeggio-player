@@ -144,6 +144,22 @@
       border-radius: 18px;
       box-sizing: border-box;
     }
+    /* Intro copy under title (desktop + landscape) */
+.intro-copy{
+  max-width: 900px;
+  width: 100%;
+  margin: 10px auto 14px;
+  padding: 0 12px;
+  box-sizing: border-box;
+  text-align: left;
+  color: #b8b8b8;
+  line-height: 1.55;
+  font-size: 0.95rem;
+}
+
+/* Hide intro on mobile portrait */
+@media (max-width: 850px) and (orientation: portrait){
+}
     /* AdSense: on-page content block + jump nav */
 .content-nav{
   display: flex;
@@ -181,9 +197,6 @@
 
 /* hide intro on portrait */
 @media (max-width: 850px) and (orientation: portrait){
-  .intro-blurb{
-    display:none;
-  }
 }
 .content-panel{
   max-width: 900px;
@@ -306,18 +319,6 @@
   .page-wrapper{
     grid-template-columns: 140px 1fr;
   }
-      /* Desktop + landscape: left-aligned intro copy above mixer */
-.intro-copy{
-  max-width: 900px;   /* matches your content-panel width vibe */
-  width: 100%;
-  margin: 12px auto 18px;
-  padding: 0 12px;
-  box-sizing: border-box;
-  text-align: left;
-  color: #cfcfcf;
-  font-size: 0.9rem;
-  line-height: 1.6;
-}
     }
   input[type=range]{
   -webkit-appearance: none;
@@ -1205,10 +1206,6 @@ overflow: hidden;
     </div>
 
     <main>
-      <p class="intro-blurb">
-  Solfeggio Player lets you explore relaxing frequency tones by blending multiple sound layers.
-  Adjust each channel’s volume to create a calm, personalized listening experience.
-</p>
       <div class="start-top-wrap">
   <button id="startBtnTop" onclick="handleStartButton(true)">START SESSION</button>
 </div>
