@@ -449,7 +449,7 @@ input[type=range]::-webkit-slider-runnable-track{
   /* ===== START SESSION GLOW (PORTRAIT ONLY) ===== */
 #startBtnTop:not(:disabled){
   position: relative;
-  animation: startPulse 1.6s ease-in-out infinite;
+  animation: startPulse 1.2s ease-in-out infinite;
   will-change: transform, box-shadow, filter;
 }
 
@@ -463,10 +463,10 @@ input[type=range]::-webkit-slider-runnable-track{
   transform:translate(-50%,-50%);
   border-radius:999px;
   background: radial-gradient(
-    closest-side,
-    rgba(255,214,10,0.30),
-    rgba(255,214,10,0) 70%
-  );
+  closest-side,
+  rgba(255,214,10,0.55),
+  rgba(255,214,10,0) 75%
+);
   opacity:0;
   animation:startRing 1.6s ease-in-out infinite;
   pointer-events:none;
@@ -481,7 +481,7 @@ input[type=range]::-webkit-slider-runnable-track{
       0 10px 26px rgba(0,0,0,0.45);
   }
   50%{
-    transform:scale(1.03);
+    transform:scale(1.09);
     box-shadow:
       0 0 18px rgba(255,214,10,0.35),
       0 0 44px rgba(255,214,10,0.18),
