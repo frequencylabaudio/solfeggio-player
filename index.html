@@ -68,6 +68,14 @@
       box-sizing: border-box;
       gap: 20px;
     }
+        /* ✅ NEW: wrapper used to control horizontal scroll behavior in landscape */
+    .landscape-strip{
+    width: 100%;
+    overflow-x: auto;       /* ✅ ONLY horizontal scroller */
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;    /* ✅ horizontal-only gestures here */
+    }
     .ad-sidebar-stack {
       display: flex;
       flex-direction: column;
@@ -232,8 +240,8 @@
   cursor: pointer;
 }
 
-/* FORCE VERTICAL FADERS on Desktop + Mobile Landscape */
-@media (min-width: 851px), (max-width: 850px) and (orientation: landscape) {
+/* FORCE VERTICAL FADERS on Desktop only */
+@media (min-width: 851px) {
   input[type=range]{
     margin-top: 0px;
     -webkit-appearance: slider-vertical;
@@ -641,7 +649,6 @@ overflow: hidden;
    SINGLE HORIZONTAL SCROLL (no nested scroll)
    ========================================================== */
 @media (max-width: 850px) and (orientation: landscape) {
-   
   html, body {
     height: 100%;
     overflow-x: hidden;
@@ -654,21 +661,15 @@ overflow: hidden;
   .subtitle { margin-bottom: 10px; }
 
   /* ONE scroller: the outer wrapper */
-  .page-wrapper {
+  .page-wrapper{
     display: flex;
     flex-direction: row;
     align-items: stretch;
     gap: 12px;
 
     padding: 0 10px;
-    width: 100%;
-
-    overflow-x: auto;     /* <-- only horizontal scroll */
-    overflow-y: hidden;
-    
-    -webkit-overflow-scrolling: touch;
-    touch-action: pan-x pan-y;  /* ✅ allows vertical scrolling too */
-    overscroll-behavior: contain;
+    width: max-content;     /* ✅ important */
+    overflow: visible;      /* ✅ NOT a scroller */
   }
 
   /* Ads are NOT sticky (just normal columns that scroll with the page-wrapper) */
@@ -1012,6 +1013,9 @@ overflow: hidden;
   <a href="#faq">FAQ</a>
   <a href="#safety">Safety</a>
 </nav>
+
+<!-- ✅ NEW: wrapper that will be the only horizontal scroller in landscape -->
+<div class="landscape-strip">
   <div class="page-wrapper">
     <div class="ad-sidebar-stack">
       <!-- Sidebar Ad 1 -->
@@ -1037,7 +1041,6 @@ overflow: hidden;
 </script>
       -->
     </div>
-
     <main>
       <div class="start-top-wrap">
   <button id="startBtnTop" onclick="handleStartButton(true)">START SESSION</button>
@@ -1104,44 +1107,11 @@ overflow: hidden;
             <button class="btn-utility" onclick="resetFaders()">Reset</button>
             <button class="btn-save" onclick="openSaveModal()">Save</button>
             <button class="btn-share-main" onclick="openShareModal()">Share</button>
-          </div>
-          </div>   <!-- closes mixer-unit -->
-</div>   <!-- closes scroll-container -->
-          <!-- AdSense: real publisher content (visible on-page, not in a modal) -->
-<section class="content-panel" aria-label="Solfeggio information">
-  <h2 id="about">What are Solfeggio frequencies?</h2>
-  <p>
-    Solfeggio frequencies are tones that many listeners use for relaxation, meditation, and focus.
-  </p>
+          </div> <!-- closes main-controls -->
 
-  <h2 id="how">How this player works</h2>
-  <p>
-    Each channel is a tone you mix like a DJ. Start with one fader and slowly add more.
-  </p>
-
-  <h2 id="faq">FAQ</h2>
-  <p><strong>Do I need headphones?</strong> Not required.</p>
-  <p><strong>Is louder better?</strong> No — lower volume is better.</p>
-
-  <h2 id="safety">Safety</h2>
-  <p>
-    Keep volume moderate. Stop if you feel discomfort.
-  </p>
-</section>
-
-<!-- Portrait-only ad -->
-<div class="ad-portrait-bottom">
-  <ins class="adsbygoogle"
-       style="display:block"
-       data-ad-client="ca-pub-6943946832605299"
-       data-ad-slot="8752470712"
-       data-ad-format="auto"
-       data-full-width-responsive="true"></ins>
-  <script>
-    (adsbygoogle = window.adsbygoogle || []).push({});
-  </script>
-</div>
-    </main>
+        </div> <!-- closes mixer-unit -->
+      </div> <!-- closes scroll-container -->
+    </main> <!-- ✅ closes main -->
 
     <div class="ad-sidebar-stack">
       <!-- Sidebar Ad 3 -->
@@ -1166,7 +1136,42 @@ overflow: hidden;
      (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
       -->
-    </div>
+        </div>
+  </div> <!-- closes page-wrapper -->
+</div> <!-- ✅ closes landscape-strip -->
+
+<!-- ✅ content is now below the strip, always reachable -->
+<section class="content-panel" aria-label="Solfeggio information">
+    <h2 id="about">What are Solfeggio frequencies?</h2>
+    <p>
+      Solfeggio frequencies are tones that many listeners use for relaxation, meditation, and focus.
+    </p>
+
+    <h2 id="how">How this player works</h2>
+    <p>
+      Each channel is a tone you mix like a DJ. Start with one fader and slowly add more.
+    </p>
+
+    <h2 id="faq">FAQ</h2>
+    <p><strong>Do I need headphones?</strong> Not required.</p>
+    <p><strong>Is louder better?</strong> No — lower volume is better.</p>
+
+    <h2 id="safety">Safety</h2>
+    <p>
+      Keep volume moderate. Stop if you feel discomfort.
+    </p>
+  </section>
+
+  <div class="ad-portrait-bottom">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-6943946832605299"
+         data-ad-slot="8752470712"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
   </div>
 
   <!-- SAVE MODAL (pauses audio) -->
@@ -1881,21 +1886,28 @@ function fallbackCopy(text) {
     }
 
     async function savePresetToFirebase(uid) {
-      const presetData = generatePresetString();
-      const userEmail = auth.currentUser.email;
-      const motionParam = motionOn ? "1" : "0";
-      const presetLink = `${window.location.origin}${window.location.pathname}?preset=${presetData}&motion=${motionParam}`;
+  const presetData = generatePresetString();
+  const email = auth.currentUser?.email; // ✅ fixed
+  const motionParam = motionOn ? "1" : "0";
+  const presetLink = `${window.location.origin}${window.location.pathname}?preset=${presetData}&motion=${motionParam}`;
 
-      try {
-        await db.collection("presets").doc(uid).set({
-          encodedData: presetData,
-          timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-    // Option B: queue mail server-side (prevents Firestore abuse)
+  if (!email) {
+    showToast("No email found for this account.");
+    await recoverAudioAfterExternalUI();
+    return;
+  }
+
+  try {
+    await db.collection("presets").doc(uid).set({
+      encodedData: presetData,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    // Option B: queue mail server-side
     try {
       await queueMailViaFunction(email, presetLink);
     } catch (e) {
-      // Optional fallback during rollout (remove once function is live)
+      // Fallback during rollout
       console.warn("Mail function failed, fallback to Firestore:", e);
       await db.collection("mail").add({
         to: email,
@@ -1905,7 +1917,7 @@ function fallbackCopy(text) {
             <p>Welcome back to your resonance.</p>
             <p>
               Your perfect balance of Solfeggio frequencies is ready for your next session.
-              No need to re-adjust your faders or toggle your mutes—we’ve remembered everything for you.
+              No need to re-adjust your faders or toggle your mutes, we’ve remembered everything for you.
             </p>
             <p><strong><a href="${presetLink}">[Open Your Soundscape]</a></strong></p>
             <p>May this soundscape bring you the peace and clarity you seek today.</p>
@@ -1914,13 +1926,14 @@ function fallbackCopy(text) {
         }
       });
     }
-        showToast("Mix saved! Check your email.");
-        closeSaveModal();
-      } catch (e) {
-        showToast("Save failed: " + e.message);
-        await recoverAudioAfterExternalUI();
-      }
-    }
+
+    showToast("Mix saved! Check your email.");
+    closeSaveModal();
+  } catch (e) {
+    showToast("Save failed: " + e.message);
+    await recoverAudioAfterExternalUI();
+  }
+}
 
     async function sendPresetEmail() {
   const emailEl = document.getElementById("userEmail");
