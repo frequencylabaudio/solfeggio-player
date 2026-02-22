@@ -68,6 +68,9 @@
       box-sizing: border-box;
       gap: 20px;
     }
+    main{
+      padding-bottom: 70px;
+      }
     .ad-sidebar-stack {
       display: flex;
       flex-direction: column;
@@ -352,13 +355,22 @@
   .footer-credit{
   position: fixed;
   right: 18px;
-  bottom: 14px;
+  bottom: calc(14px + env(safe-area-inset-bottom));
   font-size: 0.75rem;
   color: #666;
   letter-spacing: 2px;
   text-transform: uppercase;
   z-index: 40;
- }
+
+  /* ✅ prevents overlap with your content panel edge */
+  pointer-events: auto;
+  max-width: calc(100vw - 36px);
+  background: rgba(5,5,5,0.72);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 999px;
+  padding: 8px 12px;
+}
     /* Footer links — AdSense compliant */
  .footer-credit a {
   color: #888;
