@@ -68,6 +68,60 @@
       box-sizing: border-box;
       gap: 20px;
     }
+
+    /* ==========================================================
+   REVIEW MODE (Desktop + Landscape)
+   During AdSense review:
+   - show ONLY one side rail
+   - slightly narrower so ads feel lighter
+   ========================================================== */
+
+/* Desktop */
+@media (min-width: 851px) {
+
+  /* make layout one rail + content */
+  .page-wrapper{
+    grid-template-columns: 120px 1fr;
+  }
+
+  /* hide RIGHT rail during review */
+  .page-wrapper > .ad-sidebar-stack:last-of-type{
+    display: none;
+  }
+
+  /* narrower rail */
+  .ad-sidebar-stack{
+    width: 120px;
+  }
+
+  /* lighter visual weight */
+  .ad-box{
+    width: 120px;
+    border-color: rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.02);
+  }
+}
+
+/* Mobile landscape */
+@media (max-width: 850px) and (orientation: landscape){
+
+  /* hide RIGHT rail during review */
+  .page-wrapper > .ad-sidebar-stack:last-of-type{
+    display: none;
+  }
+
+  .ad-sidebar-stack{
+    flex: 0 0 80px;
+    width: 80px;
+  }
+
+  .ad-box{
+    width: 80px;
+    border-color: rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.02);
+  }
+}
+    
     main{
       padding-bottom: 70px;
       }
@@ -114,7 +168,23 @@
   color: #ffd60a;
   border-color: #ffd60a;
 }
+/* Intro paragraph (desktop + landscape only) */
+.intro-blurb{
+  max-width: 900px;
+  margin: 10px auto 14px;
+  color: #b8b8b8;
+  line-height: 1.55;
+  font-size: 0.95rem;
+  text-align: center;
+  padding: 0 12px;
+}
 
+/* hide intro on portrait */
+@media (max-width: 850px) and (orientation: portrait){
+  .intro-blurb{
+    display:none;
+  }
+}
 .content-panel{
   max-width: 900px;
   width: 100%;
@@ -227,7 +297,15 @@
     width: 30px;        /* was 40px */
     font-size: 0.48rem;
   }
-      
+     /* AdSense review: keep ONLY one sidebar on desktop/landscape */
+  .page-wrapper > .ad-sidebar-stack:last-of-type{
+    display: none;
+  }
+
+  /* Optional: rebalance the grid so the center is still centered */
+  .page-wrapper{
+    grid-template-columns: 140px 1fr;
+  }   
     }
   input[type=range]{
   -webkit-appearance: none;
@@ -1085,12 +1163,14 @@ overflow: hidden;
   <div class="page-wrapper">
     <div class="ad-sidebar-stack">
       <!-- Sidebar Ad 1 -->
-<ins class="adsbygoogle"
+<div class="ad-box">
+  <ins class="adsbygoogle"
      style="display:block"
      data-ad-client="ca-pub-6943946832605299"
      data-ad-slot="7240477872"
      data-ad-format="auto"
      data-full-width-responsive="true"></ins>
+  </div>
 <script>
      (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
@@ -1109,6 +1189,10 @@ overflow: hidden;
     </div>
 
     <main>
+      <p class="intro-blurb">
+  Solfeggio Player lets you explore relaxing frequency tones by blending multiple sound layers.
+  Adjust each channel’s volume to create a calm, personalized listening experience.
+</p>
       <div class="start-top-wrap">
   <button id="startBtnTop" onclick="handleStartButton(true)">START SESSION</button>
 </div>
@@ -1242,12 +1326,14 @@ overflow: hidden;
 
     <div class="ad-sidebar-stack">
       <!-- Sidebar Ad 3 -->
-<ins class="adsbygoogle"
+<div class="ad-box">
+   <ins class="adsbygoogle"
      style="display:block"
      data-ad-client="ca-pub-6943946832605299"
      data-ad-slot="4774870719"
      data-ad-format="auto"
      data-full-width-responsive="true"></ins>
+  </div>
 <script>
      (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
