@@ -144,18 +144,6 @@
       border-radius: 18px;
       box-sizing: border-box;
     }
-    /* Intro copy under title (desktop + landscape) */
-.intro-copy{
-  max-width: 900px;
-  width: 100%;
-  margin: 10px auto 14px;
-  padding: 0 12px;
-  box-sizing: border-box;
-  text-align: left;
-  color: #b8b8b8;
-  line-height: 1.55;
-  font-size: 0.95rem;
-}
 
 /* Hide intro on mobile portrait */
 @media (max-width: 850px) and (orientation: portrait){
@@ -273,6 +261,17 @@
       box-shadow: 0 15px 40px rgba(0,0,0,0.9);
       margin-bottom: 30px;
     }
+    .intro-copy{
+        width: 100%;
+        max-width: 1040px;
+        margin: 12px auto 18px;
+        padding: 0 12px;
+        box-sizing: border-box;
+        text-align: left;
+        color: #b8b8b8;
+        line-height: 1.55;
+        font-size: 0.95rem;
+      }
     .chan {
       display: flex; flex-direction: column; align-items: center;
       flex: 0 0 95px; width: 95px; background: var(--chan-bg);
@@ -820,7 +819,12 @@ overflow: hidden;
   .title-container { margin-top: 10px; max-width: 100%; }
   h1 { font-size: 1.6rem; }
   .subtitle { margin-bottom: 10px; }
-
+    /* Landscape: make the description text smaller */
+  .intro-copy{
+    font-size: 0.75rem;
+    line-height: 1.35;
+    color: #666;
+  }
   /* ONE scroller: the outer wrapper */
   .page-wrapper {
     display: flex;
