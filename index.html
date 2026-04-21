@@ -103,11 +103,11 @@
 
   /* make layout one rail + content */
   .page-wrapper{
-    grid-template-columns: 120px 1fr;
+    grid-template-columns: 1fr 120px;
   }
 
-  /* hide RIGHT rail during review */
-  .page-wrapper > .ad-sidebar-stack:last-of-type{
+  /* hide LEFT rail */
+  .page-wrapper > .ad-sidebar-stack:first-of-type{
     display: none;
   }
 
@@ -127,8 +127,8 @@
 /* Mobile landscape */
 @media (max-width: 850px) and (orientation: landscape){
 
-  /* hide RIGHT rail during review */
-  .page-wrapper > .ad-sidebar-stack:last-of-type{
+  /* hide LEFT rail */
+  .page-wrapper > .ad-sidebar-stack:first-of-type{
     display: none;
   }
 
@@ -475,10 +475,41 @@
   color: #ffd60a;
   text-decoration: underline;
  }
+.site-credit{
+  position: fixed;
+  right: 18px;
+  bottom: calc(14px + env(safe-area-inset-bottom));
+  z-index: 40;
+  font-size: 0.72rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #666;
+  background: rgba(5,5,5,0.72);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 999px;
+  padding: 8px 12px;
+  pointer-events: none;
+  max-width: calc(100vw - 36px);
+}
 /* ==========================================================
    VERTICAL MOBILE (PORTRAIT) ONLY
    ========================================================== */
 @media (max-width: 850px) and (orientation: portrait) {
+    .site-credit{
+    position: static;
+    margin: 18px 0 14px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    backdrop-filter: none;
+    text-align: center;
+    font-size: 0.72rem;
+    letter-spacing: 2px;
+    color: #666;
+    pointer-events: none;
+  }
   input[type=range]{
     -webkit-appearance: none;
     appearance: none;
@@ -1177,6 +1208,7 @@ overflow: hidden;
 </head>
 
 <body>
+  <div class="site-credit">Created by Keunho Koh</div>
   <div class="title-container">
     <h1>SOLFEGGIO PLAYER</h1>
     <button class="info-icon" type="button" aria-label="How to use" onclick="openHowToModal()">i</button>
