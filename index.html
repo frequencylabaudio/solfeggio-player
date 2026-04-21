@@ -1000,10 +1000,13 @@ overflow: hidden;
   .main-controls {
   gap: 10px;
   padding-bottom: calc(8px + env(safe-area-inset-bottom));
-  align-self: center;
   justify-content: center;
-  width: max-content;
+  width: fit-content;
+  max-width: calc(100vw - 20px);
   margin: 0 auto;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
     /* FIX #1 (Landscape): prevent Timer pill from stretching wide */
