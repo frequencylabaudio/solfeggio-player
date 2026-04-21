@@ -998,9 +998,13 @@ overflow: hidden;
 }
 
   .main-controls {
-    gap: 10px;
-    padding-bottom: calc(8px + env(safe-area-inset-bottom));
-  }
+  gap: 10px;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  align-self: center;
+  justify-content: center;
+  width: max-content;
+  margin: 0 auto;
+}
 
     /* FIX #1 (Landscape): prevent Timer pill from stretching wide */
   .timer-wrap{
